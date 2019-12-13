@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Popup</title>
+
+    <link rel="stylesheet" type="text/css" href="../styles/popup.css" />
+  </head>
+  <body>
+    <div id="extension-menu">
+      <h1>Vad ska döljas:</h1>
+
+      <input
+        type="checkbox"
+        name="hideStories"
+        value="true"
+        v-model="hideStories"
+      />
+      Stories<br />
+
+      <p>{{hideStories}}</p>
+    </div>
+    <script src="../scripts/popup.js"></script>
+  </body>
+</html>
