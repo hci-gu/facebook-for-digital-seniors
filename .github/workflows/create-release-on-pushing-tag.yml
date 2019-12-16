@@ -12,6 +12,9 @@ jobs:
     name: all da shitz!
     runs-on: ubuntu-latest
     steps:
+      - name: Get the version
+        id: get_version
+        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       - name: Dump GitHub context
         env:
           GITHUB_CONTEXT: ${{ toJson(github) }}
@@ -53,6 +56,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./packages/facebook-for-elderly.${{ github.ref }}.chrome.zip
-          asset_name: facebook-for-elderly.${{ github.ref }}.chrome.zip
+          asset_path: ./packages/facebook-for-elderly.${{ steps.get_version.outputs.VERSION }}.chrome.zip
+          asset_name: facebook-for-elderly.${{ steps.get_version.outputs.VERSION }}.chrome.zip
           asset_content_type: application/zip
