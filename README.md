@@ -1,4 +1,4 @@
-https://github.com/Dealerpriest/facebook-for-elderly/workflows/create-release-on-pushing-tag/badge.svg
+![](https://github.com/Dealerpriest/facebook-for-elderly/workflows/create-release-on-pushing-tag/badge.svg)
 
 # facebook for elderly
 
