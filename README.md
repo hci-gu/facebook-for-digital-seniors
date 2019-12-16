@@ -1,10 +1,12 @@
+https://github.com/dealerpriest/facebook-for-elderly/workflows/create-release-on-pushing-tag/badge.svg
+
 # facebook for elderly
 
 A web extension for customizing facebook interface and experience. Primarly aimed at making it more user friendly for elderly.
 
 ## Install
 
-	$ npm install
+    $ npm install
 
 ## Development
 
@@ -22,8 +24,8 @@ A web extension for customizing facebook interface and experience. Primarly aime
 
 ## Environment
 
-The build tool also defines a variable named `process.env.NODE_ENV` in your scripts. 
+The build tool also defines a variable named `process.env.NODE_ENV` in your scripts.
 
 ## Docs
 
-* [webextension-toolbox](https://github.com/HaNdTriX/webextension-toolbox)
+- [webextension-toolbox](https://github.com/HaNdTriX/webextension-toolbox)
