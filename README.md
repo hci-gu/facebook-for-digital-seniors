@@ -2,7 +2,7 @@
 
 # facebook for elderly
 
-A web extension for customizing facebook interface and experience. Primarly aimed at making it more user friendly for elderly.
+A web extension for customizing facebook interface and experience. Primarily aimed at making it more user friendly for elderly.
 
 ## Install
 
