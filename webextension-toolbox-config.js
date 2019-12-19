@@ -3,7 +3,7 @@
 // (But you could use ES2015 features supported by your Node.js version)
 const webpack = require("webpack");
 
-const ChromeExtensionReloader = require("webpack-chrome-extension-reloader");
+// const ChromeExtensionReloader = require("webpack-chrome-extension-reloader");
 
 const VueLoaderPlugin = require("vue-loader/lib/plugin");
 
