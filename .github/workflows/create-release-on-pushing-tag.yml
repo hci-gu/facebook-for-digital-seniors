@@ -21,12 +21,12 @@ jobs:
         run: echo "$GITHUB_CONTEXT"
       - name: Checkout code
         uses: actions/checkout@master
-        with:
-          fetch-depth: 1
+        # with:
+        #   fetch-depth: 1
       - name: Use Node.js
         uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
+          node-version: "8.x"
       # - run: cd facebook-for-elderly
       - name: Install dependencies
         run: |
