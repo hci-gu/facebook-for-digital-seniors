@@ -1,7 +1,7 @@
 import MutationSummary from "mutation-summary";
 
-// let idsToRemove = [];
 let state = {};
+let style;
 
 function hideElement(node) {
   node.style.display = "none";
@@ -11,18 +11,18 @@ function showElement(node) {
   node.style.removeProperty("display");
 }
 
-function updateVisibility() {
-  if (!state.controlledElements) {
-    console.error("controlledElements is null or undefined");
+function updateVisibilityAll() {
+  if (!state.thingsToHide) {
+    console.error("thingsToHide is null or undefined");
     return;
   }
-  for (let item of state.controlledElements) {
-    let node = document.querySelector(item.id);
+  for (let item of state.thingsToHide) {
+    let node = document.querySelector(item.cssSelector);
     if (!node) {
-      console.error("didn't find the node");
+      console.error("didn't find the node", item.cssSelector);
       continue;
     }
-    console.log("changing element: ", item.id, " to ", item.hide);
+    console.log("changing element: ", item.cssSelector, " to ", item.hide);
     if (item.hide) {
       hideElement(node);
     } else {
@@ -31,42 +31,40 @@ function updateVisibility() {
   }
 }
 
+function updateStyles() {
+  for (let customCssItem of state.customCss) {
+    console.log("inserting new css rule: ", customCssItem);
+    let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value}px}`;
+    console.log("cssString:", cssString);
+    style.sheet.insertRule(cssString);
+  }
+}
+
 browser.runtime.onMessage.addListener(message => {
   console.log("msg received: ", message);
   state = message;
-  updateVisibility();
+  updateVisibilityAll();
 });
 
 browser.runtime.sendMessage("stateRequest").then(response => {
   console.log("response received: ", response);
   state = response;
-  updateVisibility();
 
-  // if (state.idsToRemove) {
-  //   idsToRemove = response.idsToRemove.reduce((outputArray, item) => {
-  //     if (item.remove) {
-  //       outputArray.push(item.id);
-  //     }
-  //     return outputArray;
-  //   }, []);
-  // }
-
-  // //Initial removal of elements
-  // for (let id of idsToRemove) {
-  //   let node = document.querySelector(id);
-  //   if (node) {
-  //     // node.remove();
-  //     hideElement(node);
-  //   }
-  // }
-
-  if (!state.controlledElements) {
-    console.error("controlledElements is null or undefined");
+  if (!state.thingsToHide) {
+    console.error("thingsToHide is null or undefined");
     return;
   }
 
-  let watchedNodesQuery = state.controlledElements.map(el => {
-    return { element: el.id };
+  style = document.createElement("style");
+  style.id = "style-tag";
+  document.head.appendChild(style);
+
+  updateStyles();
+
+  // updateVisibilityAll();
+
+  let watchedNodesQuery = state.thingsToHide.map(el => {
+    return { element: el.cssSelector };
   });
 
   let nodeObserver = new MutationSummary({
@@ -76,14 +74,23 @@ browser.runtime.sendMessage("stateRequest").then(response => {
 });
 
 const nodeChangeHandler = summaries => {
-  updateVisibility(); // Should be safe since mutation-summary won't trigger on changes made in it's own callback.
+  console.log("node summary was triggered");
   console.log(summaries);
-  // for (let summary of summaries) {
-  //   for (let node of summary.added) {
-  //     // node.remove();
-  //     hideElement(node);
-  //   }
-  // }
+  // updateVisibilityAll(); // Should be safe since mutation-summary won't trigger on changes made in it's own callback.
+
+  for (let summary of summaries) {
+    for (let node of summary.added) {
+      for (let item of state.thingsToHide) {
+        if (node.matches(item.cssSelector)) {
+          if (item.hide) {
+            hideElement(node);
+          } else {
+            showElement(node);
+          }
+        }
+      }
+    }
+  }
 };
 
 if (window.location.host.includes("facebook.com")) {
@@ -92,4 +99,4 @@ if (window.location.host.includes("facebook.com")) {
   console.log("not on facebook I think... You CRY!!");
 }
 
-console.log(`YOO! FB4seniles loaded!!!`);
+console.log(`YOO! FB4Seniles loaded!!!`);

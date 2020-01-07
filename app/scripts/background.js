@@ -6,52 +6,57 @@ browser.browserAction.setBadgeText({
   text: `BFB`
 });
 
-console.log(`BAAAJS! Event Page for Browser Action`);
-
-let state = {
-  controlledElements: [
-    { name: "Left pane", id: "#left_nav_section_nodes", hide: false },
+let state = {};
+const initialState = {
+  thingsToHide: [
+    { name: "Left pane", cssSelector: "#left_nav_section_nodes", hide: false },
     {
       name: "Stories",
-      id: "#stories_pagelet_below_composer",
+      cssSelector: "#stories_pagelet_below_composer",
       hide: true
     },
     {
       name: "Right Pane",
-      id: ".home_right_column",
+      cssSelector: ".home_right_column",
       hide: true
     },
     {
       name: "Language Panel",
-      id: "#pagelet_rhc_footer",
+      cssSelector: "#pagelet_rhc_footer",
       hide: false
+    }
+  ],
+  customCss: [
+    {
+      name: "body text size",
+      selector: "p",
+      property: "font-size",
+      value: 19
     }
   ]
 };
 
-let controlledElements = localStorage.getItem("controlledElements");
-if (controlledElements) {
-  console.log("state received from localstorage", controlledElements);
-  state.controlledElements = controlledElements;
+let receivedState = localStorage.getItem("state");
+if (receivedState) {
+  console.log("saved state received from localStorage", receivedState);
+  state = receivedState;
 } else {
   console.log(
-    "nothing in localstorage. Saving the following",
-    state.controlledElements
+    "nothing in localStorage. Saving the following as initial state",
+    initialState
   );
-  localStorage.setItem(
-    "controlledElements",
-    JSON.stringify(state.controlledElements)
-  );
+  localStorage.setItem("state", JSON.stringify(initialState));
 }
 
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log("message receive: ", msg);
-  state.controlledElements = JSON.parse(
-    localStorage.getItem("controlledElements")
-  );
+
+  state = JSON.parse(localStorage.getItem("state"));
 
   if (state) {
     console.log(state);
-    sendResponse(state);
+    return Promise.resolve(state);
+  } else {
+    console.error("couldn't retrieve a state from localStorage!");
   }
 });

@@ -1,7 +1,7 @@
 <template>
   <div>
-    <h1>{{ msg }}</h1>
-    <label v-for="(item, index) of controlledElements" :key="item.name">
+    <h1>DöljVisa:</h1>
+    <label v-for="(item, index) of state.thingsToHide" :key="item.name">
       <input
         type="checkbox"
         :name="item.name"
@@ -11,6 +11,17 @@
         @change="onChange()"
       />{{ item.name }}
     </label>
+    <h1>Textstorlek</h1>
+    <label
+      ><input
+        v-model="state.customCss[0].value"
+        @change="onChange()"
+        type="range"
+        min="10"
+        max="26"
+        step="1"
+      />{{ state.customCss[0].value }}</label
+    >
   </div>
 </template>
 
@@ -18,17 +29,16 @@
 export default {
   data() {
     return {
-      msg: "Dölj/Visa:",
-      controlledElements: []
+      state: []
     };
   },
   watch: {},
   mounted() {
     console.log("mounted");
-    let controlledElements = window.localStorage.getItem("controlledElements");
-    if (controlledElements) {
+    let state = window.localStorage.getItem("state");
+    if (state) {
       // TODO: error check the parsing
-      this.controlledElements = JSON.parse(controlledElements);
+      this.state = JSON.parse(state);
     }
   },
   methods: {
@@ -43,9 +53,7 @@ export default {
         .then(tabs => {
           console.log(tabs);
           browser.tabs
-            .sendMessage(tabs[0].id, {
-              controlledElements: this.controlledElements
-            })
+            .sendMessage(tabs[0].id, this.state)
             .then(answer => console.log(answer))
             .catch(err => {
               console.error("sendMessage threw error:");
@@ -59,10 +67,7 @@ export default {
     },
     storeState() {
       console.log("storing state in localstorage");
-      window.localStorage.setItem(
-        "controlledElements",
-        JSON.stringify(this.controlledElements)
-      );
+      window.localStorage.setItem("state", JSON.stringify(this.state));
     }
   }
 };
