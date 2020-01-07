@@ -21,7 +21,12 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
+      "matches": [
+        "http://www.facebook.com/*",
+        "http://www.facebook.se/*",
+        "https://www.facebook.com/*",
+        "https://www.facebook.se/*"
+      ],
       "css": ["styles/contentscript.css"],
       "js": ["scripts/contentscript.js"],
       "run_at": "document_start",
