@@ -12,6 +12,8 @@ function showElement(node) {
 }
 
 function updateVisibilityAll() {
+
+
   if (!state.thingsToHide) {
     console.error("thingsToHide is null or undefined");
     return;
@@ -31,7 +33,38 @@ function updateVisibilityAll() {
   }
 }
 
+function changeSharedIcon() {
+  // .sp_f6EkU4HBM56.sx_c74ada - members 
+  // '.sp_RLFL6-1bUHS.sx_e55dd2' - public
+  // '.sp_RLFL6-1bUHS.sx_ecb1ed' - friends
+
+  // change shared icon
+  window.addEventListener('load', function () {
+
+    // Public
+    let icons = document.querySelectorAll('.sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed');
+
+    icons.forEach((item) => {
+      let title = ""
+
+      // check where aria-label is located
+      if (item.parentElement.tagName === "A") {
+        title = item.parentElement.getAttribute('aria-label');
+      } else if (item.parentElement.tagName === "SPAN") {
+        title = item.parentElement.parentElement.getAttribute('aria-label');
+      }
+
+      item.className = "sharedIcon";
+      item.innerHTML = title;
+    });
+
+
+  })
+
+}
+
 function updateStyles() {
+
   for (let customCssItem of state.customCss) {
     console.log("inserting new css rule: ", customCssItem);
     let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value}px}`;
@@ -60,6 +93,7 @@ browser.runtime.sendMessage("stateRequest").then(response => {
   document.head.appendChild(style);
 
   updateStyles();
+  changeSharedIcon();
 
   // updateVisibilityAll();
 
@@ -67,6 +101,9 @@ browser.runtime.sendMessage("stateRequest").then(response => {
     return { element: el.cssSelector };
   });
 
+  watchedNodesQuery.push({ element: ".userContentWrapper" });
+
+  console.log("Watch", watchedNodesQuery);
   let nodeObserver = new MutationSummary({
     callback: nodeChangeHandler,
     queries: watchedNodesQuery
@@ -74,6 +111,7 @@ browser.runtime.sendMessage("stateRequest").then(response => {
 });
 
 const nodeChangeHandler = summaries => {
+
   console.log("node summary was triggered");
   console.log(summaries);
   // updateVisibilityAll(); // Should be safe since mutation-summary won't trigger on changes made in it's own callback.
