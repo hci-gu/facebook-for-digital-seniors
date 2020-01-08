@@ -11,17 +11,19 @@
         @change="onChange()"
       />{{ item.name }}
     </label>
-    <h1>Textstorlek</h1>
-    <label
-      ><input
-        v-model="state.customCss[0].value"
-        @input="onChange()"
-        type="range"
-        min="10"
-        max="26"
-        step="1"
-      />{{ state.customCss[0].value }}</label
-    >
+    <template v-for="customCss of state.customCss">
+      <h1>{{ customCss.name }}</h1>
+      <label>
+        <input
+          v-model="customCss.value"
+          @input="onChange()"
+          type="range"
+          :min="customCss.min"
+          :max="customCss.max"
+          step="1"
+        />{{ customCss.value }}</label
+      >
+    </template>
   </div>
 </template>
 

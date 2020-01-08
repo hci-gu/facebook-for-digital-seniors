@@ -28,11 +28,22 @@ const initialState = {
   ],
   customCss: [
     {
-      name: "body text size",
+      name: "brödtext textstorlek",
       selector: "p",
       property: "font-size",
       unit: "px",
-      value: 19
+      value: 19,
+      min: 10,
+      max: 40
+    },
+    {
+      name: "övergripande textstorlek",
+      selector: "body",
+      property: "font-size",
+      unit: "%",
+      value: 100,
+      min: 60,
+      max: 240
     }
   ]
 };
