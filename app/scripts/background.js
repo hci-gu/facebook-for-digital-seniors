@@ -31,6 +31,7 @@ const initialState = {
       name: "body text size",
       selector: "p",
       property: "font-size",
+      unit: "px",
       value: 19
     }
   ]

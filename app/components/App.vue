@@ -15,7 +15,7 @@
     <label
       ><input
         v-model="state.customCss[0].value"
-        @change="onChange()"
+        @input="onChange()"
         type="range"
         min="10"
         max="26"
