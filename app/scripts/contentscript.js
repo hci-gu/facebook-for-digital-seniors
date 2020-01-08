@@ -1,19 +1,83 @@
 import MutationSummary from "mutation-summary";
 
 let state = {};
-let style;
 
-function hideElement(node) {
+
+
+let style = undefined;
+
+browser.runtime.onMessage.addListener(message => {
+  console.log("msg received: ", message);
+  state = message;
+  updateVisibilityAll();
+  updateStyles();
+});
+
+browser.runtime.sendMessage("stateRequest").then(response => {
+  console.log("response received: ", response);
+  state = response;
+
+  if (!state.thingsToHide) {
+    console.error("thingsToHide is null or undefined");
+    return;
+  }
+
+  updateStyles();
+  changeSharedIcon();
+
+  // updateVisibilityAll();
+
+  let watchedNodesQuery = state.thingsToHide.map(el => {
+    return { element: el.cssSelector };
+  });
+
+  watchedNodesQuery.push({ element: ".userContentWrapper" });
+
+  // we want to react as soon the head tag is inserted into the DOM.
+  // Unfortunately it doesn't seem possible to observe the head tag.
+  // So let's instead observe the body tag. It should presumably load directly after the head tag.
+  watchedNodesQuery.push({ element: "body" });
+
+  console.log("watchedNodes: ", watchedNodesQuery);
+  let nodeObserver = new MutationSummary({
+    callback: nodeChangeHandler,
+    queries: watchedNodesQuery
+  });
+});
+
+const nodeChangeHandler = summaries => {
+
+  console.log("node summary was triggered");
+  console.log(summaries);
+
+  for (let summary of summaries) {
+    for (let node of summary.added) {
+      //was it the head tag?
+      if (node.matches("body")) {
+        onBodyTagLoaded();
+      }
+      for (let item of state.thingsToHide) {
+        if (node.matches(item.cssSelector)) {
+          if (item.hide) {
+            hideElement(node);
+          } else {
+            showElement(node);
+          }
+        }
+      }
+    }
+  }
+};
+
+const hideElement = node => {
   node.style.display = "none";
-}
+};
 
-function showElement(node) {
+const showElement = node => {
   node.style.removeProperty("display");
-}
+};
 
-function updateVisibilityAll() {
-
-
+const updateVisibilityAll = () => {
   if (!state.thingsToHide) {
     console.error("thingsToHide is null or undefined");
     return;
@@ -31,9 +95,42 @@ function updateVisibilityAll() {
       showElement(node);
     }
   }
-}
+};
 
-function changeSharedIcon() {
+const updateStyles = () => {
+  if (!style) {
+    return;
+  }
+  for (let customCssItem of state.customCss) {
+    //Check if rule is already present
+    let ruleList = style.sheet.cssRules;
+    let foundCssRule = undefined;
+    for (let candidateCssRule of ruleList) {
+      if (
+        candidateCssRule.type == CSSRule.STYLE_RULE &&
+        candidateCssRule.selectorText == customCssItem.selector
+      ) {
+        foundCssRule = candidateCssRule;
+        break;
+      }
+    }
+    if (foundCssRule) {
+      console.log("style already present!");
+      console.log("styleDeclaration:", foundCssRule.style);
+      foundCssRule.style.setProperty(
+        customCssItem.property,
+        customCssItem.value + customCssItem.unit
+      );
+    } else {
+      console.log("inserting new css rule: ", customCssItem);
+      let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value} ${customCssItem.unit}}`;
+      console.log("cssString:", cssString);
+      style.sheet.insertRule(cssString);
+    }
+  }
+};
+
+const changeSharedIcon = () => {
   // .sp_f6EkU4HBM56.sx_c74ada - members 
   // '.sp_RLFL6-1bUHS.sx_e55dd2' - public
   // '.sp_RLFL6-1bUHS.sx_ecb1ed' - friends
@@ -63,78 +160,16 @@ function changeSharedIcon() {
 
 }
 
-function updateStyles() {
-
-  for (let customCssItem of state.customCss) {
-    console.log("inserting new css rule: ", customCssItem);
-    let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value}px}`;
-    console.log("cssString:", cssString);
-    style.sheet.insertRule(cssString);
-  }
-}
-
-browser.runtime.onMessage.addListener(message => {
-  console.log("msg received: ", message);
-  state = message;
-  updateVisibilityAll();
-});
-
-browser.runtime.sendMessage("stateRequest").then(response => {
-  console.log("response received: ", response);
-  state = response;
-
-  if (!state.thingsToHide) {
-    console.error("thingsToHide is null or undefined");
-    return;
-  }
-
+const onBodyTagLoaded = () => {
+  console.log("body tag added to DOM");
   style = document.createElement("style");
   style.id = "style-tag";
   document.head.appendChild(style);
-
-  updateStyles();
-  changeSharedIcon();
-
-  // updateVisibilityAll();
-
-  let watchedNodesQuery = state.thingsToHide.map(el => {
-    return { element: el.cssSelector };
-  });
-
-  watchedNodesQuery.push({ element: ".userContentWrapper" });
-
-  console.log("Watch", watchedNodesQuery);
-  let nodeObserver = new MutationSummary({
-    callback: nodeChangeHandler,
-    queries: watchedNodesQuery
-  });
-});
-
-const nodeChangeHandler = summaries => {
-
-  console.log("node summary was triggered");
-  console.log(summaries);
-  // updateVisibilityAll(); // Should be safe since mutation-summary won't trigger on changes made in it's own callback.
-
-  for (let summary of summaries) {
-    for (let node of summary.added) {
-      for (let item of state.thingsToHide) {
-        if (node.matches(item.cssSelector)) {
-          if (item.hide) {
-            hideElement(node);
-          } else {
-            showElement(node);
-          }
-        }
-      }
-    }
-  }
+  console.log("added custom style tag to head tag");
 };
 
-if (window.location.host.includes("facebook.com")) {
-  console.log("Prutt!!!!");
-} else {
-  console.log("not on facebook I think... You CRY!!");
-}
+// document.addEventListener("DOMContentLoaded", () =>
+//   console.log("DOCUMENT LOADED")
+// );
 
 console.log(`YOO! FB4Seniles loaded!!!`);
