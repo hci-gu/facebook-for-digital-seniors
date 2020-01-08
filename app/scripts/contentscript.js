@@ -65,6 +65,10 @@ const nodeChangeHandler = summaries => {
           }
         }
       }
+
+      if (node.matches('.userContentWrapper')) {
+        changeSharedIcon();
+      }
     }
   }
 };
@@ -136,27 +140,30 @@ const changeSharedIcon = () => {
   // '.sp_RLFL6-1bUHS.sx_ecb1ed' - friends
 
   // change shared icon
-  window.addEventListener('load', function () {
+  // window.addEventListener('load', function () {
 
-    // Public
-    let icons = document.querySelectorAll('.sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed');
+  // Public
+  let icons = document.querySelectorAll('.sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed, sp_RLFL6-1bUHS.sx_ae6206');
+  if (!icons) {
+    return;
+  }
 
-    icons.forEach((item) => {
-      let title = ""
+  icons.forEach((item) => {
+    let title = ""
 
-      // check where aria-label is located
-      if (item.parentElement.tagName === "A") {
-        title = item.parentElement.getAttribute('aria-label');
-      } else if (item.parentElement.tagName === "SPAN") {
-        title = item.parentElement.parentElement.getAttribute('aria-label');
-      }
+    // check where aria-label is located
+    if (item.parentElement.tagName === "A") {
+      title = item.parentElement.getAttribute('aria-label');
+    } else if (item.parentElement.tagName === "SPAN") {
+      title = item.parentElement.parentElement.getAttribute('aria-label');
+    }
 
-      item.className = "sharedIcon";
-      item.innerHTML = title;
-    });
+    item.className = "sharedIcon";
+    item.innerHTML = title;
+  });
 
 
-  })
+  // })
 
 }
 
