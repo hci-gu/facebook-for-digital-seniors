@@ -121,6 +121,8 @@ body {
 fieldset {
   border-style: solid;
   border-color: #333;
+  padding-top: 0.6rem;
+  padding-bottom: 0;
   margin-bottom: 1rem;
 }
 legend {
