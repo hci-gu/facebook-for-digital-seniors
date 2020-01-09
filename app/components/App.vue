@@ -1,29 +1,65 @@
 <template>
-  <div>
-    <h1>DöljVisa:</h1>
-    <label v-for="(item, index) of state.thingsToHide" :key="item.name">
-      <input
-        type="checkbox"
-        :name="item.name"
-        v-model="item.hide"
-        :true-value="false"
-        :false-value="true"
-        @change="onChange()"
-      />{{ item.name }}
-    </label>
-    <template v-for="customCss of state.customCss">
-      <h1>{{ customCss.name }}</h1>
-      <label>
+  <div id="main-container">
+    <fieldset>
+      <legend>Dölj/Visa</legend>
+      <div v-for="(item, index) of state.thingsToHide" :key="item.name">
+        <label :for="item.id" class="checkbox-label">
+          <input
+            :id="item.id"
+            type="checkbox"
+            :name="item.name"
+            v-model="item.hide"
+            :true-value="false"
+            :false-value="true"
+            @change="onChange()"
+          />
+          {{ item.name }}
+        </label>
+      </div>
+    </fieldset>
+    <fieldset v-for="customCss of state.customCss">
+      <legend>
+        <label>
+          <input
+            type="checkbox"
+            v-model="customCss.enabled"
+            @change="onChange()"
+          />
+          {{ customCss.name }}</label
+        >
+      </legend>
+      <label :for="customCss.id">
         <input
+          :id="customCss.id"
           v-model="customCss.value"
           @input="onChange()"
           type="range"
           :min="customCss.min"
           :max="customCss.max"
           step="1"
-        />{{ customCss.value }}</label
+        />
+        {{ customCss.value }}</label
       >
-    </template>
+    </fieldset>
+    <fieldset>
+      <legend>Mottagera</legend>
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          v-model="state.audienceSettings.replaceAudienceIconsWithText"
+          @change="onChange()"
+        />
+        Visa mottagare med text istället för ikon
+      </label>
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          v-model="state.audienceSettings.highlightAudienceWhenPosting"
+          @change="onChange()"
+        />
+        Belys mottagare när man skapar ny post
+      </label>
+    </fieldset>
   </div>
 </template>
 
@@ -76,14 +112,31 @@ export default {
 </script>
 
 <style>
-label {
+body {
+  font-family: "Fira Sans", sans-serif;
+}
+#main-container {
+  width: 20rem;
+}
+fieldset {
+  border-style: solid;
+  border-color: #333;
+  margin-bottom: 1rem;
+}
+legend {
+  padding: 0.1rem 0.3rem 0.1rem 0.3rem;
+  background-color: #333;
+  color: #fff;
+  font-size: 0.9rem;
+}
+.checkbox-label {
   border: 1px solid #ccc;
   padding: 10px;
   margin: 0 0 10px;
   display: block;
 }
 
-label:hover {
+.checkbox-label:hover {
   background: #eee;
   cursor: pointer;
 }

@@ -2,8 +2,6 @@ import MutationSummary from "mutation-summary";
 
 let state = {};
 
-
-
 let style = undefined;
 
 browser.runtime.onMessage.addListener(message => {
@@ -11,6 +9,7 @@ browser.runtime.onMessage.addListener(message => {
   state = message;
   updateVisibilityAll();
   updateStyles();
+  updateShareIcons();
 });
 
 browser.runtime.sendMessage("stateRequest").then(response => {
@@ -23,7 +22,7 @@ browser.runtime.sendMessage("stateRequest").then(response => {
   }
 
   updateStyles();
-  changeSharedIcon();
+  updateShareIcons();
 
   // updateVisibilityAll();
 
@@ -46,7 +45,6 @@ browser.runtime.sendMessage("stateRequest").then(response => {
 });
 
 const nodeChangeHandler = summaries => {
-
   console.log("node summary was triggered");
   console.log(summaries);
 
@@ -66,8 +64,8 @@ const nodeChangeHandler = summaries => {
         }
       }
 
-      if (node.matches('.userContentWrapper')) {
-        changeSharedIcon();
+      if (node.matches(".userContentWrapper")) {
+        updateShareIcons();
       }
     }
   }
@@ -121,10 +119,14 @@ const updateStyles = () => {
     if (foundCssRule) {
       console.log("style already present!");
       console.log("styleDeclaration:", foundCssRule.style);
-      foundCssRule.style.setProperty(
-        customCssItem.property,
-        customCssItem.value + customCssItem.unit
-      );
+      if (customCssItem.enabled) {
+        foundCssRule.style.setProperty(
+          customCssItem.property,
+          customCssItem.value + customCssItem.unit
+        );
+      } else {
+        foundCssRule.style.removeProperty(customCssItem.property);
+      }
     } else {
       console.log("inserting new css rule: ", customCssItem);
       let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value} ${customCssItem.unit}}`;
@@ -134,8 +136,11 @@ const updateStyles = () => {
   }
 };
 
-const changeSharedIcon = () => {
-  // .sp_f6EkU4HBM56.sx_c74ada - members 
+const updateShareIcons = () => {
+  if (!state.audienceSettings.replaceAudienceIconsWithText) {
+    return;
+  }
+  // .sp_f6EkU4HBM56.sx_c74ada - members
   // '.sp_RLFL6-1bUHS.sx_e55dd2' - public
   // '.sp_RLFL6-1bUHS.sx_ecb1ed' - friends
 
@@ -143,29 +148,38 @@ const changeSharedIcon = () => {
   // window.addEventListener('load', function () {
 
   // Public
-  let icons = document.querySelectorAll('.sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed, sp_RLFL6-1bUHS.sx_ae6206');
+  // let icons = document.querySelectorAll(
+  //   ".sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed, sp_RLFL6-1bUHS.sx_ae6206"
+  // );
+  let selectors = state.facebookCssSelectors;
+  let selectorString = selectors.publicIconClass.concat(
+    ", ",
+    selectors.membersIconClass,
+    ", ",
+    selectors.friendsIconClass
+  );
+  console.log("selectorString: ", selectorString);
+  let icons = document.querySelectorAll(selectorString);
   if (!icons) {
     return;
   }
 
-  icons.forEach((item) => {
-    let title = ""
+  icons.forEach(item => {
+    let title = "";
 
     // check where aria-label is located
     if (item.parentElement.tagName === "A") {
-      title = item.parentElement.getAttribute('aria-label');
+      title = item.parentElement.getAttribute("aria-label");
     } else if (item.parentElement.tagName === "SPAN") {
-      title = item.parentElement.parentElement.getAttribute('aria-label');
+      title = item.parentElement.parentElement.getAttribute("aria-label");
     }
 
     item.className = "sharedIcon";
     item.innerHTML = title;
   });
 
-
   // })
-
-}
+};
 
 const onBodyTagLoaded = () => {
   console.log("body tag added to DOM");
