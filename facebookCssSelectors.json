@@ -2,7 +2,7 @@
   "publicIconClass": ".sx_e55dd2",
   "membersIconClass": ".sx_c74ada",
   "friendsIconClass": ".sx_ecb1ed",
-  "smallDotInPostsClass": "._6spk",
+  "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
   "topSectionInPostClass": ".k_42u-ccaoz"
 }
