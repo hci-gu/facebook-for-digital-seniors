@@ -1,5 +1,6 @@
-.sharedIcon {
-  height: 40px;
-  margin-top: -20px;
-  background-image: none;
+.sharing-text {
+  float: right;
+  width: 65%;
+  text-align: right;
+  margin-top: -1.4em;
 }

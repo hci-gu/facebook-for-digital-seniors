@@ -72,10 +72,18 @@ const nodeChangeHandler = summaries => {
 };
 
 const hideElement = node => {
+  if (!node) {
+    console.error("invalid input to hideElement function:", node);
+    return;
+  }
   node.style.display = "none";
 };
 
 const showElement = node => {
+  if (!node) {
+    console.error("invalid input to showElement function:", node);
+    return;
+  }
   node.style.removeProperty("display");
 };
 
@@ -137,48 +145,98 @@ const updateStyles = () => {
 };
 
 const updateShareIcons = () => {
-  if (!state.audienceSettings.replaceAudienceIconsWithText) {
-    return;
-  }
-  // .sp_f6EkU4HBM56.sx_c74ada - members
-  // '.sp_RLFL6-1bUHS.sx_e55dd2' - public
-  // '.sp_RLFL6-1bUHS.sx_ecb1ed' - friends
-
-  // change shared icon
-  // window.addEventListener('load', function () {
-
-  // Public
-  // let icons = document.querySelectorAll(
-  //   ".sp_RLFL6-1bUHS.sx_e55dd2, .sp_f6EkU4HBM56.sx_c74ada, .sp_RLFL6-1bUHS.sx_ecb1ed, sp_RLFL6-1bUHS.sx_ae6206"
-  // );
   let selectors = state.facebookCssSelectors;
-  let selectorString = selectors.publicIconClass.concat(
+  let iconSelectorString = selectors.publicIconClass.concat(
     ", ",
     selectors.membersIconClass,
     ", ",
-    selectors.friendsIconClass
+    selectors.friendsIconClass,
+    ", ",
+    selectors.customShareIconClass
   );
-  console.log("selectorString: ", selectorString);
-  let icons = document.querySelectorAll(selectorString);
-  if (!icons) {
+  console.log("iconSelectorString: ", iconSelectorString);
+  let foundIcons = document.querySelectorAll(iconSelectorString);
+  if (!foundIcons) {
+    console.error("no icons found! Have FB perhaps renamed the cssSelectors?");
     return;
   }
 
-  icons.forEach(item => {
-    let title = "";
+  let topSections = document.querySelectorAll(selectors.topSectionInPostClass);
+  if (!topSections) {
+    console.error(
+      "no topSections found! Have FB perhaps renamed the cssSelectors?"
+    );
+    return;
+  }
+  console.log("found topSections:", topSections);
 
-    // check where aria-label is located
-    if (item.parentElement.tagName === "A") {
-      title = item.parentElement.getAttribute("aria-label");
-    } else if (item.parentElement.tagName === "SPAN") {
-      title = item.parentElement.parentElement.getAttribute("aria-label");
+  // let dotsInPosts = document.querySelectorAll(selectors.smallDotInPostClass);
+  // console.log("found dots:", dotsInPosts);
+
+  if (state.audienceSettings.replaceAudienceIconsWithText) {
+    for (let topSection of topSections) {
+      hideIconShowText(topSection, iconSelectorString);
     }
+  } else {
+    for (let topSection of topSections) {
+      showIconHideText(topSection, iconSelectorString);
+    }
+  }
+};
 
-    item.className = "sharedIcon";
-    item.innerHTML = title;
-  });
+const hideIconShowText = (topSectionNode, iconSelectorString) => {
+  let iconNode = topSectionNode.querySelector(iconSelectorString);
+  if (iconNode) {
+    hideElement(iconNode);
+  }
+  let dot = topSectionNode.querySelector(
+    state.facebookCssSelectors.smallDotInPostClass
+  );
+  if (dot) {
+    hideElement(dot);
+  }
 
-  // })
+  let textNode = topSectionNode.querySelector(".sharing-text");
+  if (textNode) {
+    console.log("textNode already present. toggling it's display");
+    showElement(textNode);
+  } else if (!iconNode) {
+    console.error(
+      "Something went wrong. Couldn't locate an iconNode within the topsection Element"
+    );
+  } else {
+    console.log("no textNode present. Creating one!!!");
+    // extract the accesibility text from wrapping elements
+    let altText = "";
+    if (iconNode.parentElement.tagName === "A") {
+      altText = iconNode.parentElement.getAttribute("aria-label");
+    } else if (iconNode.parentElement.tagName === "SPAN") {
+      altText = iconNode.parentElement.parentElement.getAttribute("aria-label");
+    }
+    console.log("retrieved alt text: ", altText);
+    let textNode = document.createElement("h2");
+    textNode.className = "sharing-text";
+    textNode.textContent = altText;
+    topSectionNode.appendChild(textNode);
+  }
+};
+
+const showIconHideText = (topSectionNode, iconSelectorString) => {
+  let iconNode = topSectionNode.querySelector(iconSelectorString);
+  if (iconNode) {
+    showElement(iconNode);
+  }
+  let dot = topSectionNode.querySelector(
+    state.facebookCssSelectors.smallDotInPostClass
+  );
+  if (dot) {
+    showElement(dot);
+  }
+
+  let textNode = topSectionNode.querySelector(".sharing-text");
+  if (textNode) {
+    hideElement(textNode);
+  }
 };
 
 const onBodyTagLoaded = () => {

@@ -17,7 +17,7 @@
         </label>
       </div>
     </fieldset>
-    <fieldset v-for="customCss of state.customCss">
+    <!-- <fieldset v-for="customCss of state.customCss">
       <legend>
         <label>
           <input
@@ -40,9 +40,9 @@
         />
         {{ customCss.value }}</label
       >
-    </fieldset>
+    </fieldset> -->
     <fieldset>
-      <legend>Mottagera</legend>
+      <legend>Mottagare</legend>
       <label class="checkbox-label">
         <input
           type="checkbox"
@@ -51,14 +51,14 @@
         />
         Visa mottagare med text istället för ikon
       </label>
-      <label class="checkbox-label">
+      <!-- <label class="checkbox-label">
         <input
           type="checkbox"
           v-model="state.audienceSettings.highlightAudienceWhenPosting"
           @change="onChange()"
         />
         Belys mottagare när man skapar ny post
-      </label>
+      </label> -->
     </fieldset>
   </div>
 </template>
