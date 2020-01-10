@@ -2,6 +2,7 @@
   "publicIconClass": ".sx_e55dd2",
   "membersIconClass": ".sx_c74ada",
   "friendsIconClass": ".sx_ecb1ed",
+  "customShareIconClass": ".sx_ae6206",
   "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
   "topSectionInPostClass": ".k_42u-ccaoz"
