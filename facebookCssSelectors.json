@@ -1,5 +1,6 @@
 {
   "publicIconClass": ".sx_e55dd2",
   "membersIconClass": ".sx_c74ada",
-  "friendsIconClass": ".sx_ecb1ed"
+  "friendsIconClass": ".sx_ecb1ed",
+  "smallDotInPosts": "._6spk"
 }
