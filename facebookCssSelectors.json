@@ -6,6 +6,7 @@
   "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
   "topSectionInPostClass": ".k_42u-ccaoz",
-  "postComposer": ".pagelet_composer",
-  "postComposerAudienceSelector": ".composerAudienceWrapper"
+  "composer": ".pagelet_composer",
+  "composerFeedAudienceSelector": ".composerAudienceWrapper",
+  "composerStoriesAudienceSelector": "._2loc "
 }
