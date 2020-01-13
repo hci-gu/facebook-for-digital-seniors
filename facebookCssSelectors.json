@@ -5,5 +5,7 @@
   "customShareIconClass": ".sx_83d14b",
   "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
-  "topSectionInPostClass": ".k_42u-ccaoz"
+  "topSectionInPostClass": ".k_42u-ccaoz",
+  "postComposer": ".pagelet_composer",
+  "postComposerAudienceSelector": ".composerAudienceWrapper"
 }
