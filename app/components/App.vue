@@ -51,14 +51,14 @@
         />
         Visa mottagare med text istället för ikon
       </label>
-      <!-- <label class="checkbox-label">
+      <label class="checkbox-label">
         <input
           type="checkbox"
           v-model="state.audienceSettings.highlightAudienceWhenPosting"
           @change="onChange()"
         />
         Belys mottagare när man skapar ny post
-      </label> -->
+      </label>
     </fieldset>
   </div>
 </template>

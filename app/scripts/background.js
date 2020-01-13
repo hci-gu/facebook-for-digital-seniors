@@ -18,6 +18,7 @@ browser.browserAction.setBadgeText({
 //Save the state object to local storage.
 
 const setup = async () => {
+  console.log("ENV: ", process.env.NODE_ENV);
   let startState = await initializeState();
   console.log("startState: ", startState);
   let facebookCssSelectors = await retrieveFacebookCssSelectors();
@@ -40,13 +41,20 @@ browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 const retrieveFacebookCssSelectors = async () => {
-  let githubRawUrl = "https://raw.githubusercontent.com/";
-  let facebookCssSelectorsJsonPath =
-    "Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json";
+  // We ain't wanna have to push the json to github for each edit. So during development we simply require it.
+  if (process.env.NODE_ENV === "development") {
+    let importedJson = require("../../facebookCssSelectors.json");
+    console.log("imported json: ", importedJson);
+    return importedJson;
+  } else {
+    let githubRawUrl = "https://raw.githubusercontent.com/";
+    let facebookCssSelectorsJsonPath =
+      "Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json";
 
-  let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
+    let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
 
-  return await response.json();
+    return await response.json();
+  }
 };
 
 const initializeState = async () => {

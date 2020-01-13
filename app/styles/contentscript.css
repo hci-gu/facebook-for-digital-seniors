@@ -4,3 +4,11 @@
   text-align: right;
   margin-top: -1.4em;
 }
+
+.red-highlight-border {
+  border: red dashed 4px;
+}
+
+.green-highlight-border {
+  border: green dashed 4px;
+}

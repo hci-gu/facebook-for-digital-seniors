@@ -6,7 +6,8 @@
   "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
   "topSectionInPostClass": ".k_42u-ccaoz",
-  "composer": ".pagelet_composer",
+  "composer": "#pagelet_composer",
+  "composerFooter": "[data-testid~=react-composer-footer-with-destination-picker]",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
   "composerStoriesAudienceSelector": "._2loc "
 }

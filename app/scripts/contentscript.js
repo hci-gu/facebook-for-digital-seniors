@@ -10,15 +10,19 @@ browser.runtime.onMessage.addListener(message => {
   updateVisibilityAll();
   updateStyles();
   updateShareIcons();
+  updateComposerAudience();
 });
 
 browser.runtime.sendMessage("stateRequest").then(response => {
   console.log("response received: ", response);
   state = response;
+  let selectors = state.facebookCssSelectors;
 
   if (!state.thingsToHide) {
     console.error("thingsToHide is null or undefined");
     return;
+  } else {
+    console.log("state is: ", state);
   }
 
   updateStyles();
@@ -26,11 +30,32 @@ browser.runtime.sendMessage("stateRequest").then(response => {
 
   // updateVisibilityAll();
 
-  let watchedNodesQuery = state.thingsToHide.map(el => {
-    return { element: el.cssSelector };
+  let watchedNodesQuery = [];
+
+  // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
+  // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
+  let hideSelectorListString = state.thingsToHide.reduce(
+    (accuString, currentSelector, idx) => {
+      // console.log(accuString);
+      return idx == 0
+        ? currentSelector.cssSelector
+        : accuString + ", " + currentSelector.cssSelector;
+    },
+    ""
+  );
+  watchedNodesQuery.push({ element: hideSelectorListString });
+
+  watchedNodesQuery.push({
+    element: selectors.postContainerClass
   });
 
-  watchedNodesQuery.push({ element: ".userContentWrapper" });
+  watchedNodesQuery.push({
+    element: selectors.composerFooter
+  });
+
+  watchedNodesQuery.push({
+    attribute: "aria-checked"
+  });
 
   // we want to react as soon the head tag is inserted into the DOM.
   // Unfortunately it doesn't seem possible to observe the head tag.
@@ -48,6 +73,8 @@ const nodeChangeHandler = summaries => {
   console.log("node summary was triggered");
   console.log(summaries);
 
+  let selectors = state.facebookCssSelectors;
+
   for (let summary of summaries) {
     for (let node of summary.added) {
       //was it the head tag?
@@ -64,9 +91,16 @@ const nodeChangeHandler = summaries => {
         }
       }
 
-      if (node.matches(".userContentWrapper")) {
+      if (node.matches(selectors.postContainerClass)) {
         updateShareIcons();
       }
+
+      if (node.matches(selectors.composerFooter)) {
+        updateComposerAudience();
+      }
+    }
+    if (summary.valueChanged && summary.valueChanged.length) {
+      updateComposerAudience();
     }
   }
 };
@@ -142,6 +176,58 @@ const updateStyles = () => {
       style.sheet.insertRule(cssString);
     }
   }
+};
+
+const updateComposerAudience = () => {
+  console.log("updating Composer Audience");
+  let selectors = state.facebookCssSelectors;
+
+  let composerFooter = document.querySelector(selectors.composerFooter);
+  if (!composerFooter) {
+    console.error(
+      "no composer footer found. Maybe css selector changed by facebook?"
+    );
+    return;
+  }
+  console.log("composerFooter: ", composerFooter);
+  let checkBoxes = composerFooter.querySelectorAll("[role=checkbox]");
+  console.log("checkBoxes: ", checkBoxes);
+  for (let checkBox of checkBoxes) {
+    let selectAudienceWrapper = checkBox.parentElement.querySelector(
+      selectors.composerFeedAudienceSelector +
+        ", " +
+        selectors.composerStoriesAudienceSelector
+    );
+    if (!selectAudienceWrapper) {
+      console.error(
+        "no audience selector element found. Was the css selector perhaps changed by facebook?"
+      );
+      return;
+    }
+
+    if (
+      checkBox.getAttribute("aria-checked") == "true" &&
+      state.audienceSettings.highlightAudienceWhenPosting
+    ) {
+      selectAudienceWrapper.classList.add("red-highlight-border");
+    } else {
+      selectAudienceWrapper.classList.remove("red-highlight-border");
+    }
+  }
+
+  // let selectFeedAudienceWrapper = document.querySelector(
+  //   selectors.composerFeedAudienceSelector
+  // );
+  // if (!selectFeedAudienceWrapper) {
+  //   console.error("No selectaudience toggle found!!");
+  //   return;
+  // }
+
+  // if (state.audienceSettings.highlightAudienceWhenPosting) {
+  //   selectFeedAudienceWrapper.classList.add("red-highlight-border");
+  // } else {
+  //   selectFeedAudienceWrapper.classList.remove("red-highlight-border");
+  // }
 };
 
 const updateShareIcons = () => {
