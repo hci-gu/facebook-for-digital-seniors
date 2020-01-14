@@ -231,15 +231,26 @@ const updateComposerAudience = () => {
 };
 
 const updateShareIcons = () => {
+
+  // // Update share Icon
+  // let iconList = document.querySelectorAll('[data-tooltip-content][aria-label][role="img"]');
+
+  // iconList.forEach((theItem) => {
+  //   theItem.className = "sharedIcon";
+  //   theItem.innerHTML = theItem.getAttribute('aria-label');
+  // })
+
+
   let selectors = state.facebookCssSelectors;
-  let iconSelectorString = selectors.publicIconClass.concat(
-    ", ",
-    selectors.membersIconClass,
-    ", ",
-    selectors.friendsIconClass,
-    ", ",
-    selectors.customShareIconClass
-  );
+  // let iconSelectorString = selectors.publicIconClass.concat(
+  //   ", ",
+  //   selectors.membersIconClass,
+  //   ", ",
+  //   selectors.friendsIconClass,
+  //   ", ",
+  //   selectors.customShareIconClass
+  // );
+  let iconSelectorString = selectors.shareIconAttributes;
   console.log("iconSelectorString: ", iconSelectorString);
   let foundIcons = document.querySelectorAll(iconSelectorString);
   if (!foundIcons) {
@@ -247,42 +258,43 @@ const updateShareIcons = () => {
     return;
   }
 
-  let topSections = document.querySelectorAll(selectors.topSectionInPostClass);
-  if (!topSections) {
+  let postContentWrapper = document.querySelectorAll(selectors.postContainerClass);
+  if (!postContentWrapper) {
     console.error(
-      "no topSections found! Have FB perhaps renamed the cssSelectors?"
+      "no postContentWrapper found! Have FB perhaps renamed the cssSelectors?"
     );
     return;
   }
-  console.log("found topSections:", topSections);
+  console.log("found postContentWrapper:", postContentWrapper);
 
   // let dotsInPosts = document.querySelectorAll(selectors.smallDotInPostClass);
   // console.log("found dots:", dotsInPosts);
 
   if (state.audienceSettings.replaceAudienceIconsWithText) {
-    for (let topSection of topSections) {
-      hideIconShowText(topSection, iconSelectorString);
+    for (let postWrapper of postContentWrapper) {
+      hideIconShowText(postWrapper, iconSelectorString);
     }
   } else {
-    for (let topSection of topSections) {
-      showIconHideText(topSection, iconSelectorString);
+    for (let postWrapper of postContentWrapper) {
+      showIconHideText(postWrapper, iconSelectorString);
     }
   }
 };
 
-const hideIconShowText = (topSectionNode, iconSelectorString) => {
-  let iconNode = topSectionNode.querySelector(iconSelectorString);
+const hideIconShowText = (postContentWrapper, iconSelectorString) => {
+  let iconNode = postContentWrapper.querySelector(iconSelectorString);
   if (iconNode) {
+    console.log("found iconNode: ", iconNode);
     hideElement(iconNode);
   }
-  let dot = topSectionNode.querySelector(
+  let dot = postContentWrapper.querySelector(
     state.facebookCssSelectors.smallDotInPostClass
   );
   if (dot) {
     hideElement(dot);
   }
 
-  let textNode = topSectionNode.querySelector(".sharing-text");
+  let textNode = postContentWrapper.querySelector(".sharing-text");
   if (textNode) {
     console.log("textNode already present. toggling it's display");
     showElement(textNode);
@@ -294,16 +306,18 @@ const hideIconShowText = (topSectionNode, iconSelectorString) => {
     console.log("no textNode present. Creating one!!!");
     // extract the accesibility text from wrapping elements
     let altText = "";
-    if (iconNode.parentElement.tagName === "A") {
-      altText = iconNode.parentElement.getAttribute("aria-label");
-    } else if (iconNode.parentElement.tagName === "SPAN") {
-      altText = iconNode.parentElement.parentElement.getAttribute("aria-label");
-    }
+    altText = iconNode.getAttribute("data-tooltip-content");
+    // if (iconNode.tagName === "A") {
+    //   altText = iconNode.getAttribute("aria-label");
+    // } else if (iconNode.parentElement.tagName === "SPAN") {
+    //   altText = iconNode.parentElement.getAttribute("aria-label");
+    // }
+
     console.log("retrieved alt text: ", altText);
     let textNode = document.createElement("h2");
     textNode.className = "sharing-text";
     textNode.textContent = altText;
-    topSectionNode.appendChild(textNode);
+    postContentWrapper.querySelector(".clearfix").appendChild(textNode);
   }
 };
 

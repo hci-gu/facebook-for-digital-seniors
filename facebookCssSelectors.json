@@ -9,5 +9,6 @@
   "composer": "#pagelet_composer",
   "composerFooter": "[data-testid~=react-composer-footer-with-destination-picker]",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
-  "composerStoriesAudienceSelector": "._2loc "
+  "composerStoriesAudienceSelector": "._2loc ",
+  "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]"
 }
