@@ -1,6 +1,6 @@
 {
   "name": "facebook-for-elderly",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A web extension for customizing facebook interface and experience. Primarily aimed at making it more user friendly for elderly.",
   "scripts": {
     "dev": "webextension-toolbox dev",
