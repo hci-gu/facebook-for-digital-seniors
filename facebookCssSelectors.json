@@ -1,14 +1,8 @@
 {
-  "publicIconClass": ".sx_711474",
-  "membersIconClass": ".sx_7fb38c",
-  "friendsIconClass": ".sx_27ae35",
-  "customShareIconClass": ".sx_83d14b",
-  "smallDotInPostClass": "._6spk",
   "postContainerClass": ".userContentWrapper",
-  "topSectionInPostClass": ".k_42u-ccaoz",
   "composer": "#pagelet_composer",
+  "composerCloseButton": "[data-testid=react-composer-close-button]",
   "composerFooter": "[data-testid~=react-composer-footer-with-destination-picker]",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
-  "composerStoriesAudienceSelector": "._2loc ",
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]"
 }

@@ -13,8 +13,6 @@
   border: green dashed 4px;
 }
 
-.sharedIcon {
-  height: 40px;
-  margin-top: 0px;
-  background-image: none;
+.hide {
+  display: none !important;
 }

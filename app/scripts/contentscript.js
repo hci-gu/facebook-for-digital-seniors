@@ -110,7 +110,8 @@ const hideElement = node => {
     console.error("invalid input to hideElement function:", node);
     return;
   }
-  node.style.display = "none";
+  // node.style.display = "none";
+  node.classList.add("hide");
 };
 
 const showElement = node => {
@@ -118,7 +119,7 @@ const showElement = node => {
     console.error("invalid input to showElement function:", node);
     return;
   }
-  node.style.removeProperty("display");
+  node.classList.remove("hide");
 };
 
 const updateVisibilityAll = () => {
@@ -179,9 +180,16 @@ const updateStyles = () => {
 };
 
 const updateComposerAudience = () => {
-  console.log("updating Composer Audience");
   let selectors = state.facebookCssSelectors;
+  let composerContainer = document.querySelector(selectors.composer);
+  let closeButton = composerContainer.querySelector(
+    selectors.composerCloseButton
+  );
+  if (!closeButton) {
+    return;
+  }
 
+  console.log("updating Composer Audience");
   let composerFooter = document.querySelector(selectors.composerFooter);
   if (!composerFooter) {
     console.error(
@@ -193,12 +201,13 @@ const updateComposerAudience = () => {
   let checkBoxes = composerFooter.querySelectorAll("[role=checkbox]");
   console.log("checkBoxes: ", checkBoxes);
   for (let checkBox of checkBoxes) {
-    let selectAudienceWrapper = checkBox.parentElement.querySelector(
-      selectors.composerFeedAudienceSelector +
-        ", " +
-        selectors.composerStoriesAudienceSelector
-    );
-    if (!selectAudienceWrapper) {
+    let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
+    // let selectAudienceWrapper = checkBox.parentElement.querySelector(
+    //   selectors.composerFeedAudienceSelector +
+    //     ", " +
+    //     selectors.composerStoriesAudienceSelector
+    // );
+    if (!selectAudienceButton) {
       console.error(
         "no audience selector element found. Was the css selector perhaps changed by facebook?"
       );
@@ -209,132 +218,87 @@ const updateComposerAudience = () => {
       checkBox.getAttribute("aria-checked") == "true" &&
       state.audienceSettings.highlightAudienceWhenPosting
     ) {
-      selectAudienceWrapper.classList.add("red-highlight-border");
+      selectAudienceButton.classList.add("red-highlight-border");
     } else {
-      selectAudienceWrapper.classList.remove("red-highlight-border");
+      selectAudienceButton.classList.remove("red-highlight-border");
     }
   }
-
-  // let selectFeedAudienceWrapper = document.querySelector(
-  //   selectors.composerFeedAudienceSelector
-  // );
-  // if (!selectFeedAudienceWrapper) {
-  //   console.error("No selectaudience toggle found!!");
-  //   return;
-  // }
-
-  // if (state.audienceSettings.highlightAudienceWhenPosting) {
-  //   selectFeedAudienceWrapper.classList.add("red-highlight-border");
-  // } else {
-  //   selectFeedAudienceWrapper.classList.remove("red-highlight-border");
-  // }
 };
 
 const updateShareIcons = () => {
-
-  // // Update share Icon
-  // let iconList = document.querySelectorAll('[data-tooltip-content][aria-label][role="img"]');
-
-  // iconList.forEach((theItem) => {
-  //   theItem.className = "sharedIcon";
-  //   theItem.innerHTML = theItem.getAttribute('aria-label');
-  // })
-
-
   let selectors = state.facebookCssSelectors;
-  // let iconSelectorString = selectors.publicIconClass.concat(
-  //   ", ",
-  //   selectors.membersIconClass,
-  //   ", ",
-  //   selectors.friendsIconClass,
-  //   ", ",
-  //   selectors.customShareIconClass
-  // );
-  let iconSelectorString = selectors.shareIconAttributes;
-  console.log("iconSelectorString: ", iconSelectorString);
-  let foundIcons = document.querySelectorAll(iconSelectorString);
-  if (!foundIcons) {
-    console.error("no icons found! Have FB perhaps renamed the cssSelectors?");
-    return;
-  }
 
-  let postContentWrapper = document.querySelectorAll(selectors.postContainerClass);
-  if (!postContentWrapper) {
+  let postContentWrappers = document.querySelectorAll(
+    selectors.postContainerClass
+  );
+  if (!postContentWrappers) {
     console.error(
       "no postContentWrapper found! Have FB perhaps renamed the cssSelectors?"
     );
     return;
   }
-  console.log("found postContentWrapper:", postContentWrapper);
-
-  // let dotsInPosts = document.querySelectorAll(selectors.smallDotInPostClass);
-  // console.log("found dots:", dotsInPosts);
+  console.log("found postContentWrappers:", postContentWrappers);
 
   if (state.audienceSettings.replaceAudienceIconsWithText) {
-    for (let postWrapper of postContentWrapper) {
-      hideIconShowText(postWrapper, iconSelectorString);
+    for (let postWrapper of postContentWrappers) {
+      setDisplayForShareIconAndShareText(postWrapper, false, true);
     }
   } else {
-    for (let postWrapper of postContentWrapper) {
-      showIconHideText(postWrapper, iconSelectorString);
+    for (let postWrapper of postContentWrappers) {
+      setDisplayForShareIconAndShareText(postWrapper, true, false);
     }
   }
 };
 
-const hideIconShowText = (postContentWrapper, iconSelectorString) => {
-  let iconNode = postContentWrapper.querySelector(iconSelectorString);
-  if (iconNode) {
-    console.log("found iconNode: ", iconNode);
-    hideElement(iconNode);
+const setDisplayForShareIconAndShareText = (
+  postContainer,
+  showShareIcon,
+  showShareText
+) => {
+  let selectors = state.facebookCssSelectors;
+
+  // First let's handle the icon!
+  let iconNode = postContainer.querySelector(selectors.shareIconAttributes);
+  if (!iconNode) {
+    console.log(
+      "no icon element found. Have facebook changed the css selectors?"
+    );
+    return;
   }
-  let dot = postContentWrapper.querySelector(
-    state.facebookCssSelectors.smallDotInPostClass
-  );
-  if (dot) {
+  let dot = iconNode.previousElementSibling;
+  if (!dot) {
+    console.log(
+      "no dot element found. Have facebook changed the css selectors?"
+    );
+    return;
+  }
+  if (showShareIcon) {
+    showElement(iconNode);
+    showElement(dot);
+  } else {
+    hideElement(iconNode);
     hideElement(dot);
   }
 
-  let textNode = postContentWrapper.querySelector(".sharing-text");
-  if (textNode) {
-    console.log("textNode already present. toggling it's display");
-    showElement(textNode);
-  } else if (!iconNode) {
-    console.error(
-      "Something went wrong. Couldn't locate an iconNode within the topsection Element"
-    );
-  } else {
+  //Secondly we handle the sharetext
+  let sharingTextClass = "sharing-text";
+  let textNode = postContainer.querySelector("." + sharingTextClass);
+  if (!textNode) {
     console.log("no textNode present. Creating one!!!");
     // extract the accesibility text from wrapping elements
     let altText = "";
     altText = iconNode.getAttribute("data-tooltip-content");
-    // if (iconNode.tagName === "A") {
-    //   altText = iconNode.getAttribute("aria-label");
-    // } else if (iconNode.parentElement.tagName === "SPAN") {
-    //   altText = iconNode.parentElement.getAttribute("aria-label");
-    // }
 
     console.log("retrieved alt text: ", altText);
-    let textNode = document.createElement("h2");
-    textNode.className = "sharing-text";
+    textNode = document.createElement("h2");
+    textNode.classList.add(sharingTextClass);
     textNode.textContent = altText;
-    postContentWrapper.querySelector(".clearfix").appendChild(textNode);
-  }
-};
-
-const showIconHideText = (topSectionNode, iconSelectorString) => {
-  let iconNode = topSectionNode.querySelector(iconSelectorString);
-  if (iconNode) {
-    showElement(iconNode);
-  }
-  let dot = topSectionNode.querySelector(
-    state.facebookCssSelectors.smallDotInPostClass
-  );
-  if (dot) {
-    showElement(dot);
+    postContainer.querySelector(".clearfix").appendChild(textNode);
   }
 
-  let textNode = topSectionNode.querySelector(".sharing-text");
-  if (textNode) {
+  if (showShareText) {
+    showElement(textNode);
+  } else {
     hideElement(textNode);
   }
 };
