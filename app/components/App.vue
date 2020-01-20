@@ -1,7 +1,7 @@
 <template>
   <div id="main-container">
     <fieldset>
-      <legend>Dölj/Visa</legend>
+      <legend>Visa</legend>
       <div v-for="(item, index) of state.thingsToHide" :key="item.name">
         <label :for="item.id" class="checkbox-label">
           <input
