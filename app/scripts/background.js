@@ -19,11 +19,12 @@ browser.browserAction.setBadgeText({
 
 const setup = async () => {
   console.log("ENV: ", process.env.NODE_ENV);
-  let startState = await initializeState();
-  console.log("startState: ", startState);
   let facebookCssSelectors = await retrieveFacebookCssSelectors();
   console.log("facebookCssSelectors: ", facebookCssSelectors);
-  startState.facebookCssSelectors = facebookCssSelectors;
+  let startState = await initializeState(facebookCssSelectors);
+  console.log("startState: ", startState);
+
+  // startState.facebookCssSelectors = facebookCssSelectors;
   localStorage.setItem("state", JSON.stringify(startState));
 };
 
@@ -44,7 +45,7 @@ const retrieveFacebookCssSelectors = async () => {
   // We ain't wanna have to push the json to github for each edit. So during development we simply require it.
   if (process.env.NODE_ENV === "development") {
     let importedJson = require("../../facebookCssSelectors.json");
-    console.log("imported json: ", importedJson);
+    console.log("facebookCssSelectors: ", importedJson);
     return importedJson;
   } else {
     let githubRawUrl = "https://raw.githubusercontent.com/";
@@ -52,34 +53,37 @@ const retrieveFacebookCssSelectors = async () => {
       "Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json";
 
     let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
+    console.log("fetched json from github");
 
     return await response.json();
   }
 };
 
-const initializeState = async () => {
+const initializeState = async facebookCssSelectors => {
   const initialState = {
+    stateBreakingChangeCounter: 1,
     thingsToHide: [
       {
         id: "lpane",
-        name: "Left pane",
+        name: "Vänsterpanel",
         cssSelector: "#left_nav_section_nodes",
         hide: false
       },
       {
-        name: "Stories",
+        id: "stories",
+        name: "Händelser",
         cssSelector: "#stories_pagelet_below_composer",
         hide: true
       },
       {
         id: "rpane",
-        name: "Right Pane",
+        name: "Högerpanel",
         cssSelector: ".home_right_column",
         hide: true
       },
       {
-        id: "langpanel",
-        name: "Language Panel",
+        id: "language",
+        name: "Språkruta",
         cssSelector: "#pagelet_rhc_footer",
         hide: false
       }
@@ -87,32 +91,43 @@ const initializeState = async () => {
     customCss: [
       {
         enabled: false,
-        id: "paragraphsize",
-        name: "Brödtext textstorlek",
-        selector: "p",
-        property: "font-size",
-        unit: "px",
-        value: 19,
-        min: 10,
-        max: 40
-      },
-      {
-        enabled: false,
-        id: "textsize",
-        name: "Övergripande textstorlek",
+        id: "zoom",
+        name: "Zoom",
         selector: "body",
-        property: "font-size",
+        property: "zoom",
         unit: "%",
         value: 100,
-        min: 60,
-        max: 240
+        min: 50,
+        max: 200
       }
+      // {
+      //   enabled: false,
+      //   id: "paragraphsize",
+      //   name: "Brödtext textstorlek",
+      //   selector: "p",
+      //   property: "font-size",
+      //   unit: "px",
+      //   value: 19,
+      //   min: 10,
+      //   max: 40
+      // },
+      // {
+      //   enabled: false,
+      //   id: "textsize",
+      //   name: "Övergripande textstorlek",
+      //   selector: "body",
+      //   property: "font-size",
+      //   unit: "%",
+      //   value: 100,
+      //   min: 60,
+      //   max: 240
+      // }
     ],
     audienceSettings: {
       replaceAudienceIconsWithText: true,
       highlightAudienceWhenPosting: true
     },
-    facebookCssSelectors: undefined // This gets populated by fetching from github.
+    facebookCssSelectors: facebookCssSelectors
   };
 
   let receivedState = JSON.parse(localStorage.getItem("state"));
@@ -123,7 +138,8 @@ const initializeState = async () => {
     );
     if (
       !hasSameProperties(receivedState, initialState) ||
-      !hasSameProperties(initialState, receivedState)
+      !hasSameProperties(initialState, receivedState) ||
+      stateChangeCounterUpdated(receivedState, initialState)
     ) {
       console.log(
         "discrepency found in state from local storage. Fallback to using initial state from source code"
@@ -141,16 +157,32 @@ const initializeState = async () => {
   }
 };
 
+function stateChangeCounterUpdated(firstState, secondState) {
+  if (
+    !firstState.stateBreakingChangeCounter ||
+    !secondState.stateBreakingChangeCounter
+  ) {
+    return true;
+  }
+  return (
+    firstState.stateBreakingChangeCounter !==
+    secondState.stateBreakingChangeCounter
+  );
+}
+
+//We ignore comparison of the subtree containing cssSelectors. This is because we will always use the remote one either way.
+// This has the result that the subtree in the source code is undefined.
 function hasSameProperties(obj1, obj2) {
   try {
     console.log("comparison called on: ", obj1, obj2);
     return Object.keys(obj1).every(function(property) {
-      if (property == "facebookCssSelectors") {
-        console.log(
-          "found object property named facebookCssSelectors. Ignoring comparison of that subtree."
-        );
-        return true;
-      } else if (typeof obj1[property] !== "object") {
+      // if (property == "facebookCssSelectors") {
+      //   console.log(
+      //     "found object property named facebookCssSelectors. Ignoring comparison of that subtree."
+      //   );
+      //   return true;
+      // } else
+      if (typeof obj1[property] !== "object") {
         return obj2.hasOwnProperty(property);
       } else {
         if (!obj2.hasOwnProperty(property)) {

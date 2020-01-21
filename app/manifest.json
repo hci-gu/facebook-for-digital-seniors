@@ -28,7 +28,7 @@
         "https://www.facebook.se/*"
       ],
       "css": ["styles/contentscript.css"],
-      "js": ["scripts/contentscript.js"],
+      "js": ["scripts/contentscript.js", "scripts/jquery.zoomooz.js"],
       "run_at": "document_start",
       "all_frames": false
     }

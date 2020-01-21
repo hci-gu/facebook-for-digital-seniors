@@ -17,7 +17,7 @@
         </label>
       </div>
     </fieldset>
-    <!-- <fieldset v-for="customCss of state.customCss">
+    <fieldset v-for="customCss of state.customCss">
       <legend>
         <label>
           <input
@@ -40,7 +40,7 @@
         />
         {{ customCss.value }}</label
       >
-    </fieldset> -->
+    </fieldset>
     <fieldset>
       <legend>Mottagare</legend>
       <label class="checkbox-label">
