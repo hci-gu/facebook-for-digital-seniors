@@ -1,8 +1,26 @@
+// Object.freeze(window.fetch);
+
 import MutationSummary from "mutation-summary";
 
 let state = {};
 
 let style = undefined;
+
+// Be aware. I think facebook has overridden the fetch function to proxy the request through their servers.
+// This ha the beneficial effect that we are allowed to fetch without getting CSP error.
+// The downside is that some ip lookup services behaves weirdly...
+// (async () => {
+//   // let response = await fetch("https://ipinfo.io/json");
+//   let response = await fetch("https://api.ipify.org?format=json");
+//   // let response = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
+//   // let response = await fetch("https://json.geoiplookup.io/api");
+//   let parsedRespons = await response.text();
+//   // let parsedRespons = await response.json();
+
+//   console.log("Fetched ip check");
+//   console.log("Ip check gave:", parsedRespons);
+//   // console.log(json);
+// })();
 
 browser.runtime.onMessage.addListener(message => {
   console.log("msg received: ", message);

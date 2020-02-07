@@ -1,3 +1,32 @@
+// import Fingerprint2 from "fingerprintjs2";
+
+// if (window.requestIdleCallback) {
+//   requestIdleCallback(function() {
+//     console.log("CALLING FINGERPRINT");
+//     Fingerprint2.x64hash128();
+//     Fingerprint2.get(function(components) {
+//       var values = components.map(function(component) {
+//         return component.value;
+//       });
+//       var murmur = Fingerprint2.x64hash128(values.join(""), 31);
+//       console.log("fingerPRINT: ", murmur);
+//       console.log(components); // an array of components: {key: ..., value: ...}
+//     });
+//   });
+// } else {
+//   setTimeout(function() {
+//     console.log("CALLING FINGERPRINT");
+//     Fingerprint2.get(function(components) {
+//       var values = components.map(function(component) {
+//         return component.value;
+//       });
+//       var murmur = Fingerprint2.x64hash128(values.join(""), 31);
+//       console.log("fingerPRINT: ", murmur);
+//       console.log(components); // an array of components: {key: ..., value: ...}
+//     });
+//   }, 500);
+// }
+
 browser.runtime.onInstalled.addListener(details => {
   console.log("previousVersion", details.previousVersion);
 });
@@ -6,11 +35,11 @@ browser.browserAction.setBadgeText({
   text: `BFB`
 });
 
-// let state = {};
+// localStorage.getItem("randomId")
 
-//WHAT IS THIS FILE DOING:
+//WHAT IS THE SETUP FUNCTION DOING:
 //Check if there is state in local storage.
-//If there was a state in local storage. Check that it has the correct object scheme (same as the one in sources).
+//If there was a state in local storage. Check that it has the correct object schema (same as the one in sources).
 //If not, throw it away and use the state from source code.
 //If no state found in local storage, fall back to using initial state from source code.
 //Fetch json with facebook selectors from file on github
@@ -31,7 +60,7 @@ const setup = async () => {
 browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   console.log("message receive: ", msg);
 
-  state = JSON.parse(localStorage.getItem("state"));
+  let state = JSON.parse(localStorage.getItem("state"));
 
   if (state) {
     console.log(state);
@@ -55,7 +84,7 @@ const retrieveFacebookCssSelectors = async () => {
     let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
     console.log("fetched json from github");
 
-    return await response.json();
+    return response.json();
   }
 };
 
@@ -136,6 +165,8 @@ const initializeState = async facebookCssSelectors => {
       "previously saved state received from localStorage",
       receivedState
     );
+    //Always replace the facebookCssSelectors no matter what.
+    receivedState.facebookCssSelectors = facebookCssSelectors;
     if (
       !hasSameProperties(receivedState, initialState) ||
       !hasSameProperties(initialState, receivedState) ||
@@ -170,8 +201,6 @@ function stateChangeCounterUpdated(firstState, secondState) {
   );
 }
 
-//We ignore comparison of the subtree containing cssSelectors. This is because we will always use the remote one either way.
-// This has the result that the subtree in the source code is undefined.
 function hasSameProperties(obj1, obj2) {
   try {
     console.log("comparison called on: ", obj1, obj2);
