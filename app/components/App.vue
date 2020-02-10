@@ -91,7 +91,10 @@ export default {
         .then(tabs => {
           console.log(tabs);
           browser.tabs
-            .sendMessage(tabs[0].id, this.state)
+            .sendMessage(tabs[0].id, {
+              type: "stateUpdate",
+              payload: this.state
+            })
             .then(answer => console.log(answer))
             .catch(err => {
               console.error("sendMessage threw error:");
@@ -99,7 +102,6 @@ export default {
             });
         })
         .catch(err => {
-          c;
           console.error(err);
         });
     },

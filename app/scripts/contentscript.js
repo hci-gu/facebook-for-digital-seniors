@@ -1,10 +1,36 @@
 // Object.freeze(window.fetch);
 
 import MutationSummary from "mutation-summary";
+import Fingerprint2 from "fingerprintjs2";
 
 let state = {};
 
 let style = undefined;
+
+const getFingerprint = () => {
+  const calculateFingerprint = async () => {
+    let components = await Fingerprint2.getPromise();
+    var values = components.map(function(component) {
+      return component.value;
+    });
+    var murmur = Fingerprint2.x64hash128(values.join(""), 31);
+    console.log("fingerPRINT: ", murmur);
+
+    return Promise.resolve(murmur);
+  };
+
+  return new Promise((resolve, reject) => {
+    if (window.requestIdleCallback) {
+      requestIdleCallback(() => {
+        resolve(calculateFingerprint());
+      });
+    } else {
+      setTimeout(() => {
+        resolve(calculateFingerprint());
+      }, 500);
+    }
+  });
+};
 
 // Be aware. I think facebook has overridden the fetch function to proxy the request through their servers.
 // This ha the beneficial effect that we are allowed to fetch without getting CSP error.
@@ -23,73 +49,93 @@ let style = undefined;
 // })();
 
 browser.runtime.onMessage.addListener(message => {
-  console.log("msg received: ", message);
-  state = message;
-  updateVisibilityAll();
-  updateStyles();
-  updateShareIcons();
-  updateComposerAudience();
-});
-
-browser.runtime.sendMessage("stateRequest").then(response => {
-  console.log("response received: ", response);
-  state = response;
-  let selectors = state.facebookCssSelectors;
-
-  if (!state.thingsToHide) {
-    console.error("thingsToHide is null or undefined");
-    return;
-  } else {
-    console.log("state is: ", state);
+  console.log("msg received:", message);
+  switch (message.type) {
+    case "getFingerPrint":
+      console.log("fingerprint requested from other extension script");
+      return Promise.resolve("got your request maddafaka");
+      // return getFingerprint();
+      break;
+    case "stateUpdate":
+      console.log("state update received");
+      state = message.payload;
+      updateVisibilityAll();
+      updateStyles();
+      updateShareIcons();
+      updateComposerAudience();
+      break;
+    default:
+      console.log("unknown message type", message.type);
+      return Promise.resolve("unknown message type");
+      break;
   }
-
-  updateStyles();
-  updateShareIcons();
-
-  // updateVisibilityAll();
-
-  let watchedNodesQuery = [];
-
-  // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
-  // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
-  let hideSelectorListString = state.thingsToHide.reduce(
-    (accuString, currentSelector, idx) => {
-      // console.log(accuString);
-      return idx == 0
-        ? currentSelector.cssSelector
-        : accuString + ", " + currentSelector.cssSelector;
-    },
-    ""
-  );
-  watchedNodesQuery.push({ element: hideSelectorListString });
-
-  watchedNodesQuery.push({
-    element: selectors.postContainerClass
-  });
-
-  watchedNodesQuery.push({
-    element: selectors.composerFooter
-  });
-
-  watchedNodesQuery.push({
-    attribute: "aria-checked"
-  });
-
-  // we want to react as soon the head tag is inserted into the DOM.
-  // Unfortunately it doesn't seem possible to observe the head tag.
-  // So let's instead observe the body tag. It should presumably load directly after the head tag.
-  watchedNodesQuery.push({ element: "body" });
-
-  console.log("watchedNodes: ", watchedNodesQuery);
-  let nodeObserver = new MutationSummary({
-    callback: nodeChangeHandler,
-    queries: watchedNodesQuery
-  });
 });
+
+browser.runtime.sendMessage({ type: "contentscriptReady", payload: null })
+.then(response => {
+
+//INIT stuff is happening here
+browser.runtime
+  .sendMessage({ type: "stateRequest", payload: null })
+  .then(response => {
+    console.log("response received: ", response);
+    state = response;
+    let selectors = state.facebookCssSelectors;
+
+    if (!state.thingsToHide) {
+      console.error("thingsToHide is null or undefined");
+      return;
+    } else {
+      console.log("state is: ", state);
+    }
+
+    updateStyles();
+    updateShareIcons();
+
+    // updateVisibilityAll();
+
+    let watchedNodesQuery = [];
+
+    // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
+    // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
+    let hideSelectorListString = state.thingsToHide.reduce(
+      (accuString, currentSelector, idx) => {
+        // console.log(accuString);
+        return idx == 0
+          ? currentSelector.cssSelector
+          : accuString + ", " + currentSelector.cssSelector;
+      },
+      ""
+    );
+    watchedNodesQuery.push({ element: hideSelectorListString });
+
+    watchedNodesQuery.push({
+      element: selectors.postContainerClass
+    });
+
+    watchedNodesQuery.push({
+      element: selectors.composerFooter
+    });
+
+    watchedNodesQuery.push({
+      attribute: "aria-checked"
+    });
+
+    // we want to react as soon the head tag is inserted into the DOM.
+    // Unfortunately it doesn't seem possible to observe the head tag.
+    // So let's instead observe the body tag. It should presumably load directly after the head tag.
+    watchedNodesQuery.push({ element: "body" });
+
+    console.log("watchedNodes: ", watchedNodesQuery);
+    let nodeObserver = new MutationSummary({
+      callback: nodeChangeHandler,
+      queries: watchedNodesQuery
+    });
+  });
 
 const nodeChangeHandler = summaries => {
-  console.log("node summary was triggered");
-  console.log(summaries);
+  // console.log("node summary was triggered");
+  // console.log(summaries);
 
   let selectors = state.facebookCssSelectors;
 
@@ -151,7 +197,7 @@ const updateVisibilityAll = () => {
       console.error("didn't find the node", item.cssSelector);
       continue;
     }
-    console.log("changing element: ", item.cssSelector, " to ", item.hide);
+    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
     if (item.hide) {
       hideElement(node);
     } else {
@@ -207,7 +253,7 @@ const updateComposerAudience = () => {
     return;
   }
 
-  console.log("updating Composer Audience");
+  // console.log("updating Composer Audience");
   let composerFooter = document.querySelector(selectors.composerFooter);
   if (!composerFooter) {
     console.error(
@@ -215,9 +261,9 @@ const updateComposerAudience = () => {
     );
     return;
   }
-  console.log("composerFooter: ", composerFooter);
+  // console.log("composerFooter: ", composerFooter);
   let checkBoxes = composerFooter.querySelectorAll("[role=checkbox]");
-  console.log("checkBoxes: ", checkBoxes);
+  // console.log("checkBoxes: ", checkBoxes);
   for (let checkBox of checkBoxes) {
     let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
     // let selectAudienceWrapper = checkBox.parentElement.querySelector(
@@ -255,7 +301,7 @@ const updateShareIcons = () => {
     );
     return;
   }
-  console.log("found postContentWrappers:", postContentWrappers);
+  // console.log("found postContentWrappers:", postContentWrappers);
 
   if (state.audienceSettings.replaceAudienceIconsWithText) {
     for (let postWrapper of postContentWrappers) {
@@ -278,7 +324,7 @@ const setDisplayForShareIconAndShareText = (
   // First let's handle the icon!
   let iconNode = postContainer.querySelector(selectors.shareIconAttributes);
   if (!iconNode) {
-    console.log(
+    console.error(
       "no icon element found. Have facebook changed the css selectors?"
     );
     return;
@@ -302,12 +348,12 @@ const setDisplayForShareIconAndShareText = (
   let sharingTextClass = "sharing-text";
   let textNode = postContainer.querySelector("." + sharingTextClass);
   if (!textNode) {
-    console.log("no textNode present. Creating one!!!");
+    // console.log("no textNode present. Creating one!!!");
     // extract the accesibility text from wrapping elements
     let altText = "";
     altText = iconNode.getAttribute("data-tooltip-content");
 
-    console.log("retrieved alt text: ", altText);
+    // console.log("retrieved alt text: ", altText);
     textNode = document.createElement("h2");
     textNode.classList.add(sharingTextClass);
     textNode.textContent = altText;

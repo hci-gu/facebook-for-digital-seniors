@@ -1,31 +1,12 @@
-// import Fingerprint2 from "fingerprintjs2";
+// require("dotenv").config();
+// import dotenv from "dotenv";
+import Parse from "parse";
 
-// if (window.requestIdleCallback) {
-//   requestIdleCallback(function() {
-//     console.log("CALLING FINGERPRINT");
-//     Fingerprint2.x64hash128();
-//     Fingerprint2.get(function(components) {
-//       var values = components.map(function(component) {
-//         return component.value;
-//       });
-//       var murmur = Fingerprint2.x64hash128(values.join(""), 31);
-//       console.log("fingerPRINT: ", murmur);
-//       console.log(components); // an array of components: {key: ..., value: ...}
-//     });
-//   });
-// } else {
-//   setTimeout(function() {
-//     console.log("CALLING FINGERPRINT");
-//     Fingerprint2.get(function(components) {
-//       var values = components.map(function(component) {
-//         return component.value;
-//       });
-//       var murmur = Fingerprint2.x64hash128(values.join(""), 31);
-//       console.log("fingerPRINT: ", murmur);
-//       console.log(components); // an array of components: {key: ..., value: ...}
-//     });
-//   }, 500);
-// }
+Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+Parse.initialize(
+  process.env.PARSE_APP_KEY, // This is your Application ID
+  process.env.PARSE_JAVASCRIPT_KEY // This is your Javascript key
+);
 
 browser.runtime.onInstalled.addListener(details => {
   console.log("previousVersion", details.previousVersion);
@@ -35,7 +16,10 @@ browser.browserAction.setBadgeText({
   text: `BFB`
 });
 
-// localStorage.getItem("randomId")
+const onContentScriptReady = async () => {
+  let response = await sendMessageToPage("hej", null);
+  console.log(response);
+};
 
 //WHAT IS THE SETUP FUNCTION DOING:
 //Check if there is state in local storage.
@@ -46,6 +30,7 @@ browser.browserAction.setBadgeText({
 //Put the fetched json data into our state object.
 //Save the state object to local storage.
 
+// setupFingerprint();
 const setup = async () => {
   console.log("ENV: ", process.env.NODE_ENV);
   let facebookCssSelectors = await retrieveFacebookCssSelectors();
@@ -55,18 +40,54 @@ const setup = async () => {
 
   // startState.facebookCssSelectors = facebookCssSelectors;
   localStorage.setItem("state", JSON.stringify(startState));
+  // setupParse();
 };
 
-browser.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  console.log("message receive: ", msg);
+const sendMessageToPage = async (type, msg) => {
+  console.log("skickar till page:", type, msg);
+  return browser.tabs
+    .query({ currentWindow: true, active: true })
+    .then(tabs => {
+      console.log(tabs);
+      return browser.tabs
+        .sendMessage(tabs[0].id, {
+          type: type,
+          payload: msg
+        })
+        .then(answer => {
+          console.log(answer);
+          return answer;
+        })
+        .catch(err => {
+          console.error("sendMessage threw error:");
+          console.error(err);
+        });
+    })
+    .catch(err => {
+      console.error("Probably didn't find any active tab to send to");
+      console.error(err);
+    });
+};
 
-  let state = JSON.parse(localStorage.getItem("state"));
+browser.runtime.onMessage.addListener(message => {
+  console.log("message receive: ", message);
+  switch (message.type) {
+    case "stateRequest":
+      let state = JSON.parse(localStorage.getItem("state"));
 
-  if (state) {
-    console.log(state);
-    return Promise.resolve(state);
-  } else {
-    console.error("couldn't retrieve a state from localStorage!");
+      if (state) {
+        console.log(state);
+        return Promise.resolve(state);
+      } else {
+        console.error("couldn't retrieve a state from localStorage!");
+        return Promise.reject("couldn't retrieve a state from localStorage!");
+      }
+    case "contentscriptReady":
+      onContentScriptReady();
+      return Promise.resolve();
+    default:
+      console.log("unknow message type");
+      return Promise.resolve("unknow message type");
   }
 });
 
@@ -166,7 +187,14 @@ const initializeState = async facebookCssSelectors => {
       receivedState
     );
     //Always replace the facebookCssSelectors no matter what.
-    receivedState.facebookCssSelectors = facebookCssSelectors;
+    if (receivedState.facebookCssSelectors) {
+      receivedState.facebookCssSelectors = facebookCssSelectors;
+    } else {
+      console.error(
+        "no facebookCssSelectors key in received state. Creating one!!"
+      );
+      receivedState["facebookCssSelectors"] = facebookCssSelectors;
+    }
     if (
       !hasSameProperties(receivedState, initialState) ||
       !hasSameProperties(initialState, receivedState) ||
