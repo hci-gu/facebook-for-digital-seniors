@@ -1,9 +1,9 @@
-// Object.freeze(window.fetch);
-
 import MutationSummary from "mutation-summary";
 import Fingerprint2 from "fingerprintjs2";
 
 let state = {};
+
+let backgroundscriptReady = false;
 
 let style = undefined;
 
@@ -16,7 +16,7 @@ const getFingerprint = () => {
     var murmur = Fingerprint2.x64hash128(values.join(""), 31);
     console.log("fingerPRINT: ", murmur);
 
-    return Promise.resolve(murmur);
+    return murmur;
   };
 
   return new Promise((resolve, reject) => {
@@ -53,9 +53,8 @@ browser.runtime.onMessage.addListener(message => {
   switch (message.type) {
     case "getFingerPrint":
       console.log("fingerprint requested from other extension script");
-      return Promise.resolve("got your request maddafaka");
-      // return getFingerprint();
-      break;
+      // return Promise.resolve("got your request maddafaka");
+      return getFingerprint();
     case "stateUpdate":
       console.log("state update received");
       state = message.payload;
@@ -71,8 +70,32 @@ browser.runtime.onMessage.addListener(message => {
   }
 });
 
-browser.runtime.sendMessage({ type: "contentscriptReady", payload: null })
-.then(response => {
+window.addEventListener("click", evt => {
+  console.log(evt);
+  if (evt.detail == 1) {
+    sendUserInteraction({
+      eventType: "click",
+      eventData: { x: evt.x, y: evt.y }
+    });
+  }
+});
+
+const sendUserInteraction = payload => {
+  browser.runtime
+    .sendMessage({ type: "userInteraction", payload: payload })
+    .then(response => {
+      console.log(response);
+    });
+};
+
+browser.runtime
+  .sendMessage({ type: "contentscriptReady", payload: null })
+  .then(response => {
+    console.log(response);
+    backgroundscriptReady = true;
+    let event = "refresh";
+    sendUserInteraction(event);
+  });
 
 //INIT stuff is happening here
 browser.runtime
