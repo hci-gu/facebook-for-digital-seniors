@@ -1,7 +1,13 @@
 import MutationSummary from "mutation-summary";
 import Fingerprint2 from "fingerprintjs2";
+import { isPromiseResolved } from "promise-status-async";
 
 let state = {};
+
+let resolveStateLoaded;
+let stateLoadedPromise = new Promise((resolve, reject) => {
+  resolveStateLoaded = resolve;
+});
 
 let backgroundscriptReady = false;
 
@@ -32,22 +38,6 @@ const getFingerprint = () => {
   });
 };
 
-// Be aware. I think facebook has overridden the fetch function to proxy the request through their servers.
-// This ha the beneficial effect that we are allowed to fetch without getting CSP error.
-// The downside is that some ip lookup services behaves weirdly...
-// (async () => {
-//   // let response = await fetch("https://ipinfo.io/json");
-//   let response = await fetch("https://api.ipify.org?format=json");
-//   // let response = await fetch("https://www.cloudflare.com/cdn-cgi/trace");
-//   // let response = await fetch("https://json.geoiplookup.io/api");
-//   let parsedRespons = await response.text();
-//   // let parsedRespons = await response.json();
-
-//   console.log("Fetched ip check");
-//   console.log("Ip check gave:", parsedRespons);
-//   // console.log(json);
-// })();
-
 browser.runtime.onMessage.addListener(message => {
   console.log("msg received:", message);
   switch (message.type) {
@@ -71,7 +61,8 @@ browser.runtime.onMessage.addListener(message => {
 });
 
 window.addEventListener("click", evt => {
-  console.log(evt);
+  // console.log(evt);
+  // console.log(evt.detail);
   if (evt.detail == 1) {
     sendUserInteraction({
       eventType: "click",
@@ -84,7 +75,7 @@ const sendUserInteraction = payload => {
   browser.runtime
     .sendMessage({ type: "userInteraction", payload: payload })
     .then(response => {
-      console.log(response);
+      console.log("sendUserInteraction response: ", response);
     });
 };
 
@@ -93,8 +84,7 @@ browser.runtime
   .then(response => {
     console.log(response);
     backgroundscriptReady = true;
-    let event = "refresh";
-    sendUserInteraction(event);
+    sendUserInteraction({ eventType: "refresh" });
   });
 
 //INIT stuff is happening here
@@ -103,6 +93,7 @@ browser.runtime
   .then(response => {
     console.log("response received: ", response);
     state = response;
+    resolveStateLoaded();
     let selectors = state.facebookCssSelectors;
 
     if (!state.thingsToHide) {
@@ -112,7 +103,7 @@ browser.runtime
       console.log("state is: ", state);
     }
 
-    updateStyles();
+    // updateStyles();
     updateShareIcons();
 
     // updateVisibilityAll();
@@ -239,7 +230,7 @@ const updateStyles = () => {
     let foundCssRule = undefined;
     for (let candidateCssRule of ruleList) {
       if (
-        candidateCssRule.type == CSSRule.STYLE_RULE &&
+        candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
         candidateCssRule.selectorText == customCssItem.selector
       ) {
         foundCssRule = candidateCssRule;
@@ -248,19 +239,22 @@ const updateStyles = () => {
     }
     if (foundCssRule) {
       console.log("style already present!");
-      console.log("styleDeclaration:", foundCssRule.style);
       if (customCssItem.enabled) {
+        console.log("setting css property: ", customCssItem);
         foundCssRule.style.setProperty(
           customCssItem.property,
           customCssItem.value + customCssItem.unit
         );
       } else {
+        console.log("removing css property: ", customCssItem);
         foundCssRule.style.removeProperty(customCssItem.property);
       }
     } else {
       console.log("inserting new css rule: ", customCssItem);
-      let cssString = `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value} ${customCssItem.unit}}`;
-      console.log("cssString:", cssString);
+      let cssString = customCssItem.enabled
+        ? `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value}${customCssItem.unit};}`
+        : `${customCssItem.selector} {}`;
+      console.log("composed cssString from js object:", cssString);
       style.sheet.insertRule(cssString);
     }
   }
@@ -390,12 +384,14 @@ const setDisplayForShareIconAndShareText = (
   }
 };
 
-const onBodyTagLoaded = () => {
+const onBodyTagLoaded = async () => {
   console.log("body tag added to DOM");
   style = document.createElement("style");
   style.id = "style-tag";
   document.head.appendChild(style);
   console.log("added custom style tag to head tag");
+  await stateLoadedPromise;
+  updateStyles();
 };
 
 // document.addEventListener("DOMContentLoaded", () =>
