@@ -46,13 +46,18 @@ browser.runtime.onMessage.addListener(message => {
       // return Promise.resolve("got your request maddafaka");
       return getFingerprint();
     case "stateUpdate":
-      console.log("state update received");
-      state = message.payload;
-      updateVisibilityAll();
-      updateStyles();
-      updateShareIcons();
-      updateComposerAudience();
-      break;
+      try {
+        console.log("state update received");
+        state = message.payload;
+        updateVisibilityAll();
+        updateStyles();
+        updateShareIcons();
+        updateComposerAudience();
+      } catch (err) {
+        console.error(err);
+        return "stateUpdate failed somewhere in contentscript";
+      }
+      return "performed your stateUpdate. Thaaaanx!!!";
     default:
       console.log("unknown message type", message.type);
       return Promise.resolve("unknown message type");
@@ -183,6 +188,48 @@ const nodeChangeHandler = summaries => {
   }
 };
 
+const getNodeFromCssObject = cssSelectorObject => {
+  let node = null;
+  if (typeof cssSelectorObject === "object" && cssSelectorObject !== null) {
+    console.log("retrieving node from traversal string", cssSelectorObject);
+    let startNode = document.querySelector(cssSelectorObject.selector);
+    node = findRelativeNode(startNode, cssSelectorObject.DOMSearch);
+  } else {
+    node = document.querySelector(cssSelectorObject);
+  }
+  if (!node) {
+    console.error("didn't find the node", item.cssSelectorObject);
+    return;
+  }
+  // console.log("found a node:", node);
+  return node;
+};
+
+const findRelativeNode = (startNode, DOMSearch) => {
+  // console.log("searching relative string");
+  let currentNode = startNode;
+  let traversalSequence = DOMSearch.split(",");
+  console.log("searching for node traversal sequence is: ", traversalSequence);
+  for (let i = 0; i < traversalSequence.length; i++) {
+    if (!currentNode) {
+      console.error("error when searching for relative node!!!");
+      return;
+    }
+    switch (traversalSequence[i]) {
+      case "parent":
+        currentNode = currentNode.parentElement;
+        break;
+      case "firstChild":
+        currentNode = currentNode.firstElementChild;
+        break;
+      default:
+        console.error("unknown traversal keyword");
+        break;
+    }
+  }
+  return currentNode;
+};
+
 const hideElement = node => {
   if (!node) {
     console.error("invalid input to hideElement function:", node);
@@ -200,22 +247,29 @@ const showElement = node => {
   node.classList.remove("hide");
 };
 
+const updateVisibilityFromShowHideObject = item => {
+  console.log("updateVisibilityFromShowHideObject called with: ", item);
+  let cssSelectorObject = state.facebookCssSelectors[item.cssSelectorName];
+  console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+
+  let node = getNodeFromCssObject(cssSelectorObject);
+  // console.log("changing element: ", item.cssSelector, " to ", item.hide);
+  if (item.hide) {
+    hideElement(node);
+  } else {
+    showElement(node);
+  }
+};
+
 const updateVisibilityAll = () => {
+  // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
     console.error("thingsToHide is null or undefined");
     return;
   }
-  for (let item of state.thingsToHide) {
-    let node = document.querySelector(item.cssSelector);
-    if (!node) {
-      console.error("didn't find the node", item.cssSelector);
-      continue;
-    }
-    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
-    if (item.hide) {
-      hideElement(node);
-    } else {
-      showElement(node);
+  for (let list of state.thingsToHide) {
+    for (let item of list.options) {
+      updateVisibilityFromShowHideObject(item);
     }
   }
 };
@@ -240,13 +294,13 @@ const updateStyles = () => {
     if (foundCssRule) {
       console.log("style already present!");
       if (customCssItem.enabled) {
-        console.log("setting css property: ", customCssItem);
+        // console.log("setting css property: ", customCssItem);
         foundCssRule.style.setProperty(
           customCssItem.property,
           customCssItem.value + customCssItem.unit
         );
       } else {
-        console.log("removing css property: ", customCssItem);
+        // console.log("removing css property: ", customCssItem);
         foundCssRule.style.removeProperty(customCssItem.property);
       }
     } else {

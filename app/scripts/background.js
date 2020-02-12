@@ -145,7 +145,7 @@ const sendMessageToPage = async (type, msg) => {
 };
 
 browser.runtime.onMessage.addListener(async message => {
-  console.log("message receive: ", message);
+  console.log("message received: ", message);
   switch (message.type) {
     case "stateRequest":
       let state = JSON.parse(localStorage.getItem("state"));
@@ -208,28 +208,58 @@ const initializeState = async facebookCssSelectors => {
     stateBreakingChangeCounter: 1,
     thingsToHide: [
       {
-        id: "lpane",
-        name: "Vänsterpanel",
-        cssSelector: "#left_nav_section_nodes",
-        hide: false
+        sectionName: "Menyalternativ",
+        options: [
+          {
+            id: "feed",
+            name: "Flöde",
+            cssSelectorName: "navItemNewsFeed",
+            hide: false
+          },
+          {
+            id: "messages",
+            name: "Meddelanden",
+            cssSelectorName: "navItemMessenger",
+            hide: false
+          },
+
+          {
+            id: "watch",
+            name: "Titta",
+            cssSelectorName: "navItemWatch",
+            hide: false
+          },
+
+          {
+            id: "marketplace",
+            name: "Köp/Sälj",
+            cssSelectorName: "navItemMarketplace",
+            hide: false
+          }
+        ]
       },
       {
-        id: "stories",
-        name: "Händelser",
-        cssSelector: "#stories_pagelet_below_composer",
-        hide: true
-      },
-      {
-        id: "rpane",
-        name: "Högerpanel",
-        cssSelector: ".home_right_column",
-        hide: true
-      },
-      {
-        id: "language",
-        name: "Språkruta",
-        cssSelector: "#pagelet_rhc_footer",
-        hide: false
+        sectionName: "Övrigt",
+        options: [
+          {
+            id: "stories",
+            name: "Händelser",
+            cssSelectorName: "stories",
+            hide: true
+          },
+          {
+            id: "rpane",
+            name: "Högerpanel",
+            cssSelectorName: "rightPanel",
+            hide: true
+          }
+          // {
+          //   id: "language",
+          //   name: "Språkruta",
+          //   cssSelectorName: "languagePanel",
+          //   hide: false
+          // }
+        ]
       }
     ],
     customCss: [

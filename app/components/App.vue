@@ -2,19 +2,22 @@
   <div id="main-container">
     <fieldset>
       <legend>Visa</legend>
-      <div v-for="(item, index) of state.thingsToHide" :key="item.name">
-        <label :for="item.id" class="checkbox-label">
-          <input
-            :id="item.id"
-            type="checkbox"
-            :name="item.name"
-            v-model="item.hide"
-            :true-value="false"
-            :false-value="true"
-            @change="onChange()"
-          />
-          {{ item.name }}
-        </label>
+      <div v-for="(item, index) of state.thingsToHide" :key="item.sectionName">
+        <p>{{ item.sectionName }}</p>
+        <div v-for="(item, index) of item.options" :key="item.name">
+          <label :for="item.id" class="checkbox-label">
+            <input
+              :id="item.id"
+              type="checkbox"
+              :name="item.name"
+              v-model="item.hide"
+              :true-value="false"
+              :false-value="true"
+              @change="onChange()"
+            />
+            {{ item.name }}
+          </label>
+        </div>
       </div>
     </fieldset>
     <fieldset v-for="customCss of state.customCss">
@@ -41,7 +44,7 @@
         {{ customCss.value }}</label
       >
     </fieldset>
-    <fieldset>
+    <fieldset v-if="state.audienceSettings">
       <legend>Mottagare</legend>
       <label class="checkbox-label">
         <input
@@ -81,10 +84,10 @@ export default {
   },
   methods: {
     onChange() {
-      this.sendMessage();
+      this.sendStateUpdate();
       this.storeState();
     },
-    sendMessage() {
+    sendStateUpdate() {
       console.log("skickar!!!");
       browser.tabs
         .query({ currentWindow: true, active: true })
@@ -97,7 +100,7 @@ export default {
             })
             .then(answer => console.log(answer))
             .catch(err => {
-              console.error("sendMessage threw error:");
+              console.error("sendStateUpdate threw error:");
               console.error(err);
             });
         })

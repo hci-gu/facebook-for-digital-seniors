@@ -4,5 +4,25 @@
   "composerCloseButton": "[data-testid=react-composer-close-button]",
   "composerFooter": "[data-testid~=react-composer-footer-with-destination-picker]",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
-  "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]"
+  "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
+  "navigationPanel": "#left_nav_section_nodes",
+  "stories": "#stories_pagelet_below_composer",
+  "rightPanel": ".home_right_column",
+  "languagePanel": "#pagelet_rhc_footer",
+  "navItemNewsFeed": {
+    "selector": "[data-testid='left_nav_item_News Feed']",
+    "DOMSearch": "parent"
+  },
+  "navItemMessenger": {
+    "selector": "[data-testid='left_nav_item_Messenger']",
+    "DOMSearch": "parent"
+  },
+  "navItemWatch": {
+    "selector": "[data-testid='left_nav_item_Watch']",
+    "DOMSearch": "parent"
+  },
+  "navItemMarketplace": {
+    "selector": "[data-testid='left_nav_item_Marketplace']",
+    "DOMSearch": "parent"
+  }
 }
