@@ -51,9 +51,9 @@ browser.runtime.onInstalled.addListener(details => {
   console.log("previousVersion", details.previousVersion);
 });
 
-browser.browserAction.setBadgeText({
-  text: `BFB`
-});
+// browser.browserAction.setBadgeText({
+//   text: `BFB`
+// });
 
 //we create a promise here that will settle when the fingerprint (hopefully) is received
 // let fingerPrintReceived = new Promise();
