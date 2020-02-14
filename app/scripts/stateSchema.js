@@ -1,45 +1,49 @@
 export default {
-  stateBreakingChangeCounter: 2,
+  stateBreakingChangeCounter: 4,
   thingsToHide: [
     {
-      sectionName: "Menyalternativ",
-      sectionOption: {
-        id: "universalNav",
-        name: "Huvudsektioner",
-        cssSelectorName: "universalNavSection",
-        hide: false
-      },
-      options: [
+      categoryName: "Menyalternativ",
+      groups: [
         {
-          id: "feed",
-          name: "Flöde",
-          cssSelectorName: "navItemNewsFeed",
-          hide: false
-        },
-        {
-          id: "messages",
-          name: "Meddelanden",
-          cssSelectorName: "navItemMessenger",
-          hide: false
-        },
+          option: {
+            id: "universalNav",
+            name: "Huvudsektioner",
+            cssSelectorName: "universalNavSection",
+            hide: false
+          },
+          options: [
+            {
+              id: "feed",
+              name: "Flöde",
+              cssSelectorName: "navItemNewsFeed",
+              hide: false
+            },
+            {
+              id: "messages",
+              name: "Meddelanden",
+              cssSelectorName: "navItemMessenger",
+              hide: false
+            },
 
-        {
-          id: "watch",
-          name: "Titta",
-          cssSelectorName: "navItemWatch",
-          hide: false
-        },
+            {
+              id: "watch",
+              name: "Titta",
+              cssSelectorName: "navItemWatch",
+              hide: false
+            },
 
-        {
-          id: "marketplace",
-          name: "Köp/Sälj",
-          cssSelectorName: "navItemMarketplace",
-          hide: false
+            {
+              id: "marketplace",
+              name: "Köp/Sälj",
+              cssSelectorName: "navItemMarketplace",
+              hide: false
+            }
+          ]
         }
       ]
     },
     {
-      sectionName: "Övrigt",
+      categoryName: "Övrigt",
       options: [
         {
           id: "stories",

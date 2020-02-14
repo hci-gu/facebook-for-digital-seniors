@@ -2,58 +2,40 @@
   <div id="main-container">
     <fieldset>
       <legend>Visa</legend>
-      <div v-for="(item, index) of state.thingsToHide" :key="item.sectionName">
-        <p>{{ item.sectionName }}</p>
-        <!-- <label
-          v-if="item.sectionOption != undefined"
-          :for="item.sectionOption.id"
-          class="checkbox-label"
-        >
-          <input
-            :id="item.sectionOption.id"
-            type="checkbox"
-            :name="item.sectionOption.name"
-            v-model="item.sectionOption.hide"
-            :true-value="false"
-            :false-value="true"
-            @change="onChange()"
-          />
+      <div v-for="category of state.thingsToHide" :key="category.categoryName">
+        <div>
+          <p>{{ category.categoryName }}</p>
+          <collapsible
+            :group.sync="group"
+            v-for="(group, index) of category.groups"
+            :key="index"
+          >
+          </collapsible>
 
-          {{ item.sectionOption.name }}
-        </label> -->
-        <input
-          :id="'collapse-checkbox-' + index"
-          class="collapsible-checkbox"
-          type="checkbox"
-          checked
-        />
-        <label :for="'collapse-checkbox-' + index" class="collapsible-label" />
-        <div class="collapsible">
-          <div v-for="(item, index) of item.options" :key="item.name">
-            <label :for="item.id" class="checkbox-label">
-              <input
-                :id="item.id"
-                type="checkbox"
-                :name="item.name"
-                v-model="item.hide"
-                :true-value="false"
-                :false-value="true"
-                @change="onChange()"
-              />
-              {{ item.name }}
-            </label>
-          </div>
+          <label
+            v-for="option of category.options"
+            :key="option.name"
+            :for="option.id"
+            class="checkbox-label"
+          >
+            <input
+              :id="option.id"
+              type="checkbox"
+              :name="option.name"
+              v-model="option.hide"
+              :true-value="false"
+              :false-value="true"
+            />
+            {{ option.name }}
+          </label>
+          <!-- {{ category.groups ? category.groups[0] : "" }} -->
         </div>
       </div>
     </fieldset>
-    <fieldset v-for="customCss of state.customCss">
+    <fieldset v-for="(customCss, index) of state.customCss" :key="index">
       <legend>
         <label>
-          <input
-            type="checkbox"
-            v-model="customCss.enabled"
-            @change="onChange()"
-          />
+          <input type="checkbox" v-model="customCss.enabled" />
           {{ customCss.name }}</label
         >
       </legend>
@@ -61,7 +43,6 @@
         <input
           :id="customCss.id"
           v-model="customCss.value"
-          @input="onChange()"
           type="range"
           :min="customCss.min"
           :max="customCss.max"
@@ -76,7 +57,6 @@
         <input
           type="checkbox"
           v-model="state.audienceSettings.replaceAudienceIconsWithText"
-          @change="onChange()"
         />
         Visa mottagare med text istället för ikon
       </label>
@@ -84,7 +64,6 @@
         <input
           type="checkbox"
           v-model="state.audienceSettings.highlightAudienceWhenPosting"
-          @change="onChange()"
         />
         Belys mottagare när man skapar ny post
       </label>
@@ -93,13 +72,22 @@
 </template>
 
 <script>
+import Collapsible from "./Collapsible.vue";
 export default {
   data() {
     return {
       state: []
     };
   },
-  watch: {},
+  watch: {
+    state: {
+      deep: true,
+      handler: function(newState, oldState) {
+        this.sendStateUpdate();
+        this.storeState();
+      }
+    }
+  },
   mounted() {
     console.log("mounted");
     let state = window.localStorage.getItem("state");
@@ -138,6 +126,9 @@ export default {
       console.log("storing state in localstorage");
       window.localStorage.setItem("state", JSON.stringify(this.state));
     }
+  },
+  components: {
+    Collapsible
   }
 };
 </script>
@@ -162,16 +153,23 @@ html {
 fieldset {
   border-style: solid;
   border-color: #333;
-  padding-top: 0.6rem;
-  padding-bottom: 0;
+  /* padding-top: 0.6rem;
+  padding-bottom: 0.6rem; */
   margin-bottom: 1rem;
 }
+
+fieldset p {
+  margin-top: 0.2;
+  margin-bottom: 0.1rem;
+}
+
 legend {
   padding: 0.1rem 0.3rem 0.1rem 0.3rem;
   background-color: #333;
   color: #fff;
   font-size: 0.9rem;
 }
+
 .checkbox-label {
   border: var(--inner-border-property);
   border-width: 0 0 1px;
@@ -180,11 +178,21 @@ legend {
   display: block;
 }
 
+.checkbox-label[disabled]:hover,
+.checkbox-label[disabled] {
+  color: #888;
+  background-color: unset;
+}
+
+.checkbox-label:last-of-type {
+  border-bottom: none;
+}
+
 .checkbox-label:hover {
   background: #eee;
   cursor: pointer;
 }
-
+/* 
 .collapsible-label {
   --collapsible-label-bg-color: #eee;
   border: var(--inner-border-property);
@@ -225,16 +233,18 @@ legend {
   display: none;
 }
 
-.collapsible-checkbox:checked + .collapsible-label + .collapsible {
-  max-height: 20rem;
+.collapsible-checkbox:not(:checked) + .collapsible-label + .collapsible {
+  max-height: 0;
+
+  border-color: white;
 }
 
 .collapsible {
-  max-height: 0;
+  max-height: 20rem;
   overflow: hidden;
   border: var(--inner-border-property);
-  border-width: 0 1px;
+  border-width: 0 1px 1px;
 
-  transition: max-height 0.7s ease-in-out;
-}
+  transition: max-height 0.7s ease-in-out, border-color 0.5s ease-in-out;
+} */
 </style>

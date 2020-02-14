@@ -158,21 +158,24 @@ const nodeChangeHandler = summaries => {
 
   let selectors = state.facebookCssSelectors;
 
+  //Super ugly hack to make sure we hide/show on page refresh!!!
+  updateVisibilityAll();
+
   for (let summary of summaries) {
     for (let node of summary.added) {
       //was it the head tag?
       if (node.matches("body")) {
         onBodyTagLoaded();
       }
-      for (let item of state.thingsToHide) {
-        if (node.matches(item.cssSelector)) {
-          if (item.hide) {
-            hideElement(node);
-          } else {
-            showElement(node);
-          }
-        }
-      }
+      // for (let item of state.thingsToHide) {
+      //   if (node.matches(item.cssSelector)) {
+      //     if (item.hide) {
+      //       hideElement(node);
+      //     } else {
+      //       showElement(node);
+      //     }
+      //   }
+      // }
 
       if (node.matches(selectors.postContainerClass)) {
         updateShareIcons();
@@ -206,7 +209,7 @@ const getNodeFromCssObject = cssSelectorObject => {
 };
 
 const findRelativeNode = (startNode, DOMSearch) => {
-  // console.log("searching relative string");
+  console.log("searching relative string");
   let currentNode = startNode;
   let traversalSequence = DOMSearch.split(",");
   console.log("searching for node traversal sequence is: ", traversalSequence);
@@ -215,16 +218,14 @@ const findRelativeNode = (startNode, DOMSearch) => {
       console.error("error when searching for relative node!!!");
       return;
     }
-    switch (traversalSequence[i]) {
-      case "parent":
-        currentNode = currentNode.parentElement;
-        break;
-      case "firstChild":
-        currentNode = currentNode.firstElementChild;
-        break;
-      default:
-        console.error("unknown traversal keyword");
-        break;
+    let currentDOMJump = traversalSequence[i].split(":");
+    console.log("currentDOMJump: ", currentDOMJump);
+    if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
+      currentNode = currentNode[currentDOMJump[0]];
+    } else if (currentDOMJump.length > 1) {
+      let command = currentDOMJump[0];
+      let index = currentDOMJump[1];
+      currentNode = currentNode[command][index];
     }
   }
   return currentNode;
@@ -267,10 +268,28 @@ const updateVisibilityAll = () => {
     console.error("thingsToHide is null or undefined");
     return;
   }
-  for (let list of state.thingsToHide) {
-    for (let item of list.options) {
-      updateVisibilityFromShowHideObject(item);
+  try {
+    for (let category of state.thingsToHide) {
+      if (category.groups) {
+        for (let group of category.groups) {
+          if (group.option) {
+            updateVisibilityFromShowHideObject(group.option);
+          }
+          if (group.options) {
+            for (let option of group.options) {
+              updateVisibilityFromShowHideObject(option);
+            }
+          }
+        }
+      }
+      if (category.options) {
+        for (let option of category.options) {
+          updateVisibilityFromShowHideObject(option);
+        }
+      }
     }
+  } catch (err) {
+    console.error(err);
   }
 };
 
