@@ -55,7 +55,7 @@ export default {
 };
 </script>
 
-<style scoped>
+<style>
 .collapsible-header-label {
   cursor: pointer;
 }

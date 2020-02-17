@@ -6,7 +6,7 @@
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
   "navigationPanel": "#left_nav_section_nodes",
-  "universalNavSection": "#universalNav",
+  "universalNav": "#universalNav",
   "navItemNewsFeed": {
     "selector": "#universalNav ul",
     "DOMSearch": "children:0"
@@ -23,6 +23,7 @@
     "selector": "#universalNav ul",
     "DOMSearch": "children:3"
   },
+  "pinnedNav": "#pinnedNav",
   "appsNav": "#appsNav",
   "navItemGroups": {
     "selector": "#appsNav ul",

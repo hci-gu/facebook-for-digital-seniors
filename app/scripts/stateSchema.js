@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 11,
+  stateBreakingChangeCounter: 12,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -10,7 +10,7 @@ export default {
           option: {
             id: "universalNav",
             name: "Huvudsektioner",
-            cssSelectorName: "universalNavSection",
+            cssSelectorName: "universalNav",
             hide: false
           },
           options: [
@@ -41,6 +41,14 @@ export default {
               hide: false
             }
           ]
+        },
+        {
+          option: {
+            id: "pinnedNav",
+            name: "Genvägar",
+            cssSelectorName: "pinnedNav",
+            hide: false
+          }
         },
         {
           option: {

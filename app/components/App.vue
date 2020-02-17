@@ -20,12 +20,27 @@
         >
           <div>
             <p>{{ category.categoryName }}</p>
-            <collapsible
-              :group.sync="group"
-              v-for="(group, index) of category.groups"
-              :key="index"
-            >
-            </collapsible>
+            <template v-for="(group, index) of category.groups">
+              <collapsible
+                v-if="group.options"
+                :group.sync="group"
+                :key="index"
+              >
+              </collapsible>
+              <div v-else :key="index">
+                <label :for="group.option.id" class="collapsible-label">
+                  <input
+                    :id="group.option.id"
+                    type="checkbox"
+                    :name="group.option.name"
+                    v-model="group.option.hide"
+                    :true-value="false"
+                    :false-value="true"
+                  />
+                  {{ group.option.name }}
+                </label>
+              </div>
+            </template>
 
             <label
               v-for="option of category.options"
@@ -43,7 +58,6 @@
               />
               {{ option.name }}
             </label>
-            <!-- {{ category.groups ? category.groups[0] : "" }} -->
           </div>
         </div>
       </fieldset>
