@@ -31,6 +31,20 @@ jobs:
       - name: Install dependencies
         run: |
           npm install
+      - name: Add app key
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "PARSE_APP_KEY" # [Required]
+          value: ${{secrets.PARSE_APP_KEY}} # [Required]
+          nullable: "false" # [Optional] if the resolved value is empty, the variable will be omitted
+          envPath: ".env" # [Optional] The path to the dotenv file (defaults to `.env`)
+      - name: Add javascript key
+        uses: TickX/var-to-dotenv@v1.1.1
+        with:
+          key: "PARSE_JAVASCRIPT_KEY" # [Required]
+          value: ${{secrets.PARSE_JAVASCRIPT_KEY}} # [Required]
+          nullable: "false" # [Optional] if the resolved value is empty, the variable will be omitted
+          envPath: ".env" # [Optional] The path to the dotenv file (defaults to `.env`)
       - name: build
         run: |
           npm run build chrome
