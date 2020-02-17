@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 4,
+  stateBreakingChangeCounter: 7,
   thingsToHide: [
     {
       categoryName: "Menyalternativ",
@@ -39,6 +39,40 @@ export default {
               hide: false
             }
           ]
+        },
+        {
+          option: {
+            id: "appsNav",
+            name: "Utforska",
+            cssSelectorName: "appsNav",
+            hide: false
+          },
+          options: [
+            {
+              id: "groups",
+              name: "Grupper",
+              cssSelectorName: "navItemGroups",
+              hide: false
+            },
+            {
+              id: "pages",
+              name: "Sidor",
+              cssSelectorName: "navItemPages",
+              hide: false
+            },
+            {
+              id: "events",
+              name: "Evenemang",
+              cssSelectorName: "navItemEvents",
+              hide: false
+            },
+            {
+              id: "fundraisers",
+              name: "Insamlingar",
+              cssSelectorName: "navItemFundraisers",
+              hide: false
+            }
+          ]
         }
       ]
     },
@@ -68,7 +102,7 @@ export default {
   ],
   customCss: [
     {
-      enabled: false,
+      enabled: true,
       id: "zoom",
       name: "Zoom",
       selector: "body",

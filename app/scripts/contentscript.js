@@ -201,7 +201,7 @@ const getNodeFromCssObject = cssSelectorObject => {
     node = document.querySelector(cssSelectorObject);
   }
   if (!node) {
-    console.error("didn't find the node", item.cssSelectorObject);
+    console.error("didn't find the node", cssSelectorObject);
     return;
   }
   // console.log("found a node:", node);

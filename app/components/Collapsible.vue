@@ -1,12 +1,14 @@
 <template>
   <div>
     <input
-      id="collapse-checkbox"
+      :id="group.option.id + 'collapse-checkbox'"
       class="collapsible-checkbox"
       type="checkbox"
-      checked
     />
-    <label for="collapse-checkbox" class="collapsible-label">
+    <label
+      :for="group.option.id + 'collapse-checkbox'"
+      class="collapsible-label"
+    >
       <label
         class="collapsible-header-label"
         v-if="group.option != undefined"
@@ -54,6 +56,9 @@ export default {
 </script>
 
 <style scoped>
+.collapsible-header-label {
+  cursor: pointer;
+}
 .collapsible-header-label:hover {
   font-weight: bold;
 }
@@ -66,6 +71,7 @@ export default {
   padding: 10px;
   margin: 0 0 0px;
   display: block;
+  cursor: pointer;
 
   transition: border-radius 0.3s ease-in-out;
 }
@@ -109,6 +115,7 @@ export default {
 }
 
 .collapsible {
+  margin-bottom: 0.5rem;
   max-height: 20rem;
   overflow: hidden;
   border: var(--inner-border-property);

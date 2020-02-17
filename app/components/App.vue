@@ -34,22 +34,28 @@
     </fieldset>
     <fieldset v-for="(customCss, index) of state.customCss" :key="index">
       <legend>
-        <label>
-          <input type="checkbox" v-model="customCss.enabled" />
-          {{ customCss.name }}</label
-        >
+        <!-- <label>
+          <input type="checkbox" v-model="customCss.enabled" /> -->
+        {{ customCss.name }}
+        <!-- </label> -->
       </legend>
-      <label :for="customCss.id">
-        <input
-          :id="customCss.id"
-          v-model="customCss.value"
-          type="range"
-          :min="customCss.min"
-          :max="customCss.max"
-          step="1"
-        />
-        {{ customCss.value }}</label
-      >
+      <!-- <label :for="customCss.id"> -->
+      <input
+        style="width: 100%"
+        :list="customCss.id"
+        v-model="customCss.value"
+        type="range"
+        :min="customCss.min"
+        :max="customCss.max"
+        step="1"
+      />
+      <datalist :id="customCss.id">
+        <option>50</option>
+        <option label="1X">100</option>
+        <option>150</option>
+        <option label="2X">200</option>
+      </datalist>
+      <!-- {{ customCss.value }}</label> -->
     </fieldset>
     <fieldset v-if="state.audienceSettings">
       <legend>Mottagare</legend>
@@ -146,6 +152,10 @@ html {
   overflow-y: overlay; /* scrollbar jump fix */
 }
 
+input[type="range"] {
+  cursor: pointer;
+}
+
 #main-container {
   width: 20rem;
 }
@@ -192,59 +202,4 @@ legend {
   background: #eee;
   cursor: pointer;
 }
-/* 
-.collapsible-label {
-  --collapsible-label-bg-color: #eee;
-  border: var(--inner-border-property);
-  background-color: var(--collapsible-label-bg-color);
-  border-radius: 0.5rem;
-  padding: 10px;
-  margin: 0 0 0px;
-  display: block;
-
-  transition: border-radius 0.3s ease-in-out;
-}
-
-.collapsible-label::before {
-  content: " ";
-  display: inline-block;
-
-  border-top: 5px solid transparent;
-  border-bottom: 5px solid transparent;
-  border-left: 5px solid currentColor;
-
-  vertical-align: middle;
-  margin-right: 0.7rem;
-  transform: translateY(-2px);
-
-  transition: transform 0.2s ease-out;
-}
-
-.collapsible-checkbox:checked + .collapsible-label::before {
-  transform: rotate(90deg) translateX(-3px);
-}
-
-.collapsible-checkbox:checked + .collapsible-label {
-  border-bottom-right-radius: 0;
-  border-bottom-left-radius: 0;
-}
-
-.collapsible-checkbox {
-  display: none;
-}
-
-.collapsible-checkbox:not(:checked) + .collapsible-label + .collapsible {
-  max-height: 0;
-
-  border-color: white;
-}
-
-.collapsible {
-  max-height: 20rem;
-  overflow: hidden;
-  border: var(--inner-border-property);
-  border-width: 0 1px 1px;
-
-  transition: max-height 0.7s ease-in-out, border-color 0.5s ease-in-out;
-} */
 </style>
