@@ -1,5 +1,7 @@
 export default {
-  stateBreakingChangeCounter: 7,
+  stateBreakingChangeCounter: 11,
+  simpleMode: true,
+  globalToggle: false,
   thingsToHide: [
     {
       categoryName: "Menyalternativ",
@@ -83,13 +85,13 @@ export default {
           id: "stories",
           name: "Händelser",
           cssSelectorName: "stories",
-          hide: true
+          hide: false
         },
         {
           id: "rpane",
           name: "Högerpanel",
           cssSelectorName: "rightPanel",
-          hide: true
+          hide: false
         }
         // {
         //   id: "language",
@@ -136,8 +138,8 @@ export default {
     // }
   ],
   audienceSettings: {
-    replaceAudienceIconsWithText: true,
-    highlightAudienceWhenPosting: true
+    replaceAudienceIconsWithText: false,
+    highlightAudienceWhenPosting: false
   },
   facebookCssSelectors: {}
 };

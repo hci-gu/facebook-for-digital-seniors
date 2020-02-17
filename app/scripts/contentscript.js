@@ -1,6 +1,6 @@
 import MutationSummary from "mutation-summary";
 import Fingerprint2 from "fingerprintjs2";
-import { isPromiseResolved } from "promise-status-async";
+// import { isPromiseResolved } from "promise-status-async";
 
 let state = {};
 

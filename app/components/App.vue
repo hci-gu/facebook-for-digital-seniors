@@ -1,79 +1,95 @@
 <template>
   <div id="main-container">
-    <fieldset>
-      <legend>Visa</legend>
-      <div v-for="category of state.thingsToHide" :key="category.categoryName">
-        <div>
-          <p>{{ category.categoryName }}</p>
-          <collapsible
-            :group.sync="group"
-            v-for="(group, index) of category.groups"
-            :key="index"
-          >
-          </collapsible>
+    <div v-if="state.simpleMode">
+      <label class="checkbox-label">
+        <input
+          type="checkbox"
+          v-model="state.globalToggle"
+          :true-value="true"
+          :false-value="false"
+        />
+        PÅ/AV
+      </label>
+    </div>
+    <div v-else>
+      <fieldset>
+        <legend>Visa</legend>
+        <div
+          v-for="category of state.thingsToHide"
+          :key="category.categoryName"
+        >
+          <div>
+            <p>{{ category.categoryName }}</p>
+            <collapsible
+              :group.sync="group"
+              v-for="(group, index) of category.groups"
+              :key="index"
+            >
+            </collapsible>
 
-          <label
-            v-for="option of category.options"
-            :key="option.name"
-            :for="option.id"
-            class="checkbox-label"
-          >
-            <input
-              :id="option.id"
-              type="checkbox"
-              :name="option.name"
-              v-model="option.hide"
-              :true-value="false"
-              :false-value="true"
-            />
-            {{ option.name }}
-          </label>
-          <!-- {{ category.groups ? category.groups[0] : "" }} -->
+            <label
+              v-for="option of category.options"
+              :key="option.name"
+              :for="option.id"
+              class="checkbox-label"
+            >
+              <input
+                :id="option.id"
+                type="checkbox"
+                :name="option.name"
+                v-model="option.hide"
+                :true-value="false"
+                :false-value="true"
+              />
+              {{ option.name }}
+            </label>
+            <!-- {{ category.groups ? category.groups[0] : "" }} -->
+          </div>
         </div>
-      </div>
-    </fieldset>
-    <fieldset v-for="(customCss, index) of state.customCss" :key="index">
-      <legend>
-        <!-- <label>
+      </fieldset>
+      <fieldset v-for="(customCss, index) of state.customCss" :key="index">
+        <legend>
+          <!-- <label>
           <input type="checkbox" v-model="customCss.enabled" /> -->
-        {{ customCss.name }}
-        <!-- </label> -->
-      </legend>
-      <!-- <label :for="customCss.id"> -->
-      <input
-        style="width: 100%"
-        :list="customCss.id"
-        v-model="customCss.value"
-        type="range"
-        :min="customCss.min"
-        :max="customCss.max"
-        step="1"
-      />
-      <datalist :id="customCss.id">
-        <option>50</option>
-        <option label="1X">100</option>
-        <option>150</option>
-        <option label="2X">200</option>
-      </datalist>
-      <!-- {{ customCss.value }}</label> -->
-    </fieldset>
-    <fieldset v-if="state.audienceSettings">
-      <legend>Mottagare</legend>
-      <label class="checkbox-label">
+          {{ customCss.name }}
+          <!-- </label> -->
+        </legend>
+        <!-- <label :for="customCss.id"> -->
         <input
-          type="checkbox"
-          v-model="state.audienceSettings.replaceAudienceIconsWithText"
+          style="width: 100%"
+          :list="customCss.id"
+          v-model="customCss.value"
+          type="range"
+          :min="customCss.min"
+          :max="customCss.max"
+          step="1"
         />
-        Visa mottagare med text istället för ikon
-      </label>
-      <label class="checkbox-label">
-        <input
-          type="checkbox"
-          v-model="state.audienceSettings.highlightAudienceWhenPosting"
-        />
-        Belys mottagare när man skapar ny post
-      </label>
-    </fieldset>
+        <datalist :id="customCss.id">
+          <option>50</option>
+          <option label="1X">100</option>
+          <option>150</option>
+          <option label="2X">200</option>
+        </datalist>
+        <!-- {{ customCss.value }}</label> -->
+      </fieldset>
+      <fieldset v-if="state.audienceSettings">
+        <legend>Mottagare</legend>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            v-model="state.audienceSettings.replaceAudienceIconsWithText"
+          />
+          Visa mottagare med text istället för ikon
+        </label>
+        <label class="checkbox-label">
+          <input
+            type="checkbox"
+            v-model="state.audienceSettings.highlightAudienceWhenPosting"
+          />
+          Belys mottagare när man skapar ny post
+        </label>
+      </fieldset>
+    </div>
   </div>
 </template>
 
@@ -82,14 +98,19 @@ import Collapsible from "./Collapsible.vue";
 export default {
   data() {
     return {
-      state: []
+      state: {},
+      initState: {}
     };
   },
   watch: {
     state: {
       deep: true,
       handler: function(newState, oldState) {
-        this.sendStateUpdate();
+        if (!newState.globalToggle) {
+          this.sendStateUpdate(this.initState);
+        } else {
+          this.sendStateUpdate(this.state);
+        }
         this.storeState();
       }
     }
@@ -100,25 +121,44 @@ export default {
     if (state) {
       // TODO: error check the parsing
       this.state = JSON.parse(state);
+
+      window.addEventListener("keydown", evt => {
+        console.log("keydown: ", evt.key);
+        if (evt.key == "b") {
+          this.state.simpleMode = !this.state.simpleMode;
+          this.state.globalToggle = true;
+        }
+      });
     }
+
+    this.sendMessageToBackground("initStateRequest", null).then(
+      response => (this.initState = response)
+    );
   },
   methods: {
-    onChange() {
-      this.sendStateUpdate();
-      this.storeState();
+    // onChange() {
+    //   this.sendStateUpdate();
+    //   this.storeState();
+    // },
+    sendStateUpdate(sendState) {
+      this.sendMessageToPage("stateUpdate", sendState);
     },
-    sendStateUpdate() {
-      console.log("skickar!!!");
+    storeState() {
+      console.log("storing state in localstorage");
+      window.localStorage.setItem("state", JSON.stringify(this.state));
+    },
+    sendMessageToPage(type, payload) {
+      console.log("Sending to page: ", type, payload);
       browser.tabs
         .query({ currentWindow: true, active: true })
         .then(tabs => {
-          console.log(tabs);
+          // console.log(tabs);
           browser.tabs
             .sendMessage(tabs[0].id, {
-              type: "stateUpdate",
-              payload: this.state
+              type: type,
+              payload: payload
             })
-            .then(answer => console.log(answer))
+            .then(answer => console.log("answer from page: ", answer))
             .catch(err => {
               console.error("sendStateUpdate threw error:");
               console.error(err);
@@ -128,9 +168,26 @@ export default {
           console.error(err);
         });
     },
-    storeState() {
-      console.log("storing state in localstorage");
-      window.localStorage.setItem("state", JSON.stringify(this.state));
+    async sendMessageToBackground(type, payload) {
+      console.log("sending to background: ", type, payload);
+      return browser.runtime.sendMessage({
+        type: type,
+        payload: payload
+      });
+      // try {
+      //   let response = await browser.runtime.sendMessage({
+      //     type: type,
+      //     payload: payload
+      //   });
+      // } catch (err) {
+      //   console.error(err);
+      //   return Promis.reject("fuuuck you!!!");
+      // }
+      // if (response) {
+      //   console.log("msg to background response: ", response);
+      //   return response;
+      // }
+      // return Promis.reject("fuuuck you!!!");
     }
   },
   components: {

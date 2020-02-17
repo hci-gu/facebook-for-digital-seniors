@@ -1,6 +1,6 @@
 import Parse from "parse";
 import Fingerprint2 from "fingerprintjs2";
-import initialState from "./stateSchema.js";
+import stateSchema from "./stateSchema.js";
 import { isPromiseResolved } from "promise-status-async";
 
 Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
@@ -9,6 +9,7 @@ Parse.initialize(
   process.env.PARSE_JAVASCRIPT_KEY // This is your Javascript key
 );
 let loggedInToParse = false;
+let initState = {};
 
 const generateCredentials = hash => {
   return { username: Fingerprint2.x64hash128(hash), password: hash };
@@ -158,6 +159,8 @@ browser.runtime.onMessage.addListener(async message => {
         console.error("couldn't retrieve a state from localStorage!");
         return Promise.reject("couldn't retrieve a state from localStorage!");
       }
+    case "initStateRequest":
+      return initState;
     case "contentscriptReady":
       console.log("got contentscriptReady msg!");
       resolveContentscriptReady();
@@ -205,8 +208,9 @@ const retrieveFacebookCssSelectors = async () => {
 };
 
 const initializeState = async facebookCssSelectors => {
-  console.log("initialState is: ", initialState);
-  initialState.facebookCssSelectors = facebookCssSelectors;
+  console.log("stateSchema is: ", stateSchema);
+  stateSchema.facebookCssSelectors = facebookCssSelectors;
+  initState = Object.assign({}, stateSchema);
 
   let receivedState = JSON.parse(localStorage.getItem("state"));
   if (receivedState) {
@@ -224,22 +228,22 @@ const initializeState = async facebookCssSelectors => {
       receivedState["facebookCssSelectors"] = facebookCssSelectors;
     }
     if (
-      !hasSameProperties(receivedState, initialState) ||
-      !hasSameProperties(initialState, receivedState) ||
-      stateChangeCounterUpdated(receivedState, initialState)
+      !hasSameProperties(receivedState, stateSchema) ||
+      !hasSameProperties(stateSchema, receivedState) ||
+      stateChangeCounterUpdated(receivedState, stateSchema)
     ) {
       console.log(
         "discrepency found in state from local storage. Fallback to using initial state from source code"
       );
-      return initialState;
+      return stateSchema;
     }
     return receivedState;
   } else {
     console.log(
       "nothing in localStorage. using initial state from source code",
-      initialState
+      stateSchema
     );
-    return initialState;
+    return stateSchema;
   }
 };
 
