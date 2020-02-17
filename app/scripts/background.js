@@ -23,7 +23,7 @@ const signupToParse = async browserHash => {
   ).catch(err => console.error("parse signup failed", err));
 
   if (user) {
-    console.log("registered parse user: ", user);
+    console.log("registered new parse user: ", user);
     loggedInToParse = true;
     return user;
   }
@@ -32,11 +32,12 @@ const signupToParse = async browserHash => {
 };
 
 const loginToParse = async browserHash => {
-  let user = Parse.User.current();
-  if (user) {
-    loggedInToParse = true;
-    return user;
-  }
+  let user;
+  // user = Parse.User.current();
+  // if (user) {
+  //   loggedInToParse = true;
+  //   return user;
+  // }
   console.log("no current user. Trying to login");
   let credentials = generateCredentials(browserHash);
   user = await Parse.User.logIn(credentials.username, credentials.password);
@@ -49,9 +50,9 @@ const loginToParse = async browserHash => {
   return Promise.reject("failed to login. NOW CRYYY!");
 };
 
-browser.runtime.onInstalled.addListener(details => {
-  console.log("previousVersion", details.previousVersion);
-});
+// browser.runtime.onInstalled.addListener(details => {
+//   console.log("previousVersion", details.previousVersion);
+// });
 
 // browser.browserAction.setBadgeText({
 //   text: `BFB`
@@ -69,9 +70,10 @@ let contentscriptReady = new Promise((resolve, reject) => {
 //Perhaps a bit bloaty... Could just call sendMessageToPage directly...
 const getFingerprintFromContentScript = async () => {
   let response = await sendMessageToPage("getFingerPrint", null).catch(err => {
-    console.error("no fingerprint was recevied: ", err);
+    console.error("no browserPrint was recevied: ", err);
     return Promise.reject(err);
   });
+  console.log("got browserPrint from page: ", response);
   return response;
 };
 
@@ -95,13 +97,23 @@ const setup = async () => {
   localStorage.setItem("state", JSON.stringify(startState));
 
   if (!Parse.User.current()) {
+    console.log("no logged in parse user found. Gonna try to login/signup");
     await contentscriptReady;
+    console.log("contentscriptReady resolved");
     let browserPrint = localStorage.getItem("browserFingerPrint");
     if (!browserPrint) {
+      console.log(
+        "no browserprint saved in storage. Gonna ask the page for one"
+      );
       browserPrint = await getFingerprintFromContentScript();
       if (browserPrint) {
         localStorage.setItem("browserFingerPrint", browserPrint);
-        signupToParse(browserPrint);
+        try {
+          await loginToParse(browserPrint);
+        } catch (err) {
+          let signUpResult = await signupToParse(browserPrint);
+          console.log(signUpResult);
+        }
       }
     } else {
       try {
@@ -116,6 +128,7 @@ const setup = async () => {
     // Because the current() function just checks if there is a user in localstorage and fetches it.
     // It thus relies on the parse server still having the session token saved.
     // But for now. Let's just assume all is good :-D
+    console.log("Was already logged in to Parse (with sessiontoken)");
     loggedInToParse = true;
   }
 };
@@ -185,6 +198,13 @@ const recordUserInteraction = async payload => {
   interaction.set("when", new Date());
   interaction.set("eventType", payload.eventType);
   interaction.set("eventData", payload.eventData);
+
+  //Gotta get extension state during this interaction
+  let state = JSON.parse(localStorage.getItem("state"));
+  if (state.globalToggle != undefined) {
+    interaction.set("extensionActive", state.globalToggle);
+  }
+
   console.log("userInteraction!!!!", interaction);
   return interaction.save();
 };
@@ -262,7 +282,7 @@ function stateChangeCounterUpdated(firstState, secondState) {
 
 function hasSameProperties(obj1, obj2) {
   try {
-    console.log("comparison called on: ", obj1, obj2);
+    // console.log("comparison called on: ", obj1, obj2);
     return Object.keys(obj1).every(function(property) {
       // if (property == "facebookCssSelectors") {
       //   console.log(
