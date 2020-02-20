@@ -38,7 +38,7 @@ const getFingerprint = () => {
   });
 };
 
-browser.runtime.onMessage.addListener(message => {
+browser.runtime.onMessage.addListener(async message => {
   console.log("msg received:", message);
   switch (message.type) {
     case "getFingerPrint":
@@ -58,10 +58,13 @@ browser.runtime.onMessage.addListener(message => {
         return "stateUpdate failed somewhere in contentscript";
       }
       return "performed your stateUpdate. Thaaaanx!!!";
+    case "fetchLabelsRequest":
+      console.log("fetchLabelsRequest received");
+      fetchLabelsAndAddToState();
+      return state;
     default:
       console.log("unknown message type", message.type);
       return Promise.resolve("unknown message type");
-      break;
   }
 });
 
@@ -81,6 +84,14 @@ const sendUserInteraction = payload => {
     .sendMessage({ type: "userInteraction", payload: payload })
     .then(response => {
       console.log("sendUserInteraction response: ", response);
+    });
+};
+
+const sendStateUpdate = state => {
+  browser.runtime
+    .sendMessage({ type: "stateUpdate", payload: state })
+    .then(response => {
+      console.log("sendStateUpdate response: ", response);
     });
 };
 
@@ -117,16 +128,17 @@ browser.runtime
 
     // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
     // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
-    let hideSelectorListString = state.thingsToHide.reduce(
-      (accuString, currentSelector, idx) => {
-        // console.log(accuString);
-        return idx == 0
-          ? currentSelector.cssSelector
-          : accuString + ", " + currentSelector.cssSelector;
-      },
-      ""
-    );
-    watchedNodesQuery.push({ element: hideSelectorListString });
+    // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
+    // let hideSelectorListString = state.thingsToHide.reduce(
+    //   (accuString, currentSelector, idx) => {
+    //     // console.log(accuString);
+    //     return idx == 0
+    //       ? currentSelector.cssSelector
+    //       : accuString + ", " + currentSelector.cssSelector;
+    //   },
+    //   ""
+    // );
+    // watchedNodesQuery.push({ element: hideSelectorListString });
 
     watchedNodesQuery.push({
       element: selectors.postContainerClass
@@ -153,7 +165,7 @@ browser.runtime
   });
 
 const nodeChangeHandler = summaries => {
-  // console.log("node summary was triggered");
+  console.log("node summary was triggered");
   // console.log(summaries);
 
   let selectors = state.facebookCssSelectors;
@@ -191,12 +203,28 @@ const nodeChangeHandler = summaries => {
   }
 };
 
-const getNodeFromCssObject = cssSelectorObject => {
+const getNodeFromCssObject = (
+  startNode,
+  cssSelectorObject,
+  selectorParameter
+) => {
+  console.log(
+    "getNodeFromCssObject:",
+    startNode,
+    cssSelectorObject,
+    selectorParameter
+  );
   let node = null;
   if (typeof cssSelectorObject === "object" && cssSelectorObject !== null) {
     console.log("retrieving node from traversal string", cssSelectorObject);
-    let startNode = document.querySelector(cssSelectorObject.selector);
-    node = findRelativeNode(startNode, cssSelectorObject.DOMSearch);
+    if (cssSelectorObject.selector) {
+      startNode = startNode.querySelector(cssSelectorObject.selector);
+    }
+    node = findRelativeNode(
+      startNode,
+      cssSelectorObject.DOMSearch,
+      selectorParameter
+    );
   } else {
     node = document.querySelector(cssSelectorObject);
   }
@@ -204,29 +232,38 @@ const getNodeFromCssObject = cssSelectorObject => {
     console.error("didn't find the node", cssSelectorObject);
     return;
   }
-  // console.log("found a node:", node);
+  console.log("found a node:", node);
   return node;
 };
 
-const findRelativeNode = (startNode, DOMSearch) => {
+const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
   console.log("searching relative string");
   let currentNode = startNode;
-  let traversalSequence = DOMSearch.split(",");
+  let traversalSequence = DOMSearch.split(",").map(str => str.trim());
   console.log("searching for node traversal sequence is: ", traversalSequence);
   for (let i = 0; i < traversalSequence.length; i++) {
     if (!currentNode) {
       console.error("error when searching for relative node!!!");
       return;
     }
-    let currentDOMJump = traversalSequence[i].split(":");
+    let currentDOMJump = traversalSequence[i].split(":").map(str => str.trim());
     console.log("currentDOMJump: ", currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
+      console.log("domjump is alone: ", currentDOMJump[0]);
       currentNode = currentNode[currentDOMJump[0]];
     } else if (currentDOMJump.length > 1) {
+      console.log("domjump is array", currentDOMJump[0]);
       let command = currentDOMJump[0];
       let index = currentDOMJump[1];
+      if (index == "i") {
+        index = parseInt(selectorParameter);
+      }
+
       currentNode = currentNode[command][index];
+    } else {
+      console.error("fucked up!: ", currentDOMJump);
     }
+    console.log("currentNode in looped search: ", currentNode);
   }
   return currentNode;
 };
@@ -249,11 +286,33 @@ const showElement = node => {
 };
 
 const updateVisibilityFromShowHideObject = item => {
-  console.log("updateVisibilityFromShowHideObject called with: ", item);
-  let cssSelectorObject = state.facebookCssSelectors[item.cssSelectorName];
-  console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+  // console.log("updateVisibilityFromShowHideObject called with: ", item);
+  let selectorNameArray = item.cssSelectorName.split(":");
+  let selectorName = selectorNameArray[0];
+  let selectorParameter = null;
+  if (selectorNameArray[1]) {
+    selectorParameter = selectorNameArray[1];
+  }
+  let cssSelectorObject = state.facebookCssSelectors[selectorName];
+  // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
-  let node = getNodeFromCssObject(cssSelectorObject);
+  let node = getNodeFromCssObject(
+    document,
+    cssSelectorObject,
+    selectorParameter
+  );
+
+  // if (item.labelCssSelectorName) {
+  //   console.log(
+  //     "Also extracting option label from DOM using",
+  //     item.labelCssSelectorName
+  //   );
+  //   let labelCssSelectorObject =
+  //     state.facebookCssSelectors[item.labelCssSelectorName];
+  //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+  //   item.name = label;
+  //   // sendStateUpdate(state);
+  // }
   // console.log("changing element: ", item.cssSelector, " to ", item.hide);
   if (item.hide) {
     hideElement(node);
@@ -291,6 +350,81 @@ const updateVisibilityAll = () => {
   } catch (err) {
     console.error(err);
   }
+};
+
+const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
+  const recursion = (aFunction, subStateObject) => {
+    // console.log("entering recursion with (sub)state: ", subStateObject);
+    for (let [key, value] of Object.entries(subStateObject)) {
+      if (key == "option") {
+        // console.log("one option found:", value);
+        aFunction(value);
+        continue;
+      }
+      if (key == "options") {
+        // console.log("option array found:", value);
+        for (let el of value) {
+          aFunction(el);
+        }
+        continue;
+      }
+      if (Array.isArray(value)) {
+        // console.log("subArray found:", value);
+        for (let el of value) {
+          if (typeof el === "object" && el !== null) {
+            recursion(aFunction, el);
+          }
+        }
+        continue;
+      }
+      if (typeof value === "object" && value !== null) {
+        recursion(aFunction, value);
+        // console.log("subObject found: ", value);
+        // for (let [key, subValue] of Object.entries(value)) {
+
+        // }
+        continue;
+      }
+    }
+  };
+
+  recursion(aFunction, stateObject);
+};
+
+const fetchLabelsAndAddToState = () => {
+  console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
+  function addLabel(optionObj) {
+    if (optionObj.labelCssSelectorName) {
+      let selectorNameArray = optionObj.cssSelectorName.split(":");
+      let selectorName = selectorNameArray[0];
+      let selectorParameter = null;
+      if (selectorNameArray[1]) {
+        selectorParameter = selectorNameArray[1];
+      }
+      let cssSelectorObject = state.facebookCssSelectors[selectorName];
+      console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+
+      let node = getNodeFromCssObject(
+        document,
+        cssSelectorObject,
+        selectorParameter
+      );
+      if (!node) return;
+
+      console.log(
+        "Extracting option label from DOM using",
+        optionObj.labelCssSelectorName
+      );
+      let labelCssSelectorObject =
+        state.facebookCssSelectors[optionObj.labelCssSelectorName];
+      let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+      optionObj.name = label;
+      console.log(label);
+    }
+  }
+  console.log("state before label fetch: ", String(state));
+  applyToAllOptionObjectsInState(addLabel, state);
+  console.log("state after label fetch: ", String(state));
 };
 
 const updateStyles = () => {
@@ -464,6 +598,7 @@ const onBodyTagLoaded = async () => {
   document.head.appendChild(style);
   console.log("added custom style tag to head tag");
   await stateLoadedPromise;
+  // fetchLabelsAndAddToState();
   updateStyles();
 };
 

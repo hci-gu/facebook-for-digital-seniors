@@ -22,13 +22,14 @@
             <p>{{ category.categoryName }}</p>
             <template v-for="(group, index) of category.groups">
               <collapsible
+                class="margin-bottom"
                 v-if="group.options"
                 :group.sync="group"
                 :key="index"
               >
               </collapsible>
               <div v-else :key="index">
-                <label :for="group.option.id" class="collapsible-label">
+                <label :for="group.option.id" class="single-checkbox-label">
                   <input
                     :id="group.option.id"
                     type="checkbox"
@@ -141,19 +142,36 @@ export default {
         if (evt.key == "b") {
           this.state.simpleMode = !this.state.simpleMode;
           this.state.globalToggle = true;
+        } else if (evt.key == "l") {
+          this.sendMessageToPage("fetchLabelsRequest", null);
         }
       });
     }
+
+    browser.runtime.onMessage.addListener(message => {
+      console.log("msg received from background:", message);
+      switch (message.type) {
+        case "stateUpdate":
+          try {
+            console.log("state update received");
+            this.state = message.payload;
+          } catch (err) {
+            console.error(err);
+            return "stateUpdate failed somewhere in popup";
+          }
+          return "performed your stateUpdate. Thaaaanx!!!";
+        default:
+          console.log("unknown message type", message.type);
+          return Promise.resolve("unknown message type");
+          break;
+      }
+    });
 
     this.sendMessageToBackground("initStateRequest", null).then(
       response => (this.initState = response)
     );
   },
   methods: {
-    // onChange() {
-    //   this.sendStateUpdate();
-    //   this.storeState();
-    // },
     sendStateUpdate(sendState) {
       this.sendMessageToPage("stateUpdate", sendState);
     },
@@ -251,6 +269,20 @@ legend {
   font-size: 0.9rem;
 }
 
+.margin-bottom {
+  margin-bottom: 0.5rem;
+}
+
+.single-checkbox-label {
+  margin: 10px;
+  display: block;
+}
+
+/* .single-checkbox-label:hover {
+  background: #eee;
+  cursor: pointer;
+} */
+
 .checkbox-label {
   border: var(--inner-border-property);
   border-width: 0 0 1px;
@@ -269,7 +301,8 @@ legend {
   border-bottom: none;
 }
 
-.checkbox-label:hover {
+.checkbox-label:hover,
+.single-checkbox-label:hover {
   background: #eee;
   cursor: pointer;
 }

@@ -110,16 +110,17 @@ export default {
 
 .collapsible-checkbox:not(:checked) + .collapsible-label + .collapsible {
   max-height: 0;
-
   border-color: white;
 }
 
 .collapsible {
-  margin-bottom: 0.5rem;
   max-height: 20rem;
   overflow: hidden;
   border: var(--inner-border-property);
   border-width: 0 1px 1px;
+
+  border-bottom-right-radius: 0.5rem;
+  border-bottom-left-radius: 0.5rem;
 
   transition: max-height 0.7s ease-in-out, border-color 0.5s ease-in-out;
 }

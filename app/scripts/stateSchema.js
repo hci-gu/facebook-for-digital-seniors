@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 12,
+  stateBreakingChangeCounter: 19,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -59,9 +59,10 @@ export default {
           },
           options: [
             {
-              id: "groups",
-              name: "Grupper",
-              cssSelectorName: "navItemGroups",
+              id: "apps-nav-item-0",
+              name: "x",
+              cssSelectorName: "appsNavItemAtIndex:0",
+              labelCssSelectorName: "appsNavItemName",
               hide: false
             },
             {

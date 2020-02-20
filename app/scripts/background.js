@@ -133,6 +133,13 @@ const setup = async () => {
   }
 };
 
+const sendMessageToPopup = async (type, msg) => {
+  return browser.runtime.sendMessage({ type: type, payload: msg });
+  // .then(response => {
+  //   console.log("sendStateUpdate response: ", response);
+  // });
+};
+
 const sendMessageToPage = async (type, msg) => {
   console.log("skickar till page:", type, msg);
   return browser.tabs
@@ -172,12 +179,26 @@ browser.runtime.onMessage.addListener(async message => {
         console.error("couldn't retrieve a state from localStorage!");
         return Promise.reject("couldn't retrieve a state from localStorage!");
       }
+    case "stateUpdate":
+      // let parsedStateObject = JSON.parse(message.payload);
+      console.log("received state update from page", message.payload);
+      localStorage.setItem("state", message.payload);
+      // sendMessageToPopup("stateUpdate", message)
+      //   .then(response => {
+      //     console.log("response from sending state to popup: ", response);
+      //   })
+      //   .catch(err => {
+      //     console.error(err);
+      //     console.error("the popup is probably not open");
+      //   });
+      return "Aiight! Got your state!";
     case "initStateRequest":
+      console.log("got initStateRequest from popup");
       return initState;
     case "contentscriptReady":
       console.log("got contentscriptReady msg!");
       resolveContentscriptReady();
-      return "ack for content script ready";
+      return "ack for contentscriptReady";
     case "userInteraction":
       return recordUserInteraction(message.payload);
     default:
@@ -232,7 +253,13 @@ const initializeState = async facebookCssSelectors => {
   stateSchema.facebookCssSelectors = facebookCssSelectors;
   initState = Object.assign({}, stateSchema);
 
-  let receivedState = JSON.parse(localStorage.getItem("state"));
+  let receivedState = null;
+  try {
+    receivedState = JSON.parse(localStorage.getItem("state"));
+  } catch (err) {
+    console.error(err);
+    console.error("error when trying to fetch state from storage");
+  }
   if (receivedState) {
     console.log(
       "previously saved state received from localStorage",

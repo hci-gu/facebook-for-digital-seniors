@@ -25,6 +25,17 @@
   },
   "pinnedNav": "#pinnedNav",
   "appsNav": "#appsNav",
+  "appsNavAllItems": {
+    "selector": "#appsNav ul",
+    "DOMSearch": "children"
+  },
+  "appsNavItemAtIndex": {
+    "selector": "#appsNav ul",
+    "DOMSearch": "children:i"
+  },
+  "appsNavItemName": {
+    "DOMSearch": "firstElementChild, lastElementChild,textContent"
+  },
   "navItemGroups": {
     "selector": "#appsNav ul",
     "DOMSearch": "children:0"
