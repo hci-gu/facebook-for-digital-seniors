@@ -198,7 +198,7 @@ browser.runtime.onMessage.addListener(async message => {
     case "contentscriptReady":
       console.log("got contentscriptReady msg!");
       resolveContentscriptReady();
-      return "ack for contentscriptReady";
+      return "You're ready. I, the bgscript, hereby acknowledge that!!";
     case "userInteraction":
       return recordUserInteraction(message.payload);
     default:

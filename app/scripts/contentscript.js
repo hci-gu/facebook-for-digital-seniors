@@ -95,10 +95,11 @@ const sendStateUpdate = state => {
     });
 };
 
+console.log("Sending contentScriptReady to bgscript");
 browser.runtime
   .sendMessage({ type: "contentscriptReady", payload: null })
   .then(response => {
-    console.log(response);
+    console.log("contentScriptReady response from bgscript: ", response);
     backgroundscriptReady = true;
     sendUserInteraction({ eventType: "refresh" });
   });
@@ -165,7 +166,7 @@ browser.runtime
   });
 
 const nodeChangeHandler = summaries => {
-  console.log("node summary was triggered");
+  // console.log("node summary was triggered");
   // console.log(summaries);
 
   let selectors = state.facebookCssSelectors;
@@ -208,15 +209,15 @@ const getNodeFromCssObject = (
   cssSelectorObject,
   selectorParameter
 ) => {
-  console.log(
-    "getNodeFromCssObject:",
-    startNode,
-    cssSelectorObject,
-    selectorParameter
-  );
+  // console.log(
+  //   "getNodeFromCssObject:",
+  //   startNode,
+  //   cssSelectorObject,
+  //   selectorParameter
+  // );
   let node = null;
   if (typeof cssSelectorObject === "object" && cssSelectorObject !== null) {
-    console.log("retrieving node from traversal string", cssSelectorObject);
+    // console.log("retrieving node from traversal string", cssSelectorObject);
     if (cssSelectorObject.selector) {
       startNode = startNode.querySelector(cssSelectorObject.selector);
     }
@@ -232,27 +233,26 @@ const getNodeFromCssObject = (
     console.error("didn't find the node", cssSelectorObject);
     return;
   }
-  console.log("found a node:", node);
+  // console.log("found a node:", node);
   return node;
 };
 
 const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
-  console.log("searching relative string");
   let currentNode = startNode;
   let traversalSequence = DOMSearch.split(",").map(str => str.trim());
-  console.log("searching for node traversal sequence is: ", traversalSequence);
+  // console.log("searching for node traversal sequence is: ", traversalSequence);
   for (let i = 0; i < traversalSequence.length; i++) {
     if (!currentNode) {
       console.error("error when searching for relative node!!!");
       return;
     }
     let currentDOMJump = traversalSequence[i].split(":").map(str => str.trim());
-    console.log("currentDOMJump: ", currentDOMJump);
+    // console.log("currentDOMJump: ", currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
-      console.log("domjump is alone: ", currentDOMJump[0]);
+      // console.log("domjump is alone: ", currentDOMJump[0]);
       currentNode = currentNode[currentDOMJump[0]];
     } else if (currentDOMJump.length > 1) {
-      console.log("domjump is array", currentDOMJump[0]);
+      // console.log("domjump is array", currentDOMJump[0]);
       let command = currentDOMJump[0];
       let index = currentDOMJump[1];
       if (index == "i") {
@@ -263,7 +263,7 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
     } else {
       console.error("fucked up!: ", currentDOMJump);
     }
-    console.log("currentNode in looped search: ", currentNode);
+    // console.log("currentNode in looped search: ", currentNode);
   }
   return currentNode;
 };
@@ -301,6 +301,11 @@ const updateVisibilityFromShowHideObject = item => {
     cssSelectorObject,
     selectorParameter
   );
+
+  if (item.customStylesWhenHidden) {
+    item.customStylesWhenHidden.enabled = item.hide;
+    applyCustomCssObject(item.customStylesWhenHidden);
+  }
 
   // if (item.labelCssSelectorName) {
   //   console.log(
@@ -392,7 +397,7 @@ const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
 };
 
 const fetchLabelsAndAddToState = () => {
-  console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
+  // console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
   function addLabel(optionObj) {
     if (optionObj.labelCssSelectorName) {
       let selectorNameArray = optionObj.cssSelectorName.split(":");
@@ -402,7 +407,7 @@ const fetchLabelsAndAddToState = () => {
         selectorParameter = selectorNameArray[1];
       }
       let cssSelectorObject = state.facebookCssSelectors[selectorName];
-      console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+      // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
       let node = getNodeFromCssObject(
         document,
@@ -422,48 +427,64 @@ const fetchLabelsAndAddToState = () => {
       console.log(label);
     }
   }
-  console.log("state before label fetch: ", String(state));
+  // console.log("state before label fetch: ", state);
   applyToAllOptionObjectsInState(addLabel, state);
-  console.log("state after label fetch: ", String(state));
+  // console.log("state after label fetch: ", state);
 };
 
 const updateStyles = () => {
+  for (let customCssItem of state.customCss) {
+    applyCustomCssObject(customCssItem);
+  }
+};
+
+const applyCustomCssObject = customCssObj => {
   if (!style) {
     return;
   }
-  for (let customCssItem of state.customCss) {
-    //Check if rule is already present
-    let ruleList = style.sheet.cssRules;
-    let foundCssRule = undefined;
-    for (let candidateCssRule of ruleList) {
-      if (
-        candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
-        candidateCssRule.selectorText == customCssItem.selector
-      ) {
-        foundCssRule = candidateCssRule;
-        break;
-      }
+  let selector;
+  if (customCssObj.selector) {
+    selector = customCssObj.selector;
+  } else if (customCssObj.cssSelectorName) {
+    selector = state.facebookCssSelectors[customCssObj.cssSelectorName];
+  } else {
+    console.error("OOMG!!! CRASH OF DOOOM!!! CRYYY");
+    return;
+  }
+
+  //Check if rule is already present
+  let ruleList = style.sheet.cssRules;
+  let foundCssRule = undefined;
+  for (let candidateCssRule of ruleList) {
+    if (
+      candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
+      candidateCssRule.selectorText == selector
+    ) {
+      foundCssRule = candidateCssRule;
+      break;
     }
-    if (foundCssRule) {
-      console.log("style already present!");
-      if (customCssItem.enabled) {
-        // console.log("setting css property: ", customCssItem);
-        foundCssRule.style.setProperty(
-          customCssItem.property,
-          customCssItem.value + customCssItem.unit
-        );
-      } else {
-        // console.log("removing css property: ", customCssItem);
-        foundCssRule.style.removeProperty(customCssItem.property);
-      }
+  }
+  if (foundCssRule) {
+    console.log("style selector already present!");
+    if (customCssObj.enabled) {
+      console.log("setting css property: ", customCssObj);
+      foundCssRule.style.setProperty(
+        customCssObj.property,
+        customCssObj.value + (customCssObj.unit ? customCssObj.unit : "")
+      );
     } else {
-      console.log("inserting new css rule: ", customCssItem);
-      let cssString = customCssItem.enabled
-        ? `${customCssItem.selector} {${customCssItem.property}: ${customCssItem.value}${customCssItem.unit};}`
-        : `${customCssItem.selector} {}`;
-      console.log("composed cssString from js object:", cssString);
-      style.sheet.insertRule(cssString);
+      // console.log("removing css property: ", customCssItem);
+      foundCssRule.style.removeProperty(customCssObj.property);
     }
+  } else {
+    console.log("inserting new css rule: ", customCssObj);
+    let cssString = customCssObj.enabled
+      ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
+          customCssObj.unit ? customCssObj.unit : ""
+        };}`
+      : `${selector} {}`;
+    console.log("composed cssString from js object:", cssString);
+    style.sheet.insertRule(cssString);
   }
 };
 
@@ -555,7 +576,7 @@ const setDisplayForShareIconAndShareText = (
   }
   let dot = iconNode.previousElementSibling;
   if (!dot) {
-    console.log(
+    console.error(
       "no dot element found. Have facebook changed the css selectors?"
     );
     return;

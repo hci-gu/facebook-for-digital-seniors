@@ -1,4 +1,5 @@
 {
+  "body": "body",
   "postContainerClass": ".userContentWrapper",
   "composer": "#pagelet_composer",
   "composerCloseButton": "[data-testid=react-composer-close-button]",
@@ -7,6 +8,13 @@
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
   "navigationPanel": "#left_nav_section_nodes",
   "universalNav": "#universalNav",
+  "universalNavItemAtIndex": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:i"
+  },
+  "universalNavItemLabel": {
+    "DOMSearch": "lastElementChild, lastElementChild, textContent"
+  },
   "navItemNewsFeed": {
     "selector": "#universalNav ul",
     "DOMSearch": "children:0"
@@ -24,35 +32,21 @@
     "DOMSearch": "children:3"
   },
   "pinnedNav": "#pinnedNav",
+  "pinnedNavLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, textContent"
+  },
   "appsNav": "#appsNav",
-  "appsNavAllItems": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children"
+  "appsNavLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, textContent"
   },
   "appsNavItemAtIndex": {
     "selector": "#appsNav ul",
     "DOMSearch": "children:i"
   },
-  "appsNavItemName": {
+  "appsNavItemLabel": {
     "DOMSearch": "firstElementChild, lastElementChild,textContent"
-  },
-  "navItemGroups": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children:0"
-  },
-  "navItemPages": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children:1"
-  },
-  "navItemEvents": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children:2"
-  },
-  "navItemFundraisers": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children:3"
   },
   "stories": "#stories_pagelet_below_composer",
   "rightPanel": ".home_right_column",
-  "languagePanel": "#pagelet_rhc_footer"
+  "languagePanel": "#pagelet_rhc_footer > :first-child"
 }

@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 19,
+  stateBreakingChangeCounter: 20,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -15,29 +15,31 @@ export default {
           },
           options: [
             {
-              id: "feed",
-              name: "Flöde",
-              cssSelectorName: "navItemNewsFeed",
+              id: "universal-nav-item-0",
+              name: "x",
+              cssSelectorName: "universalNavItemAtIndex:0",
+              labelCssSelectorName: "universalNavItemLabel",
               hide: false
             },
             {
-              id: "messages",
-              name: "Meddelanden",
-              cssSelectorName: "navItemMessenger",
+              id: "universal-nav-item-1",
+              name: "x",
+              cssSelectorName: "universalNavItemAtIndex:1",
+              labelCssSelectorName: "universalNavItemLabel",
               hide: false
             },
-
             {
-              id: "watch",
-              name: "Titta",
-              cssSelectorName: "navItemWatch",
+              id: "universal-nav-item-2",
+              name: "x",
+              cssSelectorName: "universalNavItemAtIndex:2",
+              labelCssSelectorName: "universalNavItemLabel",
               hide: false
             },
-
             {
-              id: "marketplace",
-              name: "Köp/Sälj",
-              cssSelectorName: "navItemMarketplace",
+              id: "universal-nav-item-3",
+              name: "x",
+              cssSelectorName: "universalNavItemAtIndex:3",
+              labelCssSelectorName: "universalNavItemLabel",
               hide: false
             }
           ]
@@ -47,6 +49,7 @@ export default {
             id: "pinnedNav",
             name: "Genvägar",
             cssSelectorName: "pinnedNav",
+            labelCssSelectorName: "pinnedNavLabel",
             hide: false
           }
         },
@@ -55,6 +58,7 @@ export default {
             id: "appsNav",
             name: "Utforska",
             cssSelectorName: "appsNav",
+            labelCssSelectorName: "appsNavLabel",
             hide: false
           },
           options: [
@@ -62,25 +66,28 @@ export default {
               id: "apps-nav-item-0",
               name: "x",
               cssSelectorName: "appsNavItemAtIndex:0",
-              labelCssSelectorName: "appsNavItemName",
+              labelCssSelectorName: "appsNavItemLabel",
               hide: false
             },
             {
-              id: "pages",
-              name: "Sidor",
-              cssSelectorName: "navItemPages",
+              id: "apps-nav-item-1",
+              name: "y",
+              cssSelectorName: "appsNavItemAtIndex:1",
+              labelCssSelectorName: "appsNavItemLabel",
               hide: false
             },
             {
-              id: "events",
-              name: "Evenemang",
-              cssSelectorName: "navItemEvents",
+              id: "apps-nav-item-2",
+              name: "z",
+              cssSelectorName: "appsNavItemAtIndex:2",
+              labelCssSelectorName: "appsNavItemLabel",
               hide: false
             },
             {
-              id: "fundraisers",
-              name: "Insamlingar",
-              cssSelectorName: "navItemFundraisers",
+              id: "apps-nav-item-3",
+              name: "w",
+              cssSelectorName: "appsNavItemAtIndex:3",
+              labelCssSelectorName: "appsNavItemLabel",
               hide: false
             }
           ]
@@ -100,6 +107,12 @@ export default {
           id: "rpane",
           name: "Högerpanel",
           cssSelectorName: "rightPanel",
+          customStylesWhenHidden: {
+            cssSelectorName: "languagePanel",
+            enabled: false,
+            property: "margin-top",
+            value: 0
+          },
           hide: false
         }
         // {
@@ -116,7 +129,7 @@ export default {
       enabled: true,
       id: "zoom",
       name: "Zoom",
-      selector: "body",
+      cssSelectorName: "body",
       property: "zoom",
       unit: "%",
       value: 100,

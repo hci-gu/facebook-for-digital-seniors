@@ -143,8 +143,10 @@ export default {
           this.state.simpleMode = !this.state.simpleMode;
           this.state.globalToggle = true;
         } else if (evt.key == "l") {
-          this.sendMessageToPage("fetchLabelsRequest", null);
         }
+      });
+      this.sendMessageToPage("fetchLabelsRequest", null).then(response => {
+        this.state = response;
       });
     }
 
@@ -179,25 +181,29 @@ export default {
       console.log("storing state in localstorage");
       window.localStorage.setItem("state", JSON.stringify(this.state));
     },
-    sendMessageToPage(type, payload) {
+    async sendMessageToPage(type, payload) {
       console.log("Sending to page: ", type, payload);
-      browser.tabs
+      return browser.tabs
         .query({ currentWindow: true, active: true })
         .then(tabs => {
           // console.log(tabs);
-          browser.tabs
+          return browser.tabs
             .sendMessage(tabs[0].id, {
               type: type,
               payload: payload
             })
-            .then(answer => console.log("answer from page: ", answer))
+            .then(answer => {
+              console.log("answer from page: ", answer);
+              return answer;
+            })
             .catch(err => {
               console.error("sendStateUpdate threw error:");
-              console.error(err);
+              return Promise.reject(console.error(err));
             });
         })
         .catch(err => {
           console.error(err);
+          return Promise.reject(err);
         });
     },
     async sendMessageToBackground(type, payload) {
