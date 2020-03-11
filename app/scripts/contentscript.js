@@ -146,9 +146,10 @@ browser.runtime
     });
 
     watchedNodesQuery.push({
-      element: selectors.composerFooter
+      element: selectors.composerFeedAudienceSelector
     });
 
+    // To trigger when interact with checkboxes!
     watchedNodesQuery.push({
       attribute: "aria-checked"
     });
@@ -166,8 +167,8 @@ browser.runtime
   });
 
 const nodeChangeHandler = summaries => {
-  // console.log("node summary was triggered");
-  // console.log(summaries);
+  console.log("node summary was triggered");
+  console.log(summaries);
 
   let selectors = state.facebookCssSelectors;
 
@@ -175,7 +176,11 @@ const nodeChangeHandler = summaries => {
   updateVisibilityAll();
 
   for (let summary of summaries) {
-    for (let node of summary.added) {
+    let changedNodes =
+      summary.reparented && summary.reparented.length != 0
+        ? summary.reparented
+        : summary.added;
+    for (let node of changedNodes) {
       //was it the head tag?
       if (node.matches("body")) {
         onBodyTagLoaded();
@@ -194,7 +199,7 @@ const nodeChangeHandler = summaries => {
         updateShareIcons();
       }
 
-      if (node.matches(selectors.composerFooter)) {
+      if (node.matches(selectors.composerFeedAudienceSelector)) {
         updateComposerAudience();
       }
     }
@@ -489,47 +494,48 @@ const applyCustomCssObject = customCssObj => {
 };
 
 const updateComposerAudience = () => {
+  console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
-  let composerContainer = document.querySelector(selectors.composer);
-  let closeButton = composerContainer.querySelector(
-    selectors.composerCloseButton
-  );
-  if (!closeButton) {
-    return;
-  }
 
-  // console.log("updating Composer Audience");
-  let composerFooter = document.querySelector(selectors.composerFooter);
-  if (!composerFooter) {
+  let composer = document.querySelector(selectors.composer);
+  if (!composer) {
     console.error(
       "no composer footer found. Maybe css selector changed by facebook?"
     );
     return;
   }
-  // console.log("composerFooter: ", composerFooter);
-  let checkBoxes = composerFooter.querySelectorAll("[role=checkbox]");
-  // console.log("checkBoxes: ", checkBoxes);
-  for (let checkBox of checkBoxes) {
-    let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
-    // let selectAudienceWrapper = checkBox.parentElement.querySelector(
-    //   selectors.composerFeedAudienceSelector +
-    //     ", " +
-    //     selectors.composerStoriesAudienceSelector
-    // );
-    if (!selectAudienceButton) {
-      console.error(
-        "no audience selector element found. Was the css selector perhaps changed by facebook?"
-      );
-      return;
-    }
+  console.log("composer: ", composer);
+  let checkBoxes = composer.querySelectorAll("[role=checkbox]");
+  console.log("checkBoxes: ", checkBoxes);
+  if (checkBoxes.length) {
+    for (let checkBox of checkBoxes) {
+      let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
+      if (!selectAudienceButton) {
+        console.error(
+          "no audience selector element found. Was the css selector perhaps changed by facebook?"
+        );
+        return;
+      }
 
-    if (
-      checkBox.getAttribute("aria-checked") == "true" &&
-      state.audienceSettings.highlightAudienceWhenPosting
-    ) {
-      selectAudienceButton.classList.add("red-highlight-border");
-    } else {
-      selectAudienceButton.classList.remove("red-highlight-border");
+      if (
+        checkBox.getAttribute("aria-checked") == "true" &&
+        state.audienceSettings.highlightAudienceWhenPosting
+      ) {
+        selectAudienceButton.classList.add("red-highlight-border");
+      } else {
+        selectAudienceButton.classList.remove("red-highlight-border");
+      }
+    }
+  } else {
+    let composerFooter = composer.querySelector(selectors.composerFooter);
+    let selectAudienceButtons = composerFooter.querySelectorAll(
+      "[role=button]"
+    );
+    console.log(selectAudienceButtons);
+    for (let selectAudienceButton of selectAudienceButtons) {
+      let buttonContainer =
+        selectAudienceButton.parentElement.parentElement.parentElement;
+      buttonContainer.classList.add("red-highlight-border");
     }
   }
 };
