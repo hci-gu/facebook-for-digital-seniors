@@ -96,10 +96,12 @@ const setup = async () => {
   // startState.facebookCssSelectors = facebookCssSelectors;
   localStorage.setItem("state", JSON.stringify(startState));
 
+  await contentscriptReady;
+  setBrowserActionToPopup();
+  console.log("contentscriptReady resolved");
+
   if (!Parse.User.current()) {
     console.log("no logged in parse user found. Gonna try to login/signup");
-    await contentscriptReady;
-    console.log("contentscriptReady resolved");
     let browserPrint = localStorage.getItem("browserFingerPrint");
     if (!browserPrint) {
       console.log(
@@ -132,6 +134,66 @@ const setup = async () => {
     loggedInToParse = true;
   }
 };
+
+function match(pattern, url) {
+  pattern = pattern.split("/");
+  url = url.split("/");
+
+  while (url.length) {
+    const p = pattern.shift();
+    if (p !== url.shift() && p !== "*") return false;
+  }
+  return true;
+}
+
+browser.tabs.onActivated.addListener(async activeInfo => {
+  console.log(activeInfo);
+  let activatedTab = await browser.tabs.get(activeInfo.tabId);
+  console.log("activatedTab", activatedTab);
+  if (
+    match("https://www.facebook.com/*", activatedTab.url) ||
+    match("http://www.facebook.com/*", activatedTab.url)
+  ) {
+    console.log("activated tab matched");
+    setBrowserActionToPopup();
+  } else {
+    setBrowserActionToChangeTab();
+    console.log("activated tab didn't match");
+  }
+});
+
+const setBrowserActionToPopup = () => {
+  console.log("setting browser action to popup");
+  browser.browserAction.setPopup({ popup: "pages/menu.html" });
+};
+
+const setBrowserActionToChangeTab = () => {
+  console.log("setting browser action to change tab");
+  browser.browserAction.setPopup({ popup: "" });
+};
+
+browser.browserAction.onClicked.addListener(async () => {
+  let tabs = await browser.tabs.query({
+    currentWindow: true,
+    active: false,
+    url: ["*://www.facebook.com/*", "*://www.facebook.se/*"]
+  });
+
+  console.log(tabs);
+
+  if (tabs.length) {
+    console.log("gonna highlight a tab!");
+    browser.tabs.highlight({
+      tabs: [tabs[0].index]
+    });
+  } else {
+    console.log("creating a tab!");
+    browser.tabs.create({
+      url: "https://www.facebook.com",
+      active: true
+    });
+  }
+});
 
 const sendMessageToPopup = async (type, msg) => {
   return browser.runtime.sendMessage({ type: type, payload: msg });

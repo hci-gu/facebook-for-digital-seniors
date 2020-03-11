@@ -22,8 +22,7 @@
       "120": "images/icon-120.png",
       "310": "images/icon-310.png"
     },
-    "default_title": "__MSG_browserActionTitle__",
-    "default_popup": "pages/menu.html"
+    "default_title": "__MSG_browserActionTitle__"
   },
   "content_scripts": [
     {
@@ -39,5 +38,5 @@
       "all_frames": false
     }
   ],
-  "permissions": ["storage"]
+  "permissions": ["storage", "tabs"]
 }
