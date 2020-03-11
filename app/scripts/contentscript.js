@@ -167,8 +167,8 @@ browser.runtime
   });
 
 const nodeChangeHandler = summaries => {
-  console.log("node summary was triggered");
-  console.log(summaries);
+  // console.log("node summary was triggered");
+  // console.log(summaries);
 
   let selectors = state.facebookCssSelectors;
 
@@ -494,7 +494,7 @@ const applyCustomCssObject = customCssObj => {
 };
 
 const updateComposerAudience = () => {
-  console.log("updateComposerAudience Called");
+  // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
 
   let composer = document.querySelector(selectors.composer);
@@ -504,9 +504,9 @@ const updateComposerAudience = () => {
     );
     return;
   }
-  console.log("composer: ", composer);
+  // console.log("composer: ", composer);
   let checkBoxes = composer.querySelectorAll("[role=checkbox]");
-  console.log("checkBoxes: ", checkBoxes);
+  // console.log("checkBoxes: ", checkBoxes);
   if (checkBoxes.length) {
     for (let checkBox of checkBoxes) {
       let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
@@ -531,7 +531,7 @@ const updateComposerAudience = () => {
     let selectAudienceButtons = composerFooter.querySelectorAll(
       "[role=button]"
     );
-    console.log(selectAudienceButtons);
+    // console.log(selectAudienceButtons);
     for (let selectAudienceButton of selectAudienceButtons) {
       let buttonContainer =
         selectAudienceButton.parentElement.parentElement.parentElement;
