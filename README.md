@@ -1,7 +1,6 @@
 ![](https://github.com/Dealerpriest/facebook-for-elderly/workflows/create-release-on-pushing-tag/badge.svg)
 
 # facebook for digital seniors
-
 A web extension for customizing facebook interface and experience. Primarily aimed at making it more user friendly for seniors.
 
 ## Install
