@@ -5,22 +5,22 @@
   "manifest_version": 2,
   "default_locale": "en",
   "icons": {
-    "16": "images/icon-16.png",
-    "36": "images/icon-36.png",
-    "48": "images/icon-48.png",
-    "120": "images/icon-120.png",
-    "310": "images/icon-310.png"
+    "16": "images/fb-logo/icon-16.png",
+    "36": "images/fb-logo/icon-36.png",
+    "48": "images/fb-logo/icon-48.png",
+    "120": "images/fb-logo/icon-120.png",
+    "310": "images/fb-logo/icon-310.png"
   },
   "background": {
     "scripts": ["scripts/background.js"]
   },
   "browser_action": {
     "default_icon": {
-      "16": "images/icon-16.png",
-      "36": "images/icon-36.png",
-      "48": "images/icon-48.png",
-      "120": "images/icon-120.png",
-      "310": "images/icon-310.png"
+      "16": "images/fb-logo/icon-16.png",
+      "36": "images/fb-logo/icon-36.png",
+      "48": "images/fb-logo/icon-48.png",
+      "120": "images/fb-logo/icon-120.png",
+      "310": "images/fb-logo/icon-310.png"
     },
     "default_title": "__MSG_browserActionTitle__"
   },
