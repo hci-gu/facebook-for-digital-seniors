@@ -28,7 +28,7 @@
     <div class="collapsible">
       <template v-for="option of group.options">
         <label
-          :key="option.name"
+          :key="option.id"
           :for="option.id"
           class="checkbox-label"
           :disabled="group.option != undefined ? group.option.hide : false"

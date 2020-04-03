@@ -1,5 +1,5 @@
-import MutationSummary from "mutation-summary";
-import Fingerprint2 from "fingerprintjs2";
+import MutationSummary from 'mutation-summary';
+import Fingerprint2 from 'fingerprintjs2';
 // import { isPromiseResolved } from "promise-status-async";
 
 let state = {};
@@ -19,8 +19,8 @@ const getFingerprint = () => {
     var values = components.map(function(component) {
       return component.value;
     });
-    var murmur = Fingerprint2.x64hash128(values.join(""), 31);
-    console.log("fingerPRINT: ", murmur);
+    var murmur = Fingerprint2.x64hash128(values.join(''), 31);
+    console.log('fingerPRINT: ', murmur);
 
     return murmur;
   };
@@ -39,15 +39,15 @@ const getFingerprint = () => {
 };
 
 browser.runtime.onMessage.addListener(async message => {
-  console.log("msg received:", message);
+  console.log('msg received:', message);
   switch (message.type) {
-    case "getFingerPrint":
-      console.log("fingerprint requested from other extension script");
+    case 'getFingerPrint':
+      console.log('fingerprint requested from other extension script');
       // return Promise.resolve("got your request maddafaka");
       return getFingerprint();
-    case "stateUpdate":
+    case 'stateUpdate':
       try {
-        console.log("state update received");
+        console.log('state update received');
         state = message.payload;
         updateVisibilityAll();
         updateStyles();
@@ -55,25 +55,25 @@ browser.runtime.onMessage.addListener(async message => {
         updateComposerAudience();
       } catch (err) {
         console.error(err);
-        return "stateUpdate failed somewhere in contentscript";
+        return 'stateUpdate failed somewhere in contentscript';
       }
-      return "performed your stateUpdate. Thaaaanx!!!";
-    case "fetchLabelsRequest":
-      console.log("fetchLabelsRequest received");
+      return 'performed your stateUpdate. Thaaaanx!!!';
+    case 'fetchLabelsRequest':
+      console.log('fetchLabelsRequest received');
       fetchLabelsAndAddToState();
       return state;
     default:
-      console.log("unknown message type", message.type);
-      return Promise.resolve("unknown message type");
+      console.log('unknown message type', message.type);
+      return Promise.resolve('unknown message type');
   }
 });
 
-window.addEventListener("click", evt => {
+window.addEventListener('click', evt => {
   // console.log(evt);
   // console.log(evt.detail);
   if (evt.detail == 1) {
     sendUserInteraction({
-      eventType: "click",
+      eventType: 'click',
       eventData: { x: evt.x, y: evt.y }
     });
   }
@@ -81,43 +81,43 @@ window.addEventListener("click", evt => {
 
 const sendUserInteraction = payload => {
   browser.runtime
-    .sendMessage({ type: "userInteraction", payload: payload })
+    .sendMessage({ type: 'userInteraction', payload: payload })
     .then(response => {
-      console.log("sendUserInteraction response: ", response);
+      console.log('sendUserInteraction response: ', response);
     });
 };
 
 const sendStateUpdate = state => {
   browser.runtime
-    .sendMessage({ type: "stateUpdate", payload: state })
+    .sendMessage({ type: 'stateUpdate', payload: state })
     .then(response => {
-      console.log("sendStateUpdate response: ", response);
+      console.log('sendStateUpdate response: ', response);
     });
 };
 
-console.log("Sending contentScriptReady to bgscript");
+console.log('Sending contentScriptReady to bgscript');
 browser.runtime
-  .sendMessage({ type: "contentscriptReady", payload: null })
+  .sendMessage({ type: 'contentscriptReady', payload: null })
   .then(response => {
-    console.log("contentScriptReady response from bgscript: ", response);
+    console.log('contentScriptReady response from bgscript: ', response);
     backgroundscriptReady = true;
-    sendUserInteraction({ eventType: "refresh" });
+    sendUserInteraction({ eventType: 'refresh' });
   });
 
 //INIT stuff is happening here
 browser.runtime
-  .sendMessage({ type: "stateRequest", payload: null })
+  .sendMessage({ type: 'stateRequest', payload: null })
   .then(response => {
-    console.log("response received: ", response);
+    console.log('response received: ', response);
     state = response;
     resolveStateLoaded();
     let selectors = state.facebookCssSelectors;
 
     if (!state.thingsToHide) {
-      console.error("thingsToHide is null or undefined");
+      console.error('thingsToHide is null or undefined');
       return;
     } else {
-      console.log("state is: ", state);
+      console.log('state is: ', state);
     }
 
     // updateStyles();
@@ -151,15 +151,15 @@ browser.runtime
 
     // To trigger when interact with checkboxes!
     watchedNodesQuery.push({
-      attribute: "aria-checked"
+      attribute: 'aria-checked'
     });
 
     // we want to react as soon the head tag is inserted into the DOM.
     // Unfortunately it doesn't seem possible to observe the head tag.
     // So let's instead observe the body tag. It should presumably load directly after the head tag.
-    watchedNodesQuery.push({ element: "body" });
+    watchedNodesQuery.push({ element: 'body' });
 
-    console.log("watchedNodes: ", watchedNodesQuery);
+    console.log('watchedNodes: ', watchedNodesQuery);
     let nodeObserver = new MutationSummary({
       callback: nodeChangeHandler,
       queries: watchedNodesQuery
@@ -182,7 +182,7 @@ const nodeChangeHandler = summaries => {
         : summary.added;
     for (let node of changedNodes) {
       //was it the head tag?
-      if (node.matches("body")) {
+      if (node.matches('body')) {
         onBodyTagLoaded();
       }
       // for (let item of state.thingsToHide) {
@@ -214,16 +214,25 @@ const getNodeFromCssObject = (
   cssSelectorObject,
   selectorParameter
 ) => {
-  // console.log(
-  //   "getNodeFromCssObject:",
-  //   startNode,
-  //   cssSelectorObject,
-  //   selectorParameter
-  // );
+  console.log(
+    'getNodeFromCssObject:',
+    startNode,
+    cssSelectorObject,
+    selectorParameter
+  );
   let node = null;
-  if (typeof cssSelectorObject === "object" && cssSelectorObject !== null) {
+  if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
     // console.log("retrieving node from traversal string", cssSelectorObject);
-    if (cssSelectorObject.selector) {
+    if (cssSelectorObject.selectorName) {
+      startNode = getNodeFromCssObject(
+        startNode,
+        state.facebookCssSelectors[cssSelectorObject.selectorName],
+        null
+      );
+      if (!startNode) {
+        return;
+      }
+    } else if (cssSelectorObject.selector) {
       startNode = startNode.querySelector(cssSelectorObject.selector);
     }
     node = findRelativeNode(
@@ -236,63 +245,64 @@ const getNodeFromCssObject = (
   }
   if (!node) {
     console.error("didn't find the node", cssSelectorObject);
-    return;
+    return null;
   }
-  // console.log("found a node:", node);
+  console.log('found a node:', node);
   return node;
 };
 
 const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
   let currentNode = startNode;
-  let traversalSequence = DOMSearch.split(",").map(str => str.trim());
-  // console.log("searching for node traversal sequence is: ", traversalSequence);
+  let traversalSequence = DOMSearch.split(',').map(str => str.trim());
+  // console.log('searching for node traversal sequence is: ', traversalSequence);
   for (let i = 0; i < traversalSequence.length; i++) {
     if (!currentNode) {
-      console.error("error when searching for relative node!!!");
+      console.error('error when searching for relative node!!!');
       return;
     }
-    let currentDOMJump = traversalSequence[i].split(":").map(str => str.trim());
-    // console.log("currentDOMJump: ", currentDOMJump);
+    let currentDOMJump = traversalSequence[i].split(':').map(str => str.trim());
+    // console.log('currentDOMJump: ', currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
-      // console.log("domjump is alone: ", currentDOMJump[0]);
+      console.log('domjump without argument: ', currentDOMJump[0]);
       currentNode = currentNode[currentDOMJump[0]];
     } else if (currentDOMJump.length > 1) {
-      // console.log("domjump is array", currentDOMJump[0]);
+      console.log('domjump with argument: ', currentDOMJump);
       let command = currentDOMJump[0];
       let index = currentDOMJump[1];
-      if (index == "i") {
+      if (index == 'i') {
         index = parseInt(selectorParameter);
       }
 
       currentNode = currentNode[command][index];
     } else {
-      console.error("fucked up!: ", currentDOMJump);
+      console.error('error traversing DOMSearch array: ', currentDOMJump);
+      return null;
     }
-    // console.log("currentNode in looped search: ", currentNode);
+    console.log('currentNode in looped search: ', currentNode);
   }
   return currentNode;
 };
 
 const hideElement = node => {
   if (!node) {
-    console.error("invalid input to hideElement function:", node);
+    console.error('invalid input to hideElement function:', node);
     return;
   }
   // node.style.display = "none";
-  node.classList.add("hide");
+  node.classList.add('hide');
 };
 
 const showElement = node => {
   if (!node) {
-    console.error("invalid input to showElement function:", node);
+    console.error('invalid input to showElement function:', node);
     return;
   }
-  node.classList.remove("hide");
+  node.classList.remove('hide');
 };
 
 const updateVisibilityFromShowHideObject = item => {
-  // console.log("updateVisibilityFromShowHideObject called with: ", item);
-  let selectorNameArray = item.cssSelectorName.split(":");
+  console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
+  let selectorNameArray = item.cssSelectorName.split(':');
   let selectorName = selectorNameArray[0];
   let selectorParameter = null;
   if (selectorNameArray[1]) {
@@ -306,6 +316,9 @@ const updateVisibilityFromShowHideObject = item => {
     cssSelectorObject,
     selectorParameter
   );
+  if (!node) {
+    return;
+  }
 
   if (item.customStylesWhenHidden) {
     item.customStylesWhenHidden.enabled = item.hide;
@@ -334,7 +347,7 @@ const updateVisibilityFromShowHideObject = item => {
 const updateVisibilityAll = () => {
   // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
-    console.error("thingsToHide is null or undefined");
+    console.error('thingsToHide is null or undefined');
     return;
   }
   try {
@@ -362,16 +375,17 @@ const updateVisibilityAll = () => {
   }
 };
 
+// goes through the stateObject tree and runs aFunction on all option objects in the tree
 const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
   const recursion = (aFunction, subStateObject) => {
     // console.log("entering recursion with (sub)state: ", subStateObject);
     for (let [key, value] of Object.entries(subStateObject)) {
-      if (key == "option") {
+      if (key == 'option') {
         // console.log("one option found:", value);
         aFunction(value);
         continue;
       }
-      if (key == "options") {
+      if (key == 'options') {
         // console.log("option array found:", value);
         for (let el of value) {
           aFunction(el);
@@ -381,13 +395,13 @@ const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
       if (Array.isArray(value)) {
         // console.log("subArray found:", value);
         for (let el of value) {
-          if (typeof el === "object" && el !== null) {
+          if (typeof el === 'object' && el !== null) {
             recursion(aFunction, el);
           }
         }
         continue;
       }
-      if (typeof value === "object" && value !== null) {
+      if (typeof value === 'object' && value !== null) {
         recursion(aFunction, value);
         // console.log("subObject found: ", value);
         // for (let [key, subValue] of Object.entries(value)) {
@@ -405,7 +419,7 @@ const fetchLabelsAndAddToState = () => {
   // console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
   function addLabel(optionObj) {
     if (optionObj.labelCssSelectorName) {
-      let selectorNameArray = optionObj.cssSelectorName.split(":");
+      let selectorNameArray = optionObj.cssSelectorName.split(':');
       let selectorName = selectorNameArray[0];
       let selectorParameter = null;
       if (selectorNameArray[1]) {
@@ -422,12 +436,15 @@ const fetchLabelsAndAddToState = () => {
       if (!node) return;
 
       console.log(
-        "Extracting option label from DOM using",
+        'Extracting option label from DOM using',
         optionObj.labelCssSelectorName
       );
       let labelCssSelectorObject =
         state.facebookCssSelectors[optionObj.labelCssSelectorName];
       let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+      if (!label) {
+        return;
+      }
       optionObj.name = label;
       console.log(label);
     }
@@ -453,7 +470,7 @@ const applyCustomCssObject = customCssObj => {
   } else if (customCssObj.cssSelectorName) {
     selector = state.facebookCssSelectors[customCssObj.cssSelectorName];
   } else {
-    console.error("OOMG!!! CRASH OF DOOOM!!! CRYYY");
+    console.error('OOMG!!! CRASH OF DOOOM!!! CRYYY');
     return;
   }
 
@@ -470,25 +487,25 @@ const applyCustomCssObject = customCssObj => {
     }
   }
   if (foundCssRule) {
-    console.log("style selector already present!");
+    console.log('style selector already present!');
     if (customCssObj.enabled) {
-      console.log("setting css property: ", customCssObj);
+      console.log('setting css property: ', customCssObj);
       foundCssRule.style.setProperty(
         customCssObj.property,
-        customCssObj.value + (customCssObj.unit ? customCssObj.unit : "")
+        customCssObj.value + (customCssObj.unit ? customCssObj.unit : '')
       );
     } else {
       // console.log("removing css property: ", customCssItem);
       foundCssRule.style.removeProperty(customCssObj.property);
     }
   } else {
-    console.log("inserting new css rule: ", customCssObj);
+    console.log('inserting new css rule: ', customCssObj);
     let cssString = customCssObj.enabled
       ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
-          customCssObj.unit ? customCssObj.unit : ""
+          customCssObj.unit ? customCssObj.unit : ''
         };}`
       : `${selector} {}`;
-    console.log("composed cssString from js object:", cssString);
+    console.log('composed cssString from js object:', cssString);
     style.sheet.insertRule(cssString);
   }
 };
@@ -499,43 +516,41 @@ const updateComposerAudience = () => {
 
   let composer = document.querySelector(selectors.composer);
   if (!composer) {
-    console.error(
-      "no composer footer found. Maybe css selector changed by facebook?"
-    );
+    console.error('no composer found. Maybe css selector changed by facebook?');
     return;
   }
+  let composerFooter = composer.querySelector(selectors.composerFooter);
   // console.log("composer: ", composer);
-  let checkBoxes = composer.querySelectorAll("[role=checkbox]");
+  let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]');
   // console.log("checkBoxes: ", checkBoxes);
   if (checkBoxes.length) {
     for (let checkBox of checkBoxes) {
       let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
       if (!selectAudienceButton) {
         console.error(
-          "no audience selector element found. Was the css selector perhaps changed by facebook?"
+          'no audience selector element found. Was the css selector perhaps changed by facebook?'
         );
         return;
       }
 
       if (
-        checkBox.getAttribute("aria-checked") == "true" &&
+        checkBox.getAttribute('aria-checked') == 'true' &&
         state.audienceSettings.highlightAudienceWhenPosting
       ) {
-        selectAudienceButton.classList.add("red-highlight-border");
+        selectAudienceButton.classList.add('red-highlight-border');
       } else {
-        selectAudienceButton.classList.remove("red-highlight-border");
+        selectAudienceButton.classList.remove('red-highlight-border');
       }
     }
   } else {
-    let composerFooter = composer.querySelector(selectors.composerFooter);
     let selectAudienceButtons = composerFooter.querySelectorAll(
-      "[role=button]"
+      '[role=button]'
     );
     // console.log(selectAudienceButtons);
     for (let selectAudienceButton of selectAudienceButtons) {
       let buttonContainer =
         selectAudienceButton.parentElement.parentElement.parentElement;
-      buttonContainer.classList.add("red-highlight-border");
+      buttonContainer.classList.add('red-highlight-border');
     }
   }
 };
@@ -548,7 +563,7 @@ const updateShareIcons = () => {
   );
   if (!postContentWrappers) {
     console.error(
-      "no postContentWrapper found! Have FB perhaps renamed the cssSelectors?"
+      'no postContentWrapper found! Have FB perhaps renamed the cssSelectors?'
     );
     return;
   }
@@ -576,14 +591,14 @@ const setDisplayForShareIconAndShareText = (
   let iconNode = postContainer.querySelector(selectors.shareIconAttributes);
   if (!iconNode) {
     console.error(
-      "no icon element found. Have facebook changed the css selectors?"
+      'no icon element found. Have facebook changed the css selectors?'
     );
     return;
   }
   let dot = iconNode.previousElementSibling;
   if (!dot) {
     console.error(
-      "no dot element found. Have facebook changed the css selectors?"
+      'no dot element found. Have facebook changed the css selectors?'
     );
     return;
   }
@@ -596,19 +611,19 @@ const setDisplayForShareIconAndShareText = (
   }
 
   //Secondly we handle the sharetext
-  let sharingTextClass = "sharing-text";
-  let textNode = postContainer.querySelector("." + sharingTextClass);
+  let sharingTextClass = 'sharing-text';
+  let textNode = postContainer.querySelector('.' + sharingTextClass);
   if (!textNode) {
     // console.log("no textNode present. Creating one!!!");
     // extract the accesibility text from wrapping elements
-    let altText = "";
-    altText = iconNode.getAttribute("data-tooltip-content");
+    let altText = '';
+    altText = iconNode.getAttribute('data-tooltip-content');
 
     // console.log("retrieved alt text: ", altText);
-    textNode = document.createElement("h2");
+    textNode = document.createElement('h2');
     textNode.classList.add(sharingTextClass);
     textNode.textContent = altText;
-    postContainer.querySelector(".clearfix").appendChild(textNode);
+    postContainer.querySelector('.clearfix').appendChild(textNode);
   }
 
   if (showShareText) {
@@ -619,11 +634,11 @@ const setDisplayForShareIconAndShareText = (
 };
 
 const onBodyTagLoaded = async () => {
-  console.log("body tag added to DOM");
-  style = document.createElement("style");
-  style.id = "style-tag";
+  console.log('body tag added to DOM');
+  style = document.createElement('style');
+  style.id = 'style-tag';
   document.head.appendChild(style);
-  console.log("added custom style tag to head tag");
+  console.log('added custom style tag to head tag');
   await stateLoadedPromise;
   // fetchLabelsAndAddToState();
   updateStyles();

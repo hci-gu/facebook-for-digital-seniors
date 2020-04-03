@@ -4,6 +4,29 @@
   "composer": "#pagelet_composer",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
   "composerFooter": ".uiContextualLayerParent",
+  "composerDeepestInnerWrapper": {
+    "selectorName": "composer",
+    "DOMSearch": "firstElementChild, firstElementChild, lastElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, lastElementChild, firstElementChild"
+  },
+  "composerBackgroundButton": {
+    "selectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, firstElementChild"
+  },
+  "composerEmojiButton": {
+    "selectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, lastElementChild"
+  },
+  "composerAttachmentBar": {
+    "selectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "lastElementChild, children:1"
+  },
+  "composerAttachmentButtonAtIndex": {
+    "selectorName": "composerAttachmentBar",
+    "DOMSearch": "firstElementChild, children:i"
+  },
+  "composerAttachmentButtonLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, lastElementChild, textContent"
+  },
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
   "navigationPanel": "#left_nav_section_nodes",
   "universalNav": "#universalNav",

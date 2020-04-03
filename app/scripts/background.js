@@ -1,9 +1,9 @@
-import Parse from "parse";
-import Fingerprint2 from "fingerprintjs2";
-import stateSchema from "./stateSchema.js";
-import { isPromiseResolved } from "promise-status-async";
+import Parse from 'parse';
+import Fingerprint2 from 'fingerprintjs2';
+import stateSchema from './stateSchema.js';
+import { isPromiseResolved } from 'promise-status-async';
 
-Parse.serverURL = "https://parseapi.back4app.com"; // This is your Server URL
+Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
 Parse.initialize(
   process.env.PARSE_APP_KEY, // This is your Application ID
   process.env.PARSE_JAVASCRIPT_KEY // This is your Javascript key
@@ -20,15 +20,15 @@ const signupToParse = async browserHash => {
   let user = Parse.User.signUp(
     credentials.username,
     credentials.password
-  ).catch(err => console.error("parse signup failed", err));
+  ).catch(err => console.error('parse signup failed', err));
 
   if (user) {
-    console.log("registered new parse user: ", user);
+    console.log('registered new parse user: ', user);
     loggedInToParse = true;
     return user;
   }
 
-  Promise.reject("failed to signUp new user. SAAAAD!");
+  Promise.reject('failed to signUp new user. SAAAAD!');
 };
 
 const loginToParse = async browserHash => {
@@ -38,7 +38,7 @@ const loginToParse = async browserHash => {
   //   loggedInToParse = true;
   //   return user;
   // }
-  console.log("no current user. Trying to login");
+  console.log('no current user. Trying to login');
   let credentials = generateCredentials(browserHash);
   user = await Parse.User.logIn(credentials.username, credentials.password);
 
@@ -47,7 +47,7 @@ const loginToParse = async browserHash => {
     return user;
   }
 
-  return Promise.reject("failed to login. NOW CRYYY!");
+  return Promise.reject('failed to login. NOW CRYYY!');
 };
 
 // browser.runtime.onInstalled.addListener(details => {
@@ -69,11 +69,11 @@ let contentscriptReady = new Promise((resolve, reject) => {
 
 //Perhaps a bit bloaty... Could just call sendMessageToPage directly...
 const getFingerprintFromContentScript = async () => {
-  let response = await sendMessageToPage("getFingerPrint", null).catch(err => {
-    console.error("no browserPrint was recevied: ", err);
+  let response = await sendMessageToPage('getFingerPrint', null).catch(err => {
+    console.error('no browserPrint was recevied: ', err);
     return Promise.reject(err);
   });
-  console.log("got browserPrint from page: ", response);
+  console.log('got browserPrint from page: ', response);
   return response;
 };
 
@@ -87,29 +87,30 @@ const getFingerprintFromContentScript = async () => {
 //Save the state object to local storage.
 
 const setup = async () => {
-  console.log("ENV: ", process.env.NODE_ENV);
+  console.log('ENV: ', process.env.NODE_ENV);
   let facebookCssSelectors = await retrieveFacebookCssSelectors();
-  console.log("facebookCssSelectors: ", facebookCssSelectors);
+  console.log('facebookCssSelectors: ', facebookCssSelectors);
   let startState = await initializeState(facebookCssSelectors);
-  console.log("startState: ", startState);
+  console.log('startState: ', startState);
 
   // startState.facebookCssSelectors = facebookCssSelectors;
-  localStorage.setItem("state", JSON.stringify(startState));
+  localStorage.setItem('state', JSON.stringify(startState));
 
-  await contentscriptReady;
   setBrowserActionToPopup();
-  console.log("contentscriptReady resolved");
+  //Currently there's a bug that we need to refresh facebook to trigger the rest of setup. Should be dealt with at some point....
+  await contentscriptReady;
+  console.log('contentscriptReady resolved');
 
   if (!Parse.User.current()) {
-    console.log("no logged in parse user found. Gonna try to login/signup");
-    let browserPrint = localStorage.getItem("browserFingerPrint");
+    console.log('no logged in parse user found. Gonna try to login/signup');
+    let browserPrint = localStorage.getItem('browserFingerPrint');
     if (!browserPrint) {
       console.log(
-        "no browserprint saved in storage. Gonna ask the page for one"
+        'no browserprint saved in storage. Gonna ask the page for one'
       );
       browserPrint = await getFingerprintFromContentScript();
       if (browserPrint) {
-        localStorage.setItem("browserFingerPrint", browserPrint);
+        localStorage.setItem('browserFingerPrint', browserPrint);
         try {
           await loginToParse(browserPrint);
         } catch (err) {
@@ -130,18 +131,18 @@ const setup = async () => {
     // Because the current() function just checks if there is a user in localstorage and fetches it.
     // It thus relies on the parse server still having the session token saved.
     // But for now. Let's just assume all is good :-D
-    console.log("Was already logged in to Parse (with sessiontoken)");
+    console.log('Was already logged in to Parse (with sessiontoken)');
     loggedInToParse = true;
   }
 };
 
 function match(pattern, url) {
-  pattern = pattern.split("/");
-  url = url.split("/");
+  pattern = pattern.split('/');
+  url = url.split('/');
 
   while (url.length) {
     const p = pattern.shift();
-    if (p !== url.shift() && p !== "*") return false;
+    if (p !== url.shift() && p !== '*') return false;
   }
   return true;
 }
@@ -149,12 +150,12 @@ function match(pattern, url) {
 browser.tabs.onActivated.addListener(async activeInfo => {
   console.log(activeInfo);
   let activatedTab = await browser.tabs.get(activeInfo.tabId);
-  console.log("activatedTab", activatedTab);
+  console.log('activatedTab', activatedTab);
   if (
-    match("https://www.facebook.com/*", activatedTab.url) ||
-    match("http://www.facebook.com/*", activatedTab.url)
+    match('https://www.facebook.com/*', activatedTab.url) ||
+    match('http://www.facebook.com/*', activatedTab.url)
   ) {
-    console.log("activated tab matched");
+    console.log('activated tab matched');
     setBrowserActionToPopup();
   } else {
     setBrowserActionToChangeTab();
@@ -163,33 +164,32 @@ browser.tabs.onActivated.addListener(async activeInfo => {
 });
 
 const setBrowserActionToPopup = () => {
-  console.log("setting browser action to popup");
-  browser.browserAction.setPopup({ popup: "pages/menu.html" });
+  console.log('setting browser action to popup');
+  browser.browserAction.setPopup({ popup: 'pages/menu.html' });
 };
 
 const setBrowserActionToChangeTab = () => {
-  console.log("setting browser action to change tab");
-  browser.browserAction.setPopup({ popup: "" });
+  console.log('setting browser action to change tab');
+  browser.browserAction.setPopup({ popup: '' });
 };
 
 browser.browserAction.onClicked.addListener(async () => {
   let tabs = await browser.tabs.query({
     currentWindow: true,
-    active: false,
-    url: ["*://www.facebook.com/*", "*://www.facebook.se/*"]
+    url: ['*://www.facebook.com/*', '*://www.facebook.se/*']
   });
 
   console.log(tabs);
 
   if (tabs.length) {
-    console.log("gonna highlight a tab!");
+    console.log('gonna highlight a tab!');
     browser.tabs.highlight({
       tabs: [tabs[0].index]
     });
   } else {
-    console.log("creating a tab!");
+    console.log('creating a tab!');
     browser.tabs.create({
-      url: "https://www.facebook.com",
+      url: 'https://www.facebook.com',
       active: true
     });
   }
@@ -203,7 +203,7 @@ const sendMessageToPopup = async (type, msg) => {
 };
 
 const sendMessageToPage = async (type, msg) => {
-  console.log("skickar till page:", type, msg);
+  console.log('skickar till page:', type, msg);
   return browser.tabs
     .query({ currentWindow: true, active: true })
     .then(tabs => {
@@ -214,11 +214,11 @@ const sendMessageToPage = async (type, msg) => {
           payload: msg
         })
         .then(answer => {
-          console.log("sent message resolved: ", answer);
+          console.log('sent message resolved: ', answer);
           return answer;
         })
         .catch(err => {
-          console.error("sendMessage threw error:");
+          console.error('sendMessage threw error:');
           console.error(err);
         });
     })
@@ -229,10 +229,10 @@ const sendMessageToPage = async (type, msg) => {
 };
 
 browser.runtime.onMessage.addListener(async message => {
-  console.log("message received: ", message);
+  console.log('message received: ', message);
   switch (message.type) {
-    case "stateRequest":
-      let state = JSON.parse(localStorage.getItem("state"));
+    case 'stateRequest':
+      let state = JSON.parse(localStorage.getItem('state'));
 
       if (state) {
         console.log(state);
@@ -241,10 +241,10 @@ browser.runtime.onMessage.addListener(async message => {
         console.error("couldn't retrieve a state from localStorage!");
         return Promise.reject("couldn't retrieve a state from localStorage!");
       }
-    case "stateUpdate":
+    case 'stateUpdate':
       // let parsedStateObject = JSON.parse(message.payload);
-      console.log("received state update from page", message.payload);
-      localStorage.setItem("state", message.payload);
+      console.log('received state update from page', message.payload);
+      localStorage.setItem('state', message.payload);
       // sendMessageToPopup("stateUpdate", message)
       //   .then(response => {
       //     console.log("response from sending state to popup: ", response);
@@ -253,19 +253,19 @@ browser.runtime.onMessage.addListener(async message => {
       //     console.error(err);
       //     console.error("the popup is probably not open");
       //   });
-      return "Aiight! Got your state!";
-    case "initStateRequest":
-      console.log("got initStateRequest from popup");
+      return 'Aiight! Got your state!';
+    case 'initStateRequest':
+      console.log('got initStateRequest from popup');
       return initState;
-    case "contentscriptReady":
-      console.log("got contentscriptReady msg!");
+    case 'contentscriptReady':
+      console.log('got contentscriptReady msg!');
       resolveContentscriptReady();
       return "You're ready. I, the bgscript, hereby acknowledge that!!";
-    case "userInteraction":
+    case 'userInteraction':
       return recordUserInteraction(message.payload);
     default:
-      console.log("unknown message type");
-      return "unknown message type";
+      console.log('unknown message type');
+      return 'unknown message type';
   }
 });
 
@@ -273,58 +273,58 @@ const recordUserInteraction = async payload => {
   if (!loggedInToParse) {
     return; //BAIL OUT MADDAFAKKA!!!!
   }
-  console.log("received user interaction: ", payload);
-  const UserInteraction = Parse.Object.extend("UserInteraction");
+  console.log('received user interaction: ', payload);
+  const UserInteraction = Parse.Object.extend('UserInteraction');
   const interaction = new UserInteraction();
 
-  interaction.set("user", Parse.User.current());
-  interaction.set("when", new Date());
-  interaction.set("eventType", payload.eventType);
-  interaction.set("eventData", payload.eventData);
+  interaction.set('user', Parse.User.current());
+  interaction.set('when', new Date());
+  interaction.set('eventType', payload.eventType);
+  interaction.set('eventData', payload.eventData);
 
   //Gotta get extension state during this interaction
-  let state = JSON.parse(localStorage.getItem("state"));
+  let state = JSON.parse(localStorage.getItem('state'));
   if (state.globalToggle != undefined) {
-    interaction.set("extensionActive", state.globalToggle);
+    interaction.set('extensionActive', state.globalToggle);
   }
 
-  console.log("userInteraction!!!!", interaction);
+  console.log('userInteraction!!!!', interaction);
   return interaction.save();
 };
 
 const retrieveFacebookCssSelectors = async () => {
   // We ain't wanna have to push the json to github for each edit. So during development we simply require it.
-  if (process.env.NODE_ENV === "development") {
-    let importedJson = require("../../facebookCssSelectors.json");
-    console.log("facebookCssSelectors: ", importedJson);
+  if (process.env.NODE_ENV === 'development') {
+    let importedJson = require('../../facebookCssSelectors.json');
+    console.log('facebookCssSelectors: ', importedJson);
     return importedJson;
   } else {
-    let githubRawUrl = "https://raw.githubusercontent.com/";
+    let githubRawUrl = 'https://raw.githubusercontent.com/';
     let facebookCssSelectorsJsonPath =
-      "Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json";
+      'Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json';
 
     let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
-    console.log("fetched json from github");
+    console.log('fetched json from github');
 
     return response.json();
   }
 };
 
 const initializeState = async facebookCssSelectors => {
-  console.log("stateSchema is: ", stateSchema);
+  console.log('stateSchema is: ', stateSchema);
   stateSchema.facebookCssSelectors = facebookCssSelectors;
   initState = Object.assign({}, stateSchema);
 
   let receivedState = null;
   try {
-    receivedState = JSON.parse(localStorage.getItem("state"));
+    receivedState = JSON.parse(localStorage.getItem('state'));
   } catch (err) {
     console.error(err);
-    console.error("error when trying to fetch state from storage");
+    console.error('error when trying to fetch state from storage');
   }
   if (receivedState) {
     console.log(
-      "previously saved state received from localStorage",
+      'previously saved state received from localStorage',
       receivedState
     );
     //Always replace the facebookCssSelectors no matter what.
@@ -332,9 +332,9 @@ const initializeState = async facebookCssSelectors => {
       receivedState.facebookCssSelectors = facebookCssSelectors;
     } else {
       console.error(
-        "no facebookCssSelectors key in received state. Creating one!!"
+        'no facebookCssSelectors key in received state. Creating one!!'
       );
-      receivedState["facebookCssSelectors"] = facebookCssSelectors;
+      receivedState['facebookCssSelectors'] = facebookCssSelectors;
     }
     if (
       !hasSameProperties(receivedState, stateSchema) ||
@@ -342,14 +342,14 @@ const initializeState = async facebookCssSelectors => {
       stateChangeCounterUpdated(receivedState, stateSchema)
     ) {
       console.log(
-        "discrepency found in state from local storage. Fallback to using initial state from source code"
+        'discrepency found in state from local storage. Fallback to using initial state from source code'
       );
       return stateSchema;
     }
     return receivedState;
   } else {
     console.log(
-      "nothing in localStorage. using initial state from source code",
+      'nothing in localStorage. using initial state from source code',
       stateSchema
     );
     return stateSchema;
@@ -379,7 +379,7 @@ function hasSameProperties(obj1, obj2) {
       //   );
       //   return true;
       // } else
-      if (typeof obj1[property] !== "object") {
+      if (typeof obj1[property] !== 'object') {
         return obj2.hasOwnProperty(property);
       } else {
         if (!obj2.hasOwnProperty(property)) {
@@ -390,7 +390,7 @@ function hasSameProperties(obj1, obj2) {
     });
   } catch (e) {
     //If bug. fallback to consider the comparison not equal.
-    console.error("some bug in the hasSameProperties function");
+    console.error('some bug in the hasSameProperties function');
     console.error(e);
     return false;
   }
