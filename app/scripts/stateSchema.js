@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 30,
+  stateBreakingChangeCounter: 32,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -117,7 +117,8 @@ export default {
           option: {
             id: 'composer-attachments-bar',
             name: '"Lägg till"-knappar',
-            cssSelectorName: 'composerAttachmentBar',
+            cssSelectorName:
+              'composerAttachmentBar, composerCollapsedAttachmentBar',
             hide: false
           },
           options: [

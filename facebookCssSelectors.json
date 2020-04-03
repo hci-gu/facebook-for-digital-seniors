@@ -5,27 +5,36 @@
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
   "composerFooter": ".uiContextualLayerParent",
   "composerDeepestInnerWrapper": {
-    "selectorName": "composer",
+    "parentSelectorName": "composer",
     "DOMSearch": "firstElementChild, firstElementChild, lastElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, lastElementChild, firstElementChild"
   },
   "composerBackgroundButton": {
-    "selectorName": "composerDeepestInnerWrapper",
+    "parentSelectorName": "composerDeepestInnerWrapper",
     "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, firstElementChild"
   },
   "composerEmojiButton": {
-    "selectorName": "composerDeepestInnerWrapper",
+    "parentSelectorName": "composerDeepestInnerWrapper",
     "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, lastElementChild"
   },
   "composerAttachmentBar": {
-    "selectorName": "composerDeepestInnerWrapper",
+    "parentSelectorName": "composerDeepestInnerWrapper",
     "DOMSearch": "lastElementChild, children:1"
   },
   "composerAttachmentButtonAtIndex": {
-    "selectorName": "composerAttachmentBar",
+    "parentSelectorName": "composerAttachmentBar",
     "DOMSearch": "firstElementChild, children:i"
   },
   "composerAttachmentButtonLabel": {
     "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, lastElementChild, textContent"
+  },
+  "composerCollapsedAttachmentBar": {
+    "parentSelectorName": "composer",
+    "selector": "form",
+    "DOMSearch": "children:3"
+  },
+  "composerCollapsedAttachmentButtonAtIndex": {
+    "parentSelectorName": "composerAttachmentBar",
+    "DOMSearch": "firstElementChild, children:i"
   },
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
   "navigationPanel": "#left_nav_section_nodes",

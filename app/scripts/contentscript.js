@@ -223,16 +223,17 @@ const getNodeFromCssObject = (
   let node = null;
   if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
     // console.log("retrieving node from traversal string", cssSelectorObject);
-    if (cssSelectorObject.selectorName) {
+    if (cssSelectorObject.parentSelectorName) {
       startNode = getNodeFromCssObject(
         startNode,
-        state.facebookCssSelectors[cssSelectorObject.selectorName],
+        state.facebookCssSelectors[cssSelectorObject.parentSelectorName],
         null
       );
       if (!startNode) {
         return;
       }
-    } else if (cssSelectorObject.selector) {
+    }
+    if (cssSelectorObject.selector) {
       startNode = startNode.querySelector(cssSelectorObject.selector);
     }
     node = findRelativeNode(
@@ -302,45 +303,51 @@ const showElement = node => {
 
 const updateVisibilityFromShowHideObject = item => {
   console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
-  let selectorNameArray = item.cssSelectorName.split(':');
-  let selectorName = selectorNameArray[0];
-  let selectorParameter = null;
-  if (selectorNameArray[1]) {
-    selectorParameter = selectorNameArray[1];
-  }
-  let cssSelectorObject = state.facebookCssSelectors[selectorName];
-  // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+  let selectorNameList = item.cssSelectorName.split(',').map(str => str.trim());
+  console.log('selectorname(s):', selectorNameList);
 
-  let node = getNodeFromCssObject(
-    document,
-    cssSelectorObject,
-    selectorParameter
-  );
-  if (!node) {
-    return;
-  }
+  for (let selectorNameString of selectorNameList) {
+    console.log('updating visibility for selectorName: ', selectorNameString);
+    let selectorAndParameter = selectorNameString.split(':');
+    let selectorName = selectorAndParameter[0];
+    let selectorParameter = null;
+    if (selectorAndParameter[1]) {
+      selectorParameter = selectorAndParameter[1];
+    }
+    let cssSelectorObject = state.facebookCssSelectors[selectorName];
+    // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
-  if (item.customStylesWhenHidden) {
-    item.customStylesWhenHidden.enabled = item.hide;
-    applyCustomCssObject(item.customStylesWhenHidden);
-  }
+    let node = getNodeFromCssObject(
+      document,
+      cssSelectorObject,
+      selectorParameter
+    );
+    if (!node) {
+      continue;
+    }
 
-  // if (item.labelCssSelectorName) {
-  //   console.log(
-  //     "Also extracting option label from DOM using",
-  //     item.labelCssSelectorName
-  //   );
-  //   let labelCssSelectorObject =
-  //     state.facebookCssSelectors[item.labelCssSelectorName];
-  //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
-  //   item.name = label;
-  //   // sendStateUpdate(state);
-  // }
-  // console.log("changing element: ", item.cssSelector, " to ", item.hide);
-  if (item.hide) {
-    hideElement(node);
-  } else {
-    showElement(node);
+    if (item.customStylesWhenHidden) {
+      item.customStylesWhenHidden.enabled = item.hide;
+      applyCustomCssObject(item.customStylesWhenHidden);
+    }
+
+    // if (item.labelCssSelectorName) {
+    //   console.log(
+    //     "Also extracting option label from DOM using",
+    //     item.labelCssSelectorName
+    //   );
+    //   let labelCssSelectorObject =
+    //     state.facebookCssSelectors[item.labelCssSelectorName];
+    //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+    //   item.name = label;
+    //   // sendStateUpdate(state);
+    // }
+    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
+    if (item.hide) {
+      hideElement(node);
+    } else {
+      showElement(node);
+    }
   }
 };
 
