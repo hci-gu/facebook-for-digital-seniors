@@ -38,7 +38,7 @@ const getFingerprint = () => {
   });
 };
 
-browser.runtime.onMessage.addListener(async message => {
+browser.runtime.onMessage.addListener(async (message) => {
   console.log('msg received:', message);
   switch (message.type) {
     case 'getFingerPrint':
@@ -68,29 +68,29 @@ browser.runtime.onMessage.addListener(async message => {
   }
 });
 
-window.addEventListener('click', evt => {
+window.addEventListener('click', (evt) => {
   // console.log(evt);
   // console.log(evt.detail);
   if (evt.detail == 1) {
     sendUserInteraction({
       eventType: 'click',
-      eventData: { x: evt.x, y: evt.y }
+      eventData: { x: evt.x, y: evt.y },
     });
   }
 });
 
-const sendUserInteraction = payload => {
+const sendUserInteraction = (payload) => {
   browser.runtime
     .sendMessage({ type: 'userInteraction', payload: payload })
-    .then(response => {
+    .then((response) => {
       console.log('sendUserInteraction response: ', response);
     });
 };
 
-const sendStateUpdate = state => {
+const sendStateUpdate = (state) => {
   browser.runtime
     .sendMessage({ type: 'stateUpdate', payload: state })
-    .then(response => {
+    .then((response) => {
       console.log('sendStateUpdate response: ', response);
     });
 };
@@ -98,7 +98,7 @@ const sendStateUpdate = state => {
 console.log('Sending contentScriptReady to bgscript');
 browser.runtime
   .sendMessage({ type: 'contentscriptReady', payload: null })
-  .then(response => {
+  .then((response) => {
     console.log('contentScriptReady response from bgscript: ', response);
     backgroundscriptReady = true;
     sendUserInteraction({ eventType: 'refresh' });
@@ -107,7 +107,7 @@ browser.runtime
 //INIT stuff is happening here
 browser.runtime
   .sendMessage({ type: 'stateRequest', payload: null })
-  .then(response => {
+  .then((response) => {
     console.log('response received: ', response);
     state = response;
     resolveStateLoaded();
@@ -142,16 +142,16 @@ browser.runtime
     // watchedNodesQuery.push({ element: hideSelectorListString });
 
     watchedNodesQuery.push({
-      element: selectors.postContainerClass
+      element: selectors.postContainerClass,
     });
 
     watchedNodesQuery.push({
-      element: selectors.composerFeedAudienceSelector
+      element: selectors.composerFeedAudienceSelector,
     });
 
     // To trigger when interact with checkboxes!
     watchedNodesQuery.push({
-      attribute: 'aria-checked'
+      attribute: 'aria-checked',
     });
 
     // we want to react as soon the head tag is inserted into the DOM.
@@ -162,11 +162,11 @@ browser.runtime
     console.log('watchedNodes: ', watchedNodesQuery);
     let nodeObserver = new MutationSummary({
       callback: nodeChangeHandler,
-      queries: watchedNodesQuery
+      queries: watchedNodesQuery,
     });
   });
 
-const nodeChangeHandler = summaries => {
+const nodeChangeHandler = (summaries) => {
   // console.log("node summary was triggered");
   // console.log(summaries);
 
@@ -254,14 +254,16 @@ const getNodeFromCssObject = (
 
 const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
   let currentNode = startNode;
-  let traversalSequence = DOMSearch.split(',').map(str => str.trim());
+  let traversalSequence = DOMSearch.split(',').map((str) => str.trim());
   // console.log('searching for node traversal sequence is: ', traversalSequence);
   for (let i = 0; i < traversalSequence.length; i++) {
     if (!currentNode) {
       console.error('error when searching for relative node!!!');
       return;
     }
-    let currentDOMJump = traversalSequence[i].split(':').map(str => str.trim());
+    let currentDOMJump = traversalSequence[i]
+      .split(':')
+      .map((str) => str.trim());
     // console.log('currentDOMJump: ', currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
       console.log('domjump without argument: ', currentDOMJump[0]);
@@ -284,7 +286,7 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
   return currentNode;
 };
 
-const hideElement = node => {
+const hideElement = (node) => {
   if (!node) {
     console.error('invalid input to hideElement function:', node);
     return;
@@ -293,7 +295,7 @@ const hideElement = node => {
   node.classList.add('hide');
 };
 
-const showElement = node => {
+const showElement = (node) => {
   if (!node) {
     console.error('invalid input to showElement function:', node);
     return;
@@ -301,9 +303,11 @@ const showElement = node => {
   node.classList.remove('hide');
 };
 
-const updateVisibilityFromShowHideObject = item => {
+const updateVisibilityFromShowHideObject = (item) => {
   console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
-  let selectorNameList = item.cssSelectorName.split(',').map(str => str.trim());
+  let selectorNameList = item.cssSelectorName
+    .split(',')
+    .map((str) => str.trim());
   console.log('selectorname(s):', selectorNameList);
 
   for (let selectorNameString of selectorNameList) {
@@ -467,7 +471,7 @@ const updateStyles = () => {
   }
 };
 
-const applyCustomCssObject = customCssObj => {
+const applyCustomCssObject = (customCssObj) => {
   if (!style) {
     return;
   }
