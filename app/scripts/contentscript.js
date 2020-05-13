@@ -1,11 +1,7 @@
 import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
+import DOMUtils from './contentscript/DOM-utils';
 // import { isPromiseResolved } from "promise-status-async";
-
-let resolveStateLoaded;
-let stateLoadedPromise = new Promise((resolve, reject) => {
-  resolveStateLoaded = resolve;
-});
 
 let backgroundscriptReady = false;
 
@@ -111,7 +107,6 @@ const init = async () => {
   const state = await sendStateRequest();
   console.log('response received: ', state);
   // state = response;
-  resolveStateLoaded(state);
   let selectors = state.facebookCssSelectors;
 
   if (!state.thingsToHide) {
@@ -220,155 +215,6 @@ const nodeChangeHandler = async (summaries) => {
   }
 };
 
-const getNodeFromCssObject = (
-  state,
-  startNode,
-  cssSelectorObject,
-  selectorParameter
-) => {
-  // console.log(
-  //   'getNodeFromCssObject:',
-  //   startNode,
-  //   cssSelectorObject,
-  //   selectorParameter
-  // );
-  let node = null;
-  if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
-    // console.log("retrieving node from traversal string", cssSelectorObject);
-    if (cssSelectorObject.parentSelectorName) {
-      startNode = getNodeFromCssObject(
-        state,
-        startNode,
-        state.facebookCssSelectors[cssSelectorObject.parentSelectorName],
-        null
-      );
-      if (!startNode) {
-        return;
-      }
-    }
-    if (cssSelectorObject.selector) {
-      startNode = startNode.querySelector(cssSelectorObject.selector);
-    }
-    node = findRelativeNode(
-      startNode,
-      cssSelectorObject.DOMSearch,
-      selectorParameter
-    );
-  } else {
-    node = document.querySelector(cssSelectorObject);
-  }
-  if (!node) {
-    // console.error("didn't find the node", cssSelectorObject);
-    return null;
-  }
-  // console.log('found a node:', node);
-  return node;
-};
-
-const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
-  let currentNode = startNode;
-  let traversalSequence = DOMSearch.split(',').map((str) => str.trim());
-  // console.log('searching for node traversal sequence is: ', traversalSequence);
-  for (let i = 0; i < traversalSequence.length; i++) {
-    if (!currentNode) {
-      console.error('error when searching for relative node!!!');
-      return;
-    }
-    let currentDOMJump = traversalSequence[i]
-      .split(':')
-      .map((str) => str.trim());
-    // console.log('currentDOMJump: ', currentDOMJump);
-    if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
-      // console.log('domjump without argument: ', currentDOMJump[0]);
-      currentNode = currentNode[currentDOMJump[0]];
-    } else if (currentDOMJump.length > 1) {
-      // console.log('domjump with argument: ', currentDOMJump);
-      let command = currentDOMJump[0];
-      let index = currentDOMJump[1];
-      if (index == 'i') {
-        index = parseInt(selectorParameter);
-      }
-
-      currentNode = currentNode[command][index];
-    } else {
-      // console.error('error traversing DOMSearch array: ', currentDOMJump);
-      return null;
-    }
-    // console.log('currentNode in looped search: ', currentNode);
-  }
-  return currentNode;
-};
-
-const hideElement = (node) => {
-  if (!node) {
-    console.error('invalid input to hideElement function:', node);
-    return;
-  }
-  // node.style.display = "none";
-  node.classList.add('hide');
-};
-
-const showElement = (node) => {
-  if (!node) {
-    console.error('invalid input to showElement function:', node);
-    return;
-  }
-  node.classList.remove('hide');
-};
-
-const updateVisibilityFromShowHideObject = (state, item) => {
-  // console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
-  let selectorNameList = item.cssSelectorName
-    .split(',')
-    .map((str) => str.trim());
-  // console.log('selectorname(s):', selectorNameList);
-
-  for (let selectorNameString of selectorNameList) {
-    // console.log('updating visibility for selectorName: ', selectorNameString);
-    let selectorAndParameter = selectorNameString.split(':');
-    let selectorName = selectorAndParameter[0];
-    let selectorParameter = null;
-    if (selectorAndParameter[1]) {
-      selectorParameter = selectorAndParameter[1];
-    }
-    let cssSelectorObject = state.facebookCssSelectors[selectorName];
-    // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
-
-    let node = getNodeFromCssObject(
-      state,
-      document,
-      cssSelectorObject,
-      selectorParameter
-    );
-    if (!node) {
-      continue;
-    }
-
-    if (item.customStylesWhenHidden) {
-      item.customStylesWhenHidden.enabled = item.hide;
-      applyCustomCssObject(state, item.customStylesWhenHidden);
-    }
-
-    // if (item.labelCssSelectorName) {
-    //   console.log(
-    //     "Also extracting option label from DOM using",
-    //     item.labelCssSelectorName
-    //   );
-    //   let labelCssSelectorObject =
-    //     state.facebookCssSelectors[item.labelCssSelectorName];
-    //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
-    //   item.name = label;
-    //   // sendStateUpdate(state);
-    // }
-    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
-    if (item.hide) {
-      hideElement(node);
-    } else {
-      showElement(node);
-    }
-  }
-};
-
 const updateVisibilityAll = (state) => {
   // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
@@ -380,18 +226,18 @@ const updateVisibilityAll = (state) => {
       if (category.groups) {
         for (let group of category.groups) {
           if (group.option) {
-            updateVisibilityFromShowHideObject(state, group.option);
+            DOMUtils.updateVisibilityFromShowHideObject(state, group.option);
           }
           if (group.options) {
             for (let option of group.options) {
-              updateVisibilityFromShowHideObject(state, option);
+              DOMUtils.updateVisibilityFromShowHideObject(state, option);
             }
           }
         }
       }
       if (category.options) {
         for (let option of category.options) {
-          updateVisibilityFromShowHideObject(state, option);
+          DOMUtils.updateVisibilityFromShowHideObject(state, option);
         }
       }
     }
@@ -455,7 +301,7 @@ const fetchLabelsAndAddToState = (state) => {
       let cssSelectorObject = state.facebookCssSelectors[selectorName];
       console.log('retrieved cssSelectorObject: ', cssSelectorObject);
 
-      let node = getNodeFromCssObject(
+      let node = DOMUtils.getNodeFromCssObject(
         state,
         document,
         cssSelectorObject,
@@ -472,7 +318,7 @@ const fetchLabelsAndAddToState = (state) => {
       );
       let labelCssSelectorObject =
         state.facebookCssSelectors[optionObj.labelCssSelectorName];
-      let label = getNodeFromCssObject(
+      let label = DOMUtils.getNodeFromCssObject(
         state,
         node,
         labelCssSelectorObject,
@@ -494,57 +340,7 @@ const fetchLabelsAndAddToState = (state) => {
 
 const updateStyles = (state) => {
   for (let customCssItem of state.customCss) {
-    applyCustomCssObject(state, customCssItem);
-  }
-};
-
-const applyCustomCssObject = (state, customCssObj) => {
-  if (!style) {
-    return;
-  }
-  let selector;
-  if (customCssObj.selector) {
-    selector = customCssObj.selector;
-  } else if (customCssObj.cssSelectorName) {
-    selector = state.facebookCssSelectors[customCssObj.cssSelectorName];
-  } else {
-    console.error('OOMG!!! CRASH OF DOOOM!!! CRYYY');
-    return;
-  }
-
-  //Check if rule is already present
-  let ruleList = style.sheet.cssRules;
-  let foundCssRule = undefined;
-  for (let candidateCssRule of ruleList) {
-    if (
-      candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
-      candidateCssRule.selectorText == selector
-    ) {
-      foundCssRule = candidateCssRule;
-      break;
-    }
-  }
-  if (foundCssRule) {
-    // console.log('style selector already present!');
-    if (customCssObj.enabled) {
-      // console.log('setting css property: ', customCssObj);
-      foundCssRule.style.setProperty(
-        customCssObj.property,
-        customCssObj.value + (customCssObj.unit ? customCssObj.unit : '')
-      );
-    } else {
-      // console.log("removing css property: ", customCssItem);
-      foundCssRule.style.removeProperty(customCssObj.property);
-    }
-  } else {
-    console.log('inserting new css rule: ', customCssObj);
-    let cssString = customCssObj.enabled
-      ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
-          customCssObj.unit ? customCssObj.unit : ''
-        };}`
-      : `${selector} {}`;
-    // console.log('composed cssString from js object:', cssString);
-    style.sheet.insertRule(cssString);
+    DOMUtils.applyCustomCssObject(state, customCssItem);
   }
 };
 
@@ -642,11 +438,11 @@ const setDisplayForShareIconAndShareText = (
     return;
   }
   if (showShareIcon) {
-    showElement(iconNode);
-    showElement(dot);
+    DOMUtils.showElement(iconNode);
+    DOMUtils.showElement(dot);
   } else {
-    hideElement(iconNode);
-    hideElement(dot);
+    DOMUtils.hideElement(iconNode);
+    DOMUtils.hideElement(dot);
   }
 
   //Secondly we handle the sharetext
@@ -666,24 +462,15 @@ const setDisplayForShareIconAndShareText = (
   }
 
   if (showShareText) {
-    showElement(textNode);
+    DOMUtils.showElement(textNode);
   } else {
-    hideElement(textNode);
+    DOMUtils.hideElement(textNode);
   }
 };
 
 const onBodyTagLoaded = async () => {
+  DOMUtils.createStyleTag();
   console.log('body tag added to DOM');
-  style = document.createElement('style');
-  style.id = 'style-tag';
-  document.head.appendChild(style);
-  console.log('added custom style tag to head tag');
-  // const receivedState = await stateLoadedPromise;
-  // updateStyles(receivedState);
-  // setTimeout(() => {
-  //   sendStateUpdate(fetchLabelsAndAddToState(receivedState));
-  //   updateStyles(receivedState);
-  // }, 3000);
 };
 
 // document.addEventListener("DOMContentLoaded", () =>
