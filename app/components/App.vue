@@ -5,6 +5,7 @@
         <input
           type="checkbox"
           v-model="stateEnabled"
+          @change="sendMessageToBackground('toggleState')"
           :true-value="true"
           :false-value="false"
         />
@@ -118,14 +119,10 @@ export default {
     };
   },
   watch: {
-    stateEnabled: {
+    state: {
+      deep: true,
       handler: function() {
-        this.sendMessageToBackground('toggleState').then(() => {
-          this.sendMessageToBackground('stateRequest').then(response => {
-            console.log('got state!!!', response);
-            this.state = response;
-          });
-        });
+        this.sendMessageToBackground('stateUpdate', this.state);
       }
     }
   },
@@ -137,7 +134,6 @@ export default {
       if (!this.state) return;
       if (evt.key == 'b') {
         this.state.simpleMode = !this.state.simpleMode;
-        this.state.globalToggle = true;
       }
     });
 
@@ -153,7 +149,6 @@ export default {
 
     this.sendMessageToBackground('stateEnabledRequest').then(response => {
       this.stateEnabled = response;
-      this.sendMessageToBackground();
     });
 
     browser.runtime.onMessage.addListener(message => {
@@ -176,54 +171,12 @@ export default {
     });
   },
   methods: {
-    sendStateUpdate(sendState) {
-      this.sendMessageToPage('stateUpdate', sendState);
-    },
-    async sendMessageToPage(type, payload) {
-      console.log('Sending to page: ', type, payload);
-      return browser.tabs
-        .query({ currentWindow: true, active: true })
-        .then(tabs => {
-          // console.log(tabs);
-          return browser.tabs
-            .sendMessage(tabs[0].id, {
-              type: type,
-              payload: payload
-            })
-            .then(answer => {
-              console.log('answer from page: ', answer);
-              return answer;
-            })
-            .catch(err => {
-              console.error('sendStateUpdate threw error:');
-              return Promise.reject(console.error(err));
-            });
-        })
-        .catch(err => {
-          console.error(err);
-          return Promise.reject(err);
-        });
-    },
     async sendMessageToBackground(type, payload) {
       console.log('sending to background: ', type, payload);
       return browser.runtime.sendMessage({
         type: type,
         payload: payload
       });
-      // try {
-      //   let response = await browser.runtime.sendMessage({
-      //     type: type,
-      //     payload: payload
-      //   });
-      // } catch (err) {
-      //   console.error(err);
-      //   return Promis.reject("fuuuck you!!!");
-      // }
-      // if (response) {
-      //   console.log("msg to background response: ", response);
-      //   return response;
-      // }
-      // return Promis.reject("fuuuck you!!!");
     }
   },
   components: {

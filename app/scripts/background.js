@@ -185,11 +185,13 @@ browser.runtime.onMessage.addListener(async (message) => {
       }
     case 'toggleState':
       state.toggleEnabled();
+      sendMessageToPage('stateUpdate', state.get());
       return;
     case 'stateUpdate':
       // let parsedStateObject = JSON.parse(message.payload);
       console.log('received state update from page', message.payload);
-      set(message.payload);
+      state.set(message.payload);
+      sendMessageToPage('stateUpdate', state.get());
       // sendMessageToPopup("stateUpdate", message)
       //   .then(response => {
       //     console.log("response from sending state to popup: ", response);

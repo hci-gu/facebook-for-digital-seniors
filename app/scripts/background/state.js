@@ -20,7 +20,10 @@ const initialize = async (facebookCssSelectors) => {
 };
 
 const get = () => {
-  if (!getEnabled()) return Object.assign({}, stateSchema);
+  if (!getEnabled()) {
+    console.log('state disabled, return default');
+    return Object.assign({}, stateSchema);
+  }
 
   try {
     return JSON.parse(localStorage.getItem('state'));
@@ -31,11 +34,21 @@ const get = () => {
   }
 };
 
-const set = (state) => localStorage.setItem('state', JSON.stringify(state));
+const set = (state) => {
+  if (!getEnabled()) {
+    console.error("You probably don't want to set state while disabled");
+  }
+  localStorage.setItem('state', JSON.stringify(state));
+};
 
-const toggleEnabled = () => localStorage.setItem('enabled', !getEnabled());
+const toggleEnabled = () => {
+  console.log('toggling enabled', getEnabled());
+  localStorage.setItem('enabled', !getEnabled());
+};
 
-const getEnabled = () => !!localStorage.getItem('enabled');
+const getEnabled = () => {
+  return localStorage.getItem('enabled') === 'true';
+};
 
 function stateChangeCounterUpdated(firstState, secondState) {
   if (

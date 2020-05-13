@@ -2,8 +2,6 @@ import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
 // import { isPromiseResolved } from "promise-status-async";
 
-let state = {};
-
 let resolveStateLoaded;
 let stateLoadedPromise = new Promise((resolve, reject) => {
   resolveStateLoaded = resolve;
@@ -48,20 +46,19 @@ browser.runtime.onMessage.addListener(async (message) => {
     case 'stateUpdate':
       try {
         console.log('state update received');
-        state = message.payload;
-        updateVisibilityAll();
-        updateStyles();
-        updateShareIcons();
-        updateComposerAudience();
+        const state = message.payload;
+        updateVisibilityAll(state);
+        updateStyles(state);
+        updateShareIcons(state);
+        updateComposerAudience(state);
       } catch (err) {
         console.error(err);
         return 'stateUpdate failed somewhere in contentscript';
       }
       return 'performed your stateUpdate. Thaaaanx!!!';
-    case 'fetchLabelsRequest':
-      console.log('fetchLabelsRequest received');
-      fetchLabelsAndAddToState();
-      return state;
+    // case 'fetchLabelsRequest':
+    //   console.log('fetchLabelsRequest received');
+    //   return state;
     default:
       console.log('unknown message type', message.type);
       return Promise.resolve('unknown message type');
@@ -88,12 +85,16 @@ const sendUserInteraction = (payload) => {
 };
 
 const sendStateUpdate = (state) => {
+  console.log('sending state to bg: ', state);
   browser.runtime
     .sendMessage({ type: 'stateUpdate', payload: state })
     .then((response) => {
       console.log('sendStateUpdate response: ', response);
     });
 };
+
+const sendStateRequest = () =>
+  browser.runtime.sendMessage({ type: 'stateRequest', payload: null });
 
 console.log('Sending contentScriptReady to bgscript');
 browser.runtime
@@ -105,75 +106,85 @@ browser.runtime
   });
 
 //INIT stuff is happening here
-browser.runtime
-  .sendMessage({ type: 'stateRequest', payload: null })
-  .then((response) => {
-    console.log('response received: ', response);
-    state = response;
-    resolveStateLoaded();
-    let selectors = state.facebookCssSelectors;
+const init = async () => {
+  console.log('init');
+  const state = await sendStateRequest();
+  console.log('response received: ', state);
+  // state = response;
+  resolveStateLoaded(state);
+  let selectors = state.facebookCssSelectors;
 
-    if (!state.thingsToHide) {
-      console.error('thingsToHide is null or undefined');
-      return;
-    } else {
-      console.log('state is: ', state);
-    }
+  if (!state.thingsToHide) {
+    console.error('thingsToHide is null or undefined');
+    return;
+  } else {
+    console.log('state is: ', state);
+  }
 
-    // updateStyles();
-    updateShareIcons();
+  // updateStyles();
+  updateShareIcons(state);
 
-    // updateVisibilityAll();
+  // updateVisibilityAll();
 
-    let watchedNodesQuery = [];
+  let watchedNodesQuery = [];
 
-    // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
-    // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
-    // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
-    // let hideSelectorListString = state.thingsToHide.reduce(
-    //   (accuString, currentSelector, idx) => {
-    //     // console.log(accuString);
-    //     return idx == 0
-    //       ? currentSelector.cssSelector
-    //       : accuString + ", " + currentSelector.cssSelector;
-    //   },
-    //   ""
-    // );
-    // watchedNodesQuery.push({ element: hideSelectorListString });
-
-    watchedNodesQuery.push({
-      element: selectors.postContainerClass,
-    });
-
-    watchedNodesQuery.push({
-      element: selectors.composerFeedAudienceSelector,
-    });
-
-    // To trigger when interact with checkboxes!
-    watchedNodesQuery.push({
-      attribute: 'aria-checked',
-    });
-
-    // we want to react as soon the head tag is inserted into the DOM.
-    // Unfortunately it doesn't seem possible to observe the head tag.
-    // So let's instead observe the body tag. It should presumably load directly after the head tag.
-    watchedNodesQuery.push({ element: 'body' });
-
-    console.log('watchedNodes: ', watchedNodesQuery);
-    let nodeObserver = new MutationSummary({
-      callback: nodeChangeHandler,
-      queries: watchedNodesQuery,
-    });
+  // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
+  // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
+  // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
+  // let hideSelectorListString = state.thingsToHide.reduce(
+  //   (accuString, currentSelector, idx) => {
+  //     // console.log(accuString);
+  //     return idx == 0
+  //       ? currentSelector.cssSelector
+  //       : accuString + ", " + currentSelector.cssSelector;
+  //   },
+  //   ""
+  // );
+  // watchedNodesQuery.push({ element: hideSelectorListString });
+  let initialNodeObserver = new MutationSummary({
+    callback: () => {
+      console.log('FETCH LABELS AND UPDATE STATE', state);
+      sendStateUpdate(fetchLabelsAndAddToState(state));
+      initialNodeObserver.disconnect();
+    },
+    queries: [{ element: selectors.universalNav }],
   });
 
-const nodeChangeHandler = (summaries) => {
+  watchedNodesQuery.push({
+    element: selectors.postContainerClass,
+  });
+
+  watchedNodesQuery.push({
+    element: selectors.composerFeedAudienceSelector,
+  });
+
+  // To trigger when interact with checkboxes!
+  watchedNodesQuery.push({
+    attribute: 'aria-checked',
+  });
+
+  // we want to react as soon the head tag is inserted into the DOM.
+  // Unfortunately it doesn't seem possible to observe the head tag.
+  // So let's instead observe the body tag. It should presumably load directly after the head tag.
+  watchedNodesQuery.push({ element: 'body' });
+
+  console.log('watchedNodes: ', watchedNodesQuery);
+  let nodeObserver = new MutationSummary({
+    callback: nodeChangeHandler,
+    queries: watchedNodesQuery,
+  });
+};
+
+const nodeChangeHandler = async (summaries) => {
   // console.log("node summary was triggered");
   // console.log(summaries);
+
+  const state = await sendStateRequest();
 
   let selectors = state.facebookCssSelectors;
 
   //Super ugly hack to make sure we hide/show on page refresh!!!
-  updateVisibilityAll();
+  updateVisibilityAll(state);
 
   for (let summary of summaries) {
     let changedNodes =
@@ -196,35 +207,37 @@ const nodeChangeHandler = (summaries) => {
       // }
 
       if (node.matches(selectors.postContainerClass)) {
-        updateShareIcons();
+        updateShareIcons(state);
       }
 
       if (node.matches(selectors.composerFeedAudienceSelector)) {
-        updateComposerAudience();
+        updateComposerAudience(state);
       }
     }
     if (summary.valueChanged && summary.valueChanged.length) {
-      updateComposerAudience();
+      updateComposerAudience(state);
     }
   }
 };
 
 const getNodeFromCssObject = (
+  state,
   startNode,
   cssSelectorObject,
   selectorParameter
 ) => {
-  console.log(
-    'getNodeFromCssObject:',
-    startNode,
-    cssSelectorObject,
-    selectorParameter
-  );
+  // console.log(
+  //   'getNodeFromCssObject:',
+  //   startNode,
+  //   cssSelectorObject,
+  //   selectorParameter
+  // );
   let node = null;
   if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
     // console.log("retrieving node from traversal string", cssSelectorObject);
     if (cssSelectorObject.parentSelectorName) {
       startNode = getNodeFromCssObject(
+        state,
         startNode,
         state.facebookCssSelectors[cssSelectorObject.parentSelectorName],
         null
@@ -245,10 +258,10 @@ const getNodeFromCssObject = (
     node = document.querySelector(cssSelectorObject);
   }
   if (!node) {
-    console.error("didn't find the node", cssSelectorObject);
+    // console.error("didn't find the node", cssSelectorObject);
     return null;
   }
-  console.log('found a node:', node);
+  // console.log('found a node:', node);
   return node;
 };
 
@@ -266,10 +279,10 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
       .map((str) => str.trim());
     // console.log('currentDOMJump: ', currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
-      console.log('domjump without argument: ', currentDOMJump[0]);
+      // console.log('domjump without argument: ', currentDOMJump[0]);
       currentNode = currentNode[currentDOMJump[0]];
     } else if (currentDOMJump.length > 1) {
-      console.log('domjump with argument: ', currentDOMJump);
+      // console.log('domjump with argument: ', currentDOMJump);
       let command = currentDOMJump[0];
       let index = currentDOMJump[1];
       if (index == 'i') {
@@ -278,10 +291,10 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
 
       currentNode = currentNode[command][index];
     } else {
-      console.error('error traversing DOMSearch array: ', currentDOMJump);
+      // console.error('error traversing DOMSearch array: ', currentDOMJump);
       return null;
     }
-    console.log('currentNode in looped search: ', currentNode);
+    // console.log('currentNode in looped search: ', currentNode);
   }
   return currentNode;
 };
@@ -303,15 +316,15 @@ const showElement = (node) => {
   node.classList.remove('hide');
 };
 
-const updateVisibilityFromShowHideObject = (item) => {
-  console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
+const updateVisibilityFromShowHideObject = (state, item) => {
+  // console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
   let selectorNameList = item.cssSelectorName
     .split(',')
     .map((str) => str.trim());
-  console.log('selectorname(s):', selectorNameList);
+  // console.log('selectorname(s):', selectorNameList);
 
   for (let selectorNameString of selectorNameList) {
-    console.log('updating visibility for selectorName: ', selectorNameString);
+    // console.log('updating visibility for selectorName: ', selectorNameString);
     let selectorAndParameter = selectorNameString.split(':');
     let selectorName = selectorAndParameter[0];
     let selectorParameter = null;
@@ -322,6 +335,7 @@ const updateVisibilityFromShowHideObject = (item) => {
     // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
     let node = getNodeFromCssObject(
+      state,
       document,
       cssSelectorObject,
       selectorParameter
@@ -332,7 +346,7 @@ const updateVisibilityFromShowHideObject = (item) => {
 
     if (item.customStylesWhenHidden) {
       item.customStylesWhenHidden.enabled = item.hide;
-      applyCustomCssObject(item.customStylesWhenHidden);
+      applyCustomCssObject(state, item.customStylesWhenHidden);
     }
 
     // if (item.labelCssSelectorName) {
@@ -355,7 +369,7 @@ const updateVisibilityFromShowHideObject = (item) => {
   }
 };
 
-const updateVisibilityAll = () => {
+const updateVisibilityAll = (state) => {
   // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
     console.error('thingsToHide is null or undefined');
@@ -366,18 +380,18 @@ const updateVisibilityAll = () => {
       if (category.groups) {
         for (let group of category.groups) {
           if (group.option) {
-            updateVisibilityFromShowHideObject(group.option);
+            updateVisibilityFromShowHideObject(state, group.option);
           }
           if (group.options) {
             for (let option of group.options) {
-              updateVisibilityFromShowHideObject(option);
+              updateVisibilityFromShowHideObject(state, option);
             }
           }
         }
       }
       if (category.options) {
         for (let option of category.options) {
-          updateVisibilityFromShowHideObject(option);
+          updateVisibilityFromShowHideObject(state, option);
         }
       }
     }
@@ -426,8 +440,9 @@ const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
   recursion(aFunction, stateObject);
 };
 
-const fetchLabelsAndAddToState = () => {
-  // console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
+const fetchLabelsAndAddToState = (state) => {
+  console.log('FETCHING ALL OPTION OBJECTS IN STATE!!!');
+
   function addLabel(optionObj) {
     if (optionObj.labelCssSelectorName) {
       let selectorNameArray = optionObj.cssSelectorName.split(':');
@@ -435,16 +450,21 @@ const fetchLabelsAndAddToState = () => {
       let selectorParameter = null;
       if (selectorNameArray[1]) {
         selectorParameter = selectorNameArray[1];
+        console.log('selectorParameter ', selectorParameter);
       }
       let cssSelectorObject = state.facebookCssSelectors[selectorName];
-      // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+      console.log('retrieved cssSelectorObject: ', cssSelectorObject);
 
       let node = getNodeFromCssObject(
+        state,
         document,
         cssSelectorObject,
         selectorParameter
       );
-      if (!node) return;
+      if (!node) {
+        console.error("didn't find the startElement before fetching label");
+        return;
+      }
 
       console.log(
         'Extracting option label from DOM using',
@@ -452,26 +472,33 @@ const fetchLabelsAndAddToState = () => {
       );
       let labelCssSelectorObject =
         state.facebookCssSelectors[optionObj.labelCssSelectorName];
-      let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+      let label = getNodeFromCssObject(
+        state,
+        node,
+        labelCssSelectorObject,
+        null
+      );
       if (!label) {
+        console.error("didn't find the labelElement");
         return;
       }
       optionObj.name = label;
-      console.log(label);
+      console.log('SET LABEL: ', label);
     }
   }
   // console.log("state before label fetch: ", state);
   applyToAllOptionObjectsInState(addLabel, state);
   // console.log("state after label fetch: ", state);
+  return state;
 };
 
-const updateStyles = () => {
+const updateStyles = (state) => {
   for (let customCssItem of state.customCss) {
-    applyCustomCssObject(customCssItem);
+    applyCustomCssObject(state, customCssItem);
   }
 };
 
-const applyCustomCssObject = (customCssObj) => {
+const applyCustomCssObject = (state, customCssObj) => {
   if (!style) {
     return;
   }
@@ -498,9 +525,9 @@ const applyCustomCssObject = (customCssObj) => {
     }
   }
   if (foundCssRule) {
-    console.log('style selector already present!');
+    // console.log('style selector already present!');
     if (customCssObj.enabled) {
-      console.log('setting css property: ', customCssObj);
+      // console.log('setting css property: ', customCssObj);
       foundCssRule.style.setProperty(
         customCssObj.property,
         customCssObj.value + (customCssObj.unit ? customCssObj.unit : '')
@@ -516,12 +543,12 @@ const applyCustomCssObject = (customCssObj) => {
           customCssObj.unit ? customCssObj.unit : ''
         };}`
       : `${selector} {}`;
-    console.log('composed cssString from js object:', cssString);
+    // console.log('composed cssString from js object:', cssString);
     style.sheet.insertRule(cssString);
   }
 };
 
-const updateComposerAudience = () => {
+const updateComposerAudience = (state) => {
   // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
 
@@ -566,7 +593,7 @@ const updateComposerAudience = () => {
   }
 };
 
-const updateShareIcons = () => {
+const updateShareIcons = (state) => {
   let selectors = state.facebookCssSelectors;
 
   let postContentWrappers = document.querySelectorAll(
@@ -582,16 +609,17 @@ const updateShareIcons = () => {
 
   if (state.audienceSettings.replaceAudienceIconsWithText) {
     for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(postWrapper, false, true);
+      setDisplayForShareIconAndShareText(state, postWrapper, false, true);
     }
   } else {
     for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(postWrapper, true, false);
+      setDisplayForShareIconAndShareText(state, postWrapper, true, false);
     }
   }
 };
 
 const setDisplayForShareIconAndShareText = (
+  state,
   postContainer,
   showShareIcon,
   showShareText
@@ -650,9 +678,12 @@ const onBodyTagLoaded = async () => {
   style.id = 'style-tag';
   document.head.appendChild(style);
   console.log('added custom style tag to head tag');
-  await stateLoadedPromise;
-  // fetchLabelsAndAddToState();
-  updateStyles();
+  // const receivedState = await stateLoadedPromise;
+  // updateStyles(receivedState);
+  // setTimeout(() => {
+  //   sendStateUpdate(fetchLabelsAndAddToState(receivedState));
+  //   updateStyles(receivedState);
+  // }, 3000);
 };
 
 // document.addEventListener("DOMContentLoaded", () =>
@@ -660,3 +691,4 @@ const onBodyTagLoaded = async () => {
 // );
 
 console.log(`YOO! FB4Seniles loaded!!!`);
+init();

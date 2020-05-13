@@ -9,5 +9,4 @@
 
 Till nästa gång:
 
-- globaltoggle i contentscript
 - kolla igenom app.vue så den är niiiice
