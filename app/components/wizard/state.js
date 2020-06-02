@@ -175,7 +175,7 @@ const initialState = () => ({
         }))
       : null,
   })),
-  index: 3,
+  index: 0,
   selectedValues: steps.map(_ => null),
 })
 

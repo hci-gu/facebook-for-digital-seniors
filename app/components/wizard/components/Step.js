@@ -109,7 +109,7 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
               })
             }}
           >
-            <a style={{ fontWeight: 'bold' }}>{part}</a>
+            <a style={{ fontWeight: 'bold', color: 'black' }}>{part}</a>
             <HelpIcon />
           </span>
         )
