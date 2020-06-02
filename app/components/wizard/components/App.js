@@ -161,7 +161,7 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
                 return
               }
               dispatch({ action: actions.DONE })
-              dispatch({ action: actions.EXIT })
+              setTimeout(() => dispatch({ action: actions.EXIT }), 500)
             }}
             style={{ marginLeft: 20 }}
           >

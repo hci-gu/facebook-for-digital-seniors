@@ -106,9 +106,9 @@ browser.runtime
 const init = async () => {
   console.log('init');
   const state = await sendStateRequest();
+  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted', payload: null });
 
-  if (!state.wizardCompleted) {
-    console.log('visa den va')
+  if (!wizardCompleted) {
     showWizard()
   }
   console.log('response received: ', state);

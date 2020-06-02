@@ -1,12 +1,7 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
 import { actions, StateContext } from '../state'
-import Tooltip from 'rc-tooltip'
-
-const Image = styled.img`
-  background-color: gray;
-  max-height: 300px;
-`
+import HelpIcon from './HelpIcon'
 
 const Container = styled.div`
   height: 100%;
@@ -91,7 +86,39 @@ const Selection = styled.div`
   }
 `
 
-const cleanKeyword = (keyword) => {
+const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
+  if (!keywords.length) return <label htmlFor={id}>{text}</label>
+  const parts = text.split(new RegExp(`(${keywords.join('|')})`, 'gi'))
+  return (
+    <label htmlFor={id}>
+      {' '}
+      {parts.map((part, i) => {
+        if (keywords.indexOf(part) === -1) return <span key={i}>{part}</span>
+        return (
+          <span
+            key={i}
+            onClick={e => {
+              e.preventDefault()
+              dispatch({
+                action: actions.HELP_PANEL,
+                payload: {
+                  image: `${index}-${cleanKeyword(part)}`,
+                  title: `${part[0].toUpperCase()}${part.slice(1)}`,
+                  description: '',
+                },
+              })
+            }}
+          >
+            <a style={{ fontWeight: 'bold' }}>{part}</a>
+            <HelpIcon />
+          </span>
+        )
+      })}{' '}
+    </label>
+  )
+}
+
+const cleanKeyword = keyword => {
   if (keyword[0] === ' ' && keyword[keyword.length - 1] === ' ') {
     keyword = keyword.slice(1, keyword.length - 1)
   }
@@ -101,50 +128,6 @@ const cleanKeyword = (keyword) => {
     .replace(/å/g, 'a')
     .replace(/ä/g, 'a')
     .replace(/ö/g, 'o')
-}
-
-const getImage = (image) => {
-  let imagePath
-  try {
-    imagePath = chrome.runtime.getURL(`images/tooltip/${image}.png`)
-  } catch (e) {
-    imagePath = `./app/images/tooltip/${image}.png`
-  }
-  return imagePath
-}
-
-const renderTextWithHighlights = (index, id, text, keywords) => {
-  if (!keywords.length) return <label htmlFor={id}>{text}</label>
-  const parts = text.split(new RegExp(`(${keywords.join('|')})`, 'gi'))
-  return (
-    <label htmlFor={id}>
-      {' '}
-      {parts.map((part, i) => {
-        if (keywords.indexOf(part) === -1) return <span key={i}>{part}</span>
-        return (
-          <Tooltip
-            key={i}
-            overlay={<Image src={getImage(`${index}-${cleanKeyword(part)}`)} />}
-            placement="bottomRight"
-          >
-            <a style={{ fontWeight: 'bold' }}>{part}</a>
-          </Tooltip>
-        )
-      })}{' '}
-    </label>
-  )
-}
-
-const textForCheckbox = (text, image) => {
-  return (
-    <Tooltip
-      key={text}
-      overlay={<Image src={getImage(image)} />}
-      placement="bottomRight"
-    >
-      <span style={{ marginLeft: 5 }}>{text}</span>
-    </Tooltip>
-  )
 }
 
 export default ({ step }) => {
@@ -185,16 +168,19 @@ export default ({ step }) => {
                 checked={
                   !displayAltMode ? selectedValue === i : selection.value
                 }
-                onChange={(e) => onChange(e, i)}
+                onChange={e => onChange(e, i)}
               />
-              {!displayAltMode
-                ? renderTextWithHighlights(
-                    index,
-                    `${step.name}_${i}`,
-                    selection.text,
-                    selection.keywords
-                  )
-                : textForCheckbox(selection.text, selection.image)}
+              {!displayAltMode ? (
+                renderTextWithHighlights(
+                  dispatch,
+                  index,
+                  `${step.name}_${i}`,
+                  selection.text,
+                  selection.keywords
+                )
+              ) : (
+                <span style={{ marginLeft: 5 }}>{selection.text}</span>
+              )}
               <br />
             </Selection>
           ))}

@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 import Steps from './Steps'
+import HelpPanel from './HelpPanel'
 
 const Container = styled.div`
-  width: 935px;
+  width: 1263px;
   height: 555px;
   background-color: #fff;
   border-radius: 3px;
@@ -26,13 +27,12 @@ const Inner = styled.div`
 `
 
 const Sidebar = styled.div`
-  width: 247px;
   height: 100%;
   background-color: rgba(68, 105, 176, 0.1);
 `
 
 const Content = styled.div`
-  width: 100%;
+  flex: auto;
   height: 100%;
   padding: 45px;
   background-color: #fff;
@@ -47,6 +47,9 @@ export default ({ children }) => {
           <Steps />
         </Sidebar>
         <Content>{children}</Content>
+        <Sidebar>
+          <HelpPanel />
+        </Sidebar>
       </Inner>
     </Container>
   )

@@ -38,5 +38,6 @@
       "all_frames": false
     }
   ],
-  "permissions": ["storage", "tabs"]
+  "permissions": ["storage", "tabs"],
+  "web_accessible_resources": ["images/tooltip/*.png"]
 }

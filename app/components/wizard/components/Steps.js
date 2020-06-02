@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { StateContext } from '../state'
 
 const Container = styled.div`
+  width: 247px;
   padding: 50px 42px;
 `
 

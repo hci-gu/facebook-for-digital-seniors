@@ -10,6 +10,7 @@ export const actions = {
   JUMP_TO: 'jump-to',
   SELECTION: 'selection',
   CHECK: 'check',
+  HELP_PANEL: 'help-panel',
 }
 
 export const StateContext = React.createContext({})
@@ -41,10 +42,10 @@ const selectorsForChoice = (featuresToRemove, stepIndex, value) => {
 
   const featuresToAddBack = selectorsForStep(step, value)
 
-  return featuresToRemove.filter((val) => !featuresToAddBack.includes(val))
+  return featuresToRemove.filter(val => !featuresToAddBack.includes(val))
 }
 
-const removeFeaturesBasedOnSelections = (state) => {
+const removeFeaturesBasedOnSelections = state => {
   let featuresToRemove = Object.keys(selectors)
   state.selectedValues.forEach((s, i) => {
     if (i === 0 || i === state.selectedValues.length - 1) return
@@ -53,17 +54,17 @@ const removeFeaturesBasedOnSelections = (state) => {
   return featuresToRemove
 }
 
-const removeFeaturesBasedOnCheckboxes = (state) => {
+const removeFeaturesBasedOnCheckboxes = state => {
   const checkboxes = state.steps.reduce((_checkboxes, step) => {
     return _checkboxes.concat(step.checkboxes ? step.checkboxes : [])
   }, [])
 
   let featuresToRemove = Object.keys(selectors)
 
-  checkboxes.forEach((checkbox) => {
+  checkboxes.forEach(checkbox => {
     if (checkbox.value) {
       featuresToRemove = featuresToRemove.filter(
-        (val) => !checkbox.add.includes(val)
+        val => !checkbox.add.includes(val)
       )
     }
   })
@@ -79,19 +80,13 @@ const reducer = (state, { action, payload }) => {
       featuresToRemove = state.altMode
         ? removeFeaturesBasedOnCheckboxes(state)
         : removeFeaturesBasedOnSelections(state)
-      featuresToRemove.forEach((key, i) => {
-        setTimeout(() => {
-          hide(selectors[key]())
-        }, 100 * i)
-      })
-      setTimeout(() => {
-        listenForChanges(featuresToRemove)
-      }, featuresToRemove * 200)
+      console.log('featuresToRemove', featuresToRemove)
       return {
         ...state,
         removing: true,
       }
     case actions.EXIT:
+      browser.runtime.sendMessage({ type: 'setWizardCompleted' })
       return {
         ...state,
         completed: true,
@@ -152,6 +147,11 @@ const reducer = (state, { action, payload }) => {
         ...state,
         index: payload.index,
       }
+    case actions.HELP_PANEL:
+      return {
+        ...state,
+        help: payload,
+      }
     default:
       return {
         ...state,
@@ -165,29 +165,30 @@ const initialState = () => ({
   completed: false,
   removing: false,
   selectors: [],
-  steps: steps.map((step) => ({
+  help: null,
+  steps: steps.map(step => ({
     ...step,
     checkboxes: step.checkboxes
-      ? step.checkboxes.map((checkbox) => ({
+      ? step.checkboxes.map(checkbox => ({
           ...checkbox,
           value: false,
         }))
       : null,
   })),
-  index: 0,
-  selectedValues: steps.map((_) => null),
+  index: 3,
+  selectedValues: steps.map(_ => null),
 })
 
 export default class StateProvider extends React.Component {
   state = {
     ...initialState(),
-    dispatch: (action) => {
+    dispatch: action => {
       this.setState(reducer(this.state, action))
     },
   }
 
   componentDidMount() {
-    document.onkeypress = (e) => {
+    document.onkeypress = e => {
       if (e.key === 'z') {
         this.state.dispatch({
           payload: {
