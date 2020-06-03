@@ -1,6 +1,7 @@
 import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
 import DOMUtils from './contentscript/DOM-utils';
+import showWizard from '../components/wizard'
 // import { isPromiseResolved } from "promise-status-async";
 
 let backgroundscriptReady = false;
@@ -105,6 +106,11 @@ browser.runtime
 const init = async () => {
   console.log('init');
   const state = await sendStateRequest();
+  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted', payload: null });
+
+  if (!wizardCompleted) {
+    showWizard()
+  }
   console.log('response received: ', state);
   // state = response;
   let selectors = state.facebookCssSelectors;

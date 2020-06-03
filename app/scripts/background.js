@@ -210,6 +210,11 @@ browser.runtime.onMessage.addListener(async (message) => {
       return "You're ready. I, the bgscript, hereby acknowledge that!!";
     case 'userInteraction':
       return parseUtil.sendUserInteraction(message.payload, state);
+    case 'wizardCompleted':
+      return localStorage.getItem('wizardCompleted') === 'true';
+    case 'setWizardCompleted':
+      console.log('setWizardCompleted')
+      return localStorage.setItem('wizardCompleted', true);
     default:
       console.log('unknown message type');
       return 'unknown message type';
