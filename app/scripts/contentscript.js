@@ -11,7 +11,7 @@ let style = undefined;
 const getFingerprint = () => {
   const calculateFingerprint = async () => {
     let components = await Fingerprint2.getPromise();
-    var values = components.map(function(component) {
+    var values = components.map(function (component) {
       return component.value;
     });
     var murmur = Fingerprint2.x64hash128(values.join(''), 31);
@@ -105,8 +105,8 @@ browser.runtime
 //INIT stuff is happening here
 const init = async () => {
   console.log('init');
-  const state = await sendStateRequest();
-  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted', payload: null });
+  const state = await browser.runtime.sendMessage({ type: 'refreshState' });
+  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted' });
 
   if (!wizardCompleted) {
     showWizard()

@@ -45,12 +45,18 @@ const getFingerprintFromContentScript = async () => {
 //Put the fetched json data into our state object.
 //Save the state object to local storage.
 
-const setup = async () => {
-  console.log('ENV: ', process.env.NODE_ENV);
+const refreshState = async () => {
   let facebookCssSelectors = await retrieveFacebookCssSelectors();
   console.log('facebookCssSelectors: ', facebookCssSelectors);
   await state.initialize(facebookCssSelectors);
-  console.log('state initialized: ', state.get());
+
+  return state.get()
+}
+
+const setup = async () => {
+  console.log('ENV: ', process.env.NODE_ENV);
+  const _state = refreshState();
+  console.log('state initialized: ', _state);
 
   setBrowserActionToPopup();
   //Currently there's a bug that we need to refresh facebook to trigger the rest of setup. Should be dealt with at some point....
@@ -165,6 +171,8 @@ const sendMessageToPage = async (type, msg) => {
 browser.runtime.onMessage.addListener(async (message) => {
   console.log('message received: ', message);
   switch (message.type) {
+    case 'refreshState':
+      return refreshState();
     case 'stateRequest':
       let gotState = state.get();
       if (gotState) {

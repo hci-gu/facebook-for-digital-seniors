@@ -26,14 +26,18 @@ const getNodeFromCssObject = (
         return;
       }
     }
-    if (cssSelectorObject.selector) {
-      startNode = startNode.querySelector(cssSelectorObject.selector);
+    if (!cssSelectorObject.DOMSearch) {
+      node = startNode.querySelector(cssSelectorObject.selector);
+    } else {
+      if (cssSelectorObject.selector) {
+        startNode = startNode.querySelector(cssSelectorObject.selector);
+      }
+      node = findRelativeNode(
+        startNode,
+        cssSelectorObject.DOMSearch,
+        selectorParameter
+      );
     }
-    node = findRelativeNode(
-      startNode,
-      cssSelectorObject.DOMSearch,
-      selectorParameter
-    );
   } else {
     node = document.querySelector(cssSelectorObject);
   }
@@ -114,12 +118,17 @@ const updateVisibilityFromShowHideObject = (state, item) => {
     let cssSelectorObject = state.facebookCssSelectors[selectorName];
     // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
-    let node = getNodeFromCssObject(
-      state,
-      document,
-      cssSelectorObject,
-      selectorParameter
-    );
+    let node;
+    try {
+      node = getNodeFromCssObject(
+        state,
+        document,
+        cssSelectorObject,
+        selectorParameter
+      );
+    } catch (e) {
+      console.error('error finding node: ', cssSelectorObject, selectorParameter)
+    }
     if (!node) {
       continue;
     }
@@ -191,8 +200,8 @@ const applyCustomCssObject = (state, customCssObj) => {
     console.log('inserting new css rule: ', customCssObj);
     let cssString = customCssObj.enabled
       ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
-          customCssObj.unit ? customCssObj.unit : ''
-        };}`
+      customCssObj.unit ? customCssObj.unit : ''
+      };}`
       : `${selector} {}`;
     // console.log('composed cssString from js object:', cssString);
     style.sheet.insertRule(cssString);
