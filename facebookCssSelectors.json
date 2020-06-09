@@ -25,7 +25,7 @@
     "DOMSearch": "firstElementChild, children:i"
   },
   "composerAttachmentButtonLabel": {
-    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, lastElementChild, textContent"
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, children:1, textContent"
   },
   "composerCollapsedAttachmentBar": {
     "parentSelectorName": "composer",
@@ -35,6 +35,46 @@
   "composerCollapsedAttachmentButtonAtIndex": {
     "parentSelectorName": "composerAttachmentBar",
     "DOMSearch": "firstElementChild, children:i"
+  },
+  "composerCreateRoomButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_CHATROOM"
+  },
+  "composerPhotoButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_MEDIA"
+  },
+  "composerTagFriendsButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_WITH_TAG"
+  },
+  "composerCheckInButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_LOCATION"
+  },
+  "composerFeelingButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_MINUTIAE"
+  },
+  "composerGIFButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_GIF"
+  },
+  "composerLiveStreamButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_FACECAST"
+  },
+  "composerVideoPartyButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_LIVING_ROOM"
+  },
+  "composerRecommendationButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_RECOMMENDATION"
+  },
+  "composerCharityButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_FUNDRAISER"
   },
   "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
   "navigationPanel": "#left_nav_section_nodes",

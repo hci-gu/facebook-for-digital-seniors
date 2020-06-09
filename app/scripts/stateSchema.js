@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 32,
+  stateBreakingChangeCounter: 35,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -11,7 +11,7 @@ export default {
             id: 'universalNav',
             name: 'Huvudsektioner',
             cssSelectorName: 'universalNav',
-            hide: false
+            hide: false,
           },
           options: [
             {
@@ -19,30 +19,30 @@ export default {
               name: 'x',
               cssSelectorName: 'universalNavItemAtIndex:0',
               labelCssSelectorName: 'universalNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'universal-nav-item-1',
               name: 'x',
               cssSelectorName: 'universalNavItemAtIndex:1',
               labelCssSelectorName: 'universalNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'universal-nav-item-2',
               name: 'x',
               cssSelectorName: 'universalNavItemAtIndex:2',
               labelCssSelectorName: 'universalNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'universal-nav-item-3',
               name: 'x',
               cssSelectorName: 'universalNavItemAtIndex:3',
               labelCssSelectorName: 'universalNavItemLabel',
-              hide: false
-            }
-          ]
+              hide: false,
+            },
+          ],
         },
         {
           option: {
@@ -50,8 +50,8 @@ export default {
             name: 'Genvägar',
             cssSelectorName: 'pinnedNav',
             labelCssSelectorName: 'pinnedNavLabel',
-            hide: false
-          }
+            hide: false,
+          },
         },
         {
           option: {
@@ -59,7 +59,7 @@ export default {
             name: 'Utforska',
             cssSelectorName: 'appsNav',
             labelCssSelectorName: 'appsNavLabel',
-            hide: false
+            hide: false,
           },
           options: [
             {
@@ -67,32 +67,32 @@ export default {
               name: 'x',
               cssSelectorName: 'appsNavItemAtIndex:0',
               labelCssSelectorName: 'appsNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'apps-nav-item-1',
               name: 'y',
               cssSelectorName: 'appsNavItemAtIndex:1',
               labelCssSelectorName: 'appsNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'apps-nav-item-2',
               name: 'z',
               cssSelectorName: 'appsNavItemAtIndex:2',
               labelCssSelectorName: 'appsNavItemLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'apps-nav-item-3',
               name: 'w',
               cssSelectorName: 'appsNavItemAtIndex:3',
               labelCssSelectorName: 'appsNavItemLabel',
-              hide: false
-            }
-          ]
-        }
-      ]
+              hide: false,
+            },
+          ],
+        },
+      ],
     },
     {
       categoryName: 'När man skapar inlägg',
@@ -102,16 +102,16 @@ export default {
             id: 'composer-background-button',
             name: 'Knapp för bakgrund',
             cssSelectorName: 'composerBackgroundButton',
-            hide: false
-          }
+            hide: false,
+          },
         },
         {
           option: {
             id: 'composer-emoji-button',
             name: 'Emojiknapp',
             cssSelectorName: 'composerEmojiButton',
-            hide: false
-          }
+            hide: false,
+          },
         },
         {
           option: {
@@ -119,33 +119,82 @@ export default {
             name: '"Lägg till"-knappar',
             cssSelectorName:
               'composerAttachmentBar, composerCollapsedAttachmentBar',
-            hide: false
+            hide: false,
           },
           options: [
             {
+              id: 'composer-create-room',
+              name: 'x',
+              cssSelectorName: 'composerCreateRoomButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
               id: 'composer-add-pic',
               name: 'x',
-              cssSelectorName: 'composerAttachmentButtonAtIndex:0',
+              cssSelectorName: 'composerPhotoButton',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'composer-tag-friends',
               name: 'x',
-              cssSelectorName: 'composerAttachmentButtonAtIndex:1',
+              cssSelectorName: 'composerTagFriendsButton',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false
+              hide: false,
             },
             {
               id: 'composer-check-in',
               name: 'x',
-              cssSelectorName: 'composerAttachmentButtonAtIndex:2',
+              cssSelectorName: 'composerCheckInButton',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false
-            }
-          ]
-        }
-      ]
+              hide: false,
+            },
+            {
+              id: 'composer-feeling',
+              name: 'x',
+              cssSelectorName: 'composerFeelingButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
+              id: 'composer-gif',
+              name: 'x',
+              cssSelectorName: 'composerGIFButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
+              id: 'composer-live-stream',
+              name: 'x',
+              cssSelectorName: 'composerLiveStreamButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
+              id: 'composer-video-party',
+              name: 'x',
+              cssSelectorName: 'composerVideoPartyButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
+              id: 'composer-recommendation',
+              name: 'x',
+              cssSelectorName: 'composerRecommendationButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+            {
+              id: 'composer-charity',
+              name: 'x',
+              cssSelectorName: 'composerCharityButton',
+              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              hide: false,
+            },
+          ],
+        },
+      ],
     },
     {
       categoryName: 'Övrigt',
@@ -154,7 +203,7 @@ export default {
           id: 'stories',
           name: 'Händelser',
           cssSelectorName: 'stories',
-          hide: false
+          hide: false,
         },
         {
           id: 'rpane',
@@ -164,18 +213,18 @@ export default {
             cssSelectorName: 'languagePanel',
             enabled: false,
             property: 'margin-top',
-            value: 0
+            value: 0,
           },
-          hide: false
-        }
+          hide: false,
+        },
         // {
         //   id: "language",
         //   name: "Språkruta",
         //   cssSelectorName: "languagePanel",
         //   hide: false
         // }
-      ]
-    }
+      ],
+    },
   ],
   customCss: [
     {
@@ -187,8 +236,8 @@ export default {
       unit: '%',
       value: 100,
       min: 50,
-      max: 200
-    }
+      max: 200,
+    },
     // {
     //   enabled: false,
     //   id: "paragraphsize",
@@ -214,7 +263,7 @@ export default {
   ],
   audienceSettings: {
     replaceAudienceIconsWithText: false,
-    highlightAudienceWhenPosting: false
+    highlightAudienceWhenPosting: false,
   },
-  facebookCssSelectors: {}
+  facebookCssSelectors: {},
 };

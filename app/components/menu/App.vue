@@ -4,7 +4,8 @@
       <label class="checkbox-label">
         <input
           type="checkbox"
-          v-model="state.globalToggle"
+          v-model="stateEnabled"
+          @change="sendMessageToBackground('toggleState')"
           :true-value="true"
           :false-value="false"
         />
@@ -109,123 +110,73 @@
 </template>
 
 <script>
-import Collapsible from "./Collapsible.vue";
+import Collapsible from './Collapsible.vue';
 export default {
   data() {
     return {
       state: {},
-      initState: {}
+      stateEnabled: false
     };
   },
   watch: {
     state: {
       deep: true,
-      handler: function(newState, oldState) {
-        if (!newState.globalToggle) {
-          this.sendStateUpdate(this.initState);
-        } else {
-          this.sendStateUpdate(this.state);
-        }
-        this.storeState();
+      handler: function() {
+        this.sendMessageToBackground('stateUpdate', this.state);
       }
     }
   },
   mounted() {
-    console.log("mounted");
-    let state = window.localStorage.getItem("state");
-    if (state) {
-      // TODO: error check the parsing
-      this.state = JSON.parse(state);
+    console.log('mounted');
 
-      window.addEventListener("keydown", evt => {
-        console.log("keydown: ", evt.key);
-        if (evt.key == "b") {
-          this.state.simpleMode = !this.state.simpleMode;
-          this.state.globalToggle = true;
-        } else if (evt.key == "l") {
-        }
-      });
-      this.sendMessageToPage("fetchLabelsRequest", null).then(response => {
-        this.state = response;
-      });
-    }
-
-    browser.runtime.onMessage.addListener(message => {
-      console.log("msg received from background:", message);
-      switch (message.type) {
-        case "stateUpdate":
-          try {
-            console.log("state update received");
-            this.state = message.payload;
-          } catch (err) {
-            console.error(err);
-            return "stateUpdate failed somewhere in popup";
-          }
-          return "performed your stateUpdate. Thaaaanx!!!";
-        default:
-          console.log("unknown message type", message.type);
-          return Promise.resolve("unknown message type");
-          break;
+    window.addEventListener('keydown', evt => {
+      console.log('keydown: ', evt.key);
+      if (!this.state) return;
+      if (evt.key == 'b') {
+        this.state.simpleMode = !this.state.simpleMode;
       }
     });
 
-    this.sendMessageToBackground("initStateRequest", null).then(
-      response => (this.initState = response)
-    );
+    // TODO: Have the contentscript do this automatically when started
+    // this.sendMessageToPage("fetchLabelsRequest", null).then(response => {
+    //   this.state = response;
+    // });
+
+    this.sendMessageToBackground('stateRequest').then(response => {
+      console.log('got state!!!', response);
+      this.state = response;
+    });
+
+    this.sendMessageToBackground('stateEnabledRequest').then(response => {
+      this.stateEnabled = response;
+    });
+
+    browser.runtime.onMessage.addListener(message => {
+      console.log('msg received from background:', message);
+      switch (message.type) {
+        case 'stateUpdate':
+          try {
+            console.log('state update received');
+            this.state = message.payload;
+          } catch (err) {
+            console.error(err);
+            return 'stateUpdate failed somewhere in popup';
+          }
+          return 'performed your stateUpdate. Thaaaanx!!!';
+        default:
+          console.log('unknown message type', message.type);
+          return Promise.resolve('unknown message type');
+          break;
+      }
+    });
   },
   methods: {
-    sendStateUpdate(sendState) {
-      this.sendMessageToPage("stateUpdate", sendState);
-    },
-    storeState() {
-      console.log("storing state in localstorage");
-      window.localStorage.setItem("state", JSON.stringify(this.state));
-    },
-    async sendMessageToPage(type, payload) {
-      console.log("Sending to page: ", type, payload);
-      return browser.tabs
-        .query({ currentWindow: true, active: true })
-        .then(tabs => {
-          // console.log(tabs);
-          return browser.tabs
-            .sendMessage(tabs[0].id, {
-              type: type,
-              payload: payload
-            })
-            .then(answer => {
-              console.log("answer from page: ", answer);
-              return answer;
-            })
-            .catch(err => {
-              console.error("sendStateUpdate threw error:");
-              return Promise.reject(console.error(err));
-            });
-        })
-        .catch(err => {
-          console.error(err);
-          return Promise.reject(err);
-        });
-    },
     async sendMessageToBackground(type, payload) {
-      console.log("sending to background: ", type, payload);
+      console.log('sending to background: ', type, payload);
       return browser.runtime.sendMessage({
         type: type,
         payload: payload
       });
-      // try {
-      //   let response = await browser.runtime.sendMessage({
-      //     type: type,
-      //     payload: payload
-      //   });
-      // } catch (err) {
-      //   console.error(err);
-      //   return Promis.reject("fuuuck you!!!");
-      // }
-      // if (response) {
-      //   console.log("msg to background response: ", response);
-      //   return response;
-      // }
-      // return Promis.reject("fuuuck you!!!");
     }
   },
   components: {
@@ -236,7 +187,7 @@ export default {
 
 <style>
 body {
-  font-family: "Fira Sans", sans-serif;
+  font-family: 'Fira Sans', sans-serif;
   --x: 1.5rem;
   margin: var(--x) var(--x) var(--x) var(--x);
 
@@ -247,7 +198,7 @@ html {
   overflow-y: overlay; /* scrollbar jump fix */
 }
 
-input[type="range"] {
+input[type='range'] {
   cursor: pointer;
 }
 

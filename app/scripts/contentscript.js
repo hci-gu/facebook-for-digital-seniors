@@ -1,13 +1,8 @@
 import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
+import DOMUtils from './contentscript/DOM-utils';
+import showWizard from '../components/wizard'
 // import { isPromiseResolved } from "promise-status-async";
-
-let state = {};
-
-let resolveStateLoaded;
-let stateLoadedPromise = new Promise((resolve, reject) => {
-  resolveStateLoaded = resolve;
-});
 
 let backgroundscriptReady = false;
 
@@ -16,7 +11,7 @@ let style = undefined;
 const getFingerprint = () => {
   const calculateFingerprint = async () => {
     let components = await Fingerprint2.getPromise();
-    var values = components.map(function(component) {
+    var values = components.map(function (component) {
       return component.value;
     });
     var murmur = Fingerprint2.x64hash128(values.join(''), 31);
@@ -38,7 +33,7 @@ const getFingerprint = () => {
   });
 };
 
-browser.runtime.onMessage.addListener(async message => {
+browser.runtime.onMessage.addListener(async (message) => {
   console.log('msg received:', message);
   switch (message.type) {
     case 'getFingerPrint':
@@ -48,132 +43,149 @@ browser.runtime.onMessage.addListener(async message => {
     case 'stateUpdate':
       try {
         console.log('state update received');
-        state = message.payload;
-        updateVisibilityAll();
-        updateStyles();
-        updateShareIcons();
-        updateComposerAudience();
+        const state = message.payload;
+        updateVisibilityAll(state);
+        updateStyles(state);
+        updateShareIcons(state);
+        updateComposerAudience(state);
       } catch (err) {
         console.error(err);
         return 'stateUpdate failed somewhere in contentscript';
       }
       return 'performed your stateUpdate. Thaaaanx!!!';
-    case 'fetchLabelsRequest':
-      console.log('fetchLabelsRequest received');
-      fetchLabelsAndAddToState();
-      return state;
+    // case 'fetchLabelsRequest':
+    //   console.log('fetchLabelsRequest received');
+    //   return state;
     default:
       console.log('unknown message type', message.type);
       return Promise.resolve('unknown message type');
   }
 });
 
-window.addEventListener('click', evt => {
+window.addEventListener('click', (evt) => {
   // console.log(evt);
   // console.log(evt.detail);
   if (evt.detail == 1) {
     sendUserInteraction({
       eventType: 'click',
-      eventData: { x: evt.x, y: evt.y }
+      eventData: { x: evt.x, y: evt.y },
     });
   }
 });
 
-const sendUserInteraction = payload => {
+const sendUserInteraction = (payload) => {
   browser.runtime
     .sendMessage({ type: 'userInteraction', payload: payload })
-    .then(response => {
+    .then((response) => {
       console.log('sendUserInteraction response: ', response);
     });
 };
 
-const sendStateUpdate = state => {
+const sendStateUpdate = (state) => {
+  console.log('sending state to bg: ', state);
   browser.runtime
     .sendMessage({ type: 'stateUpdate', payload: state })
-    .then(response => {
+    .then((response) => {
       console.log('sendStateUpdate response: ', response);
     });
 };
 
+const sendStateRequest = () =>
+  browser.runtime.sendMessage({ type: 'stateRequest', payload: null });
+
 console.log('Sending contentScriptReady to bgscript');
 browser.runtime
   .sendMessage({ type: 'contentscriptReady', payload: null })
-  .then(response => {
+  .then((response) => {
     console.log('contentScriptReady response from bgscript: ', response);
     backgroundscriptReady = true;
     sendUserInteraction({ eventType: 'refresh' });
   });
 
 //INIT stuff is happening here
-browser.runtime
-  .sendMessage({ type: 'stateRequest', payload: null })
-  .then(response => {
-    console.log('response received: ', response);
-    state = response;
-    resolveStateLoaded();
-    let selectors = state.facebookCssSelectors;
+const init = async () => {
+  console.log('init');
+  const state = await browser.runtime.sendMessage({ type: 'refreshState' });
+  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted' });
 
-    if (!state.thingsToHide) {
-      console.error('thingsToHide is null or undefined');
-      return;
-    } else {
-      console.log('state is: ', state);
-    }
+  if (!wizardCompleted) {
+    showWizard()
+  }
+  console.log('response received: ', state);
+  // state = response;
+  let selectors = state.facebookCssSelectors;
 
-    // updateStyles();
-    updateShareIcons();
+  if (!state.thingsToHide) {
+    console.error('thingsToHide is null or undefined');
+    return;
+  } else {
+    console.log('state is: ', state);
+  }
 
-    // updateVisibilityAll();
+  // updateStyles();
+  updateShareIcons(state);
 
-    let watchedNodesQuery = [];
+  // updateVisibilityAll();
 
-    // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
-    // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
-    // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
-    // let hideSelectorListString = state.thingsToHide.reduce(
-    //   (accuString, currentSelector, idx) => {
-    //     // console.log(accuString);
-    //     return idx == 0
-    //       ? currentSelector.cssSelector
-    //       : accuString + ", " + currentSelector.cssSelector;
-    //   },
-    //   ""
-    // );
-    // watchedNodesQuery.push({ element: hideSelectorListString });
+  let watchedNodesQuery = [];
 
-    watchedNodesQuery.push({
-      element: selectors.postContainerClass
-    });
-
-    watchedNodesQuery.push({
-      element: selectors.composerFeedAudienceSelector
-    });
-
-    // To trigger when interact with checkboxes!
-    watchedNodesQuery.push({
-      attribute: 'aria-checked'
-    });
-
-    // we want to react as soon the head tag is inserted into the DOM.
-    // Unfortunately it doesn't seem possible to observe the head tag.
-    // So let's instead observe the body tag. It should presumably load directly after the head tag.
-    watchedNodesQuery.push({ element: 'body' });
-
-    console.log('watchedNodes: ', watchedNodesQuery);
-    let nodeObserver = new MutationSummary({
-      callback: nodeChangeHandler,
-      queries: watchedNodesQuery
-    });
+  // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
+  // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
+  // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
+  // let hideSelectorListString = state.thingsToHide.reduce(
+  //   (accuString, currentSelector, idx) => {
+  //     // console.log(accuString);
+  //     return idx == 0
+  //       ? currentSelector.cssSelector
+  //       : accuString + ", " + currentSelector.cssSelector;
+  //   },
+  //   ""
+  // );
+  // watchedNodesQuery.push({ element: hideSelectorListString });
+  let initialNodeObserver = new MutationSummary({
+    callback: () => {
+      console.log('FETCH LABELS AND UPDATE STATE', state);
+      sendStateUpdate(fetchLabelsAndAddToState(state));
+      initialNodeObserver.disconnect();
+    },
+    queries: [{ element: selectors.universalNav }],
   });
 
-const nodeChangeHandler = summaries => {
+  watchedNodesQuery.push({
+    element: selectors.postContainerClass,
+  });
+
+  watchedNodesQuery.push({
+    element: selectors.composerFeedAudienceSelector,
+  });
+
+  // To trigger when interact with checkboxes!
+  watchedNodesQuery.push({
+    attribute: 'aria-checked',
+  });
+
+  // we want to react as soon the head tag is inserted into the DOM.
+  // Unfortunately it doesn't seem possible to observe the head tag.
+  // So let's instead observe the body tag. It should presumably load directly after the head tag.
+  watchedNodesQuery.push({ element: 'body' });
+
+  console.log('watchedNodes: ', watchedNodesQuery);
+  let nodeObserver = new MutationSummary({
+    callback: nodeChangeHandler,
+    queries: watchedNodesQuery,
+  });
+};
+
+const nodeChangeHandler = async (summaries) => {
   // console.log("node summary was triggered");
   // console.log(summaries);
+
+  const state = await sendStateRequest();
 
   let selectors = state.facebookCssSelectors;
 
   //Super ugly hack to make sure we hide/show on page refresh!!!
-  updateVisibilityAll();
+  updateVisibilityAll(state);
 
   for (let summary of summaries) {
     let changedNodes =
@@ -196,162 +208,20 @@ const nodeChangeHandler = summaries => {
       // }
 
       if (node.matches(selectors.postContainerClass)) {
-        updateShareIcons();
+        updateShareIcons(state);
       }
 
       if (node.matches(selectors.composerFeedAudienceSelector)) {
-        updateComposerAudience();
+        updateComposerAudience(state);
       }
     }
     if (summary.valueChanged && summary.valueChanged.length) {
-      updateComposerAudience();
+      updateComposerAudience(state);
     }
   }
 };
 
-const getNodeFromCssObject = (
-  startNode,
-  cssSelectorObject,
-  selectorParameter
-) => {
-  console.log(
-    'getNodeFromCssObject:',
-    startNode,
-    cssSelectorObject,
-    selectorParameter
-  );
-  let node = null;
-  if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
-    // console.log("retrieving node from traversal string", cssSelectorObject);
-    if (cssSelectorObject.parentSelectorName) {
-      startNode = getNodeFromCssObject(
-        startNode,
-        state.facebookCssSelectors[cssSelectorObject.parentSelectorName],
-        null
-      );
-      if (!startNode) {
-        return;
-      }
-    }
-    if (cssSelectorObject.selector) {
-      startNode = startNode.querySelector(cssSelectorObject.selector);
-    }
-    node = findRelativeNode(
-      startNode,
-      cssSelectorObject.DOMSearch,
-      selectorParameter
-    );
-  } else {
-    node = document.querySelector(cssSelectorObject);
-  }
-  if (!node) {
-    console.error("didn't find the node", cssSelectorObject);
-    return null;
-  }
-  console.log('found a node:', node);
-  return node;
-};
-
-const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
-  let currentNode = startNode;
-  let traversalSequence = DOMSearch.split(',').map(str => str.trim());
-  // console.log('searching for node traversal sequence is: ', traversalSequence);
-  for (let i = 0; i < traversalSequence.length; i++) {
-    if (!currentNode) {
-      console.error('error when searching for relative node!!!');
-      return;
-    }
-    let currentDOMJump = traversalSequence[i].split(':').map(str => str.trim());
-    // console.log('currentDOMJump: ', currentDOMJump);
-    if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
-      console.log('domjump without argument: ', currentDOMJump[0]);
-      currentNode = currentNode[currentDOMJump[0]];
-    } else if (currentDOMJump.length > 1) {
-      console.log('domjump with argument: ', currentDOMJump);
-      let command = currentDOMJump[0];
-      let index = currentDOMJump[1];
-      if (index == 'i') {
-        index = parseInt(selectorParameter);
-      }
-
-      currentNode = currentNode[command][index];
-    } else {
-      console.error('error traversing DOMSearch array: ', currentDOMJump);
-      return null;
-    }
-    console.log('currentNode in looped search: ', currentNode);
-  }
-  return currentNode;
-};
-
-const hideElement = node => {
-  if (!node) {
-    console.error('invalid input to hideElement function:', node);
-    return;
-  }
-  // node.style.display = "none";
-  node.classList.add('hide');
-};
-
-const showElement = node => {
-  if (!node) {
-    console.error('invalid input to showElement function:', node);
-    return;
-  }
-  node.classList.remove('hide');
-};
-
-const updateVisibilityFromShowHideObject = item => {
-  console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
-  let selectorNameList = item.cssSelectorName.split(',').map(str => str.trim());
-  console.log('selectorname(s):', selectorNameList);
-
-  for (let selectorNameString of selectorNameList) {
-    console.log('updating visibility for selectorName: ', selectorNameString);
-    let selectorAndParameter = selectorNameString.split(':');
-    let selectorName = selectorAndParameter[0];
-    let selectorParameter = null;
-    if (selectorAndParameter[1]) {
-      selectorParameter = selectorAndParameter[1];
-    }
-    let cssSelectorObject = state.facebookCssSelectors[selectorName];
-    // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
-
-    let node = getNodeFromCssObject(
-      document,
-      cssSelectorObject,
-      selectorParameter
-    );
-    if (!node) {
-      continue;
-    }
-
-    if (item.customStylesWhenHidden) {
-      item.customStylesWhenHidden.enabled = item.hide;
-      applyCustomCssObject(item.customStylesWhenHidden);
-    }
-
-    // if (item.labelCssSelectorName) {
-    //   console.log(
-    //     "Also extracting option label from DOM using",
-    //     item.labelCssSelectorName
-    //   );
-    //   let labelCssSelectorObject =
-    //     state.facebookCssSelectors[item.labelCssSelectorName];
-    //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
-    //   item.name = label;
-    //   // sendStateUpdate(state);
-    // }
-    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
-    if (item.hide) {
-      hideElement(node);
-    } else {
-      showElement(node);
-    }
-  }
-};
-
-const updateVisibilityAll = () => {
+const updateVisibilityAll = (state) => {
   // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
     console.error('thingsToHide is null or undefined');
@@ -362,18 +232,18 @@ const updateVisibilityAll = () => {
       if (category.groups) {
         for (let group of category.groups) {
           if (group.option) {
-            updateVisibilityFromShowHideObject(group.option);
+            DOMUtils.updateVisibilityFromShowHideObject(state, group.option);
           }
           if (group.options) {
             for (let option of group.options) {
-              updateVisibilityFromShowHideObject(option);
+              DOMUtils.updateVisibilityFromShowHideObject(state, option);
             }
           }
         }
       }
       if (category.options) {
         for (let option of category.options) {
-          updateVisibilityFromShowHideObject(option);
+          DOMUtils.updateVisibilityFromShowHideObject(state, option);
         }
       }
     }
@@ -422,8 +292,9 @@ const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
   recursion(aFunction, stateObject);
 };
 
-const fetchLabelsAndAddToState = () => {
-  // console.log("FETCHING ALL OPTION OBJECTS IN STATE!!!");
+const fetchLabelsAndAddToState = (state) => {
+  console.log('FETCHING ALL OPTION OBJECTS IN STATE!!!');
+
   function addLabel(optionObj) {
     if (optionObj.labelCssSelectorName) {
       let selectorNameArray = optionObj.cssSelectorName.split(':');
@@ -431,16 +302,21 @@ const fetchLabelsAndAddToState = () => {
       let selectorParameter = null;
       if (selectorNameArray[1]) {
         selectorParameter = selectorNameArray[1];
+        console.log('selectorParameter ', selectorParameter);
       }
       let cssSelectorObject = state.facebookCssSelectors[selectorName];
-      // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
+      console.log('retrieved cssSelectorObject: ', cssSelectorObject);
 
-      let node = getNodeFromCssObject(
+      let node = DOMUtils.getNodeFromCssObject(
+        state,
         document,
         cssSelectorObject,
         selectorParameter
       );
-      if (!node) return;
+      if (!node) {
+        console.error("didn't find the startElement before fetching label");
+        return;
+      }
 
       console.log(
         'Extracting option label from DOM using',
@@ -448,76 +324,33 @@ const fetchLabelsAndAddToState = () => {
       );
       let labelCssSelectorObject =
         state.facebookCssSelectors[optionObj.labelCssSelectorName];
-      let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
+      let label = DOMUtils.getNodeFromCssObject(
+        state,
+        node,
+        labelCssSelectorObject,
+        null
+      );
       if (!label) {
+        console.error("didn't find the labelElement");
         return;
       }
       optionObj.name = label;
-      console.log(label);
+      console.log('SET LABEL: ', label);
     }
   }
   // console.log("state before label fetch: ", state);
   applyToAllOptionObjectsInState(addLabel, state);
   // console.log("state after label fetch: ", state);
+  return state;
 };
 
-const updateStyles = () => {
+const updateStyles = (state) => {
   for (let customCssItem of state.customCss) {
-    applyCustomCssObject(customCssItem);
+    DOMUtils.applyCustomCssObject(state, customCssItem);
   }
 };
 
-const applyCustomCssObject = customCssObj => {
-  if (!style) {
-    return;
-  }
-  let selector;
-  if (customCssObj.selector) {
-    selector = customCssObj.selector;
-  } else if (customCssObj.cssSelectorName) {
-    selector = state.facebookCssSelectors[customCssObj.cssSelectorName];
-  } else {
-    console.error('OOMG!!! CRASH OF DOOOM!!! CRYYY');
-    return;
-  }
-
-  //Check if rule is already present
-  let ruleList = style.sheet.cssRules;
-  let foundCssRule = undefined;
-  for (let candidateCssRule of ruleList) {
-    if (
-      candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
-      candidateCssRule.selectorText == selector
-    ) {
-      foundCssRule = candidateCssRule;
-      break;
-    }
-  }
-  if (foundCssRule) {
-    console.log('style selector already present!');
-    if (customCssObj.enabled) {
-      console.log('setting css property: ', customCssObj);
-      foundCssRule.style.setProperty(
-        customCssObj.property,
-        customCssObj.value + (customCssObj.unit ? customCssObj.unit : '')
-      );
-    } else {
-      // console.log("removing css property: ", customCssItem);
-      foundCssRule.style.removeProperty(customCssObj.property);
-    }
-  } else {
-    console.log('inserting new css rule: ', customCssObj);
-    let cssString = customCssObj.enabled
-      ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
-          customCssObj.unit ? customCssObj.unit : ''
-        };}`
-      : `${selector} {}`;
-    console.log('composed cssString from js object:', cssString);
-    style.sheet.insertRule(cssString);
-  }
-};
-
-const updateComposerAudience = () => {
+const updateComposerAudience = (state) => {
   // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
 
@@ -562,7 +395,7 @@ const updateComposerAudience = () => {
   }
 };
 
-const updateShareIcons = () => {
+const updateShareIcons = (state) => {
   let selectors = state.facebookCssSelectors;
 
   let postContentWrappers = document.querySelectorAll(
@@ -578,16 +411,17 @@ const updateShareIcons = () => {
 
   if (state.audienceSettings.replaceAudienceIconsWithText) {
     for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(postWrapper, false, true);
+      setDisplayForShareIconAndShareText(state, postWrapper, false, true);
     }
   } else {
     for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(postWrapper, true, false);
+      setDisplayForShareIconAndShareText(state, postWrapper, true, false);
     }
   }
 };
 
 const setDisplayForShareIconAndShareText = (
+  state,
   postContainer,
   showShareIcon,
   showShareText
@@ -610,11 +444,11 @@ const setDisplayForShareIconAndShareText = (
     return;
   }
   if (showShareIcon) {
-    showElement(iconNode);
-    showElement(dot);
+    DOMUtils.showElement(iconNode);
+    DOMUtils.showElement(dot);
   } else {
-    hideElement(iconNode);
-    hideElement(dot);
+    DOMUtils.hideElement(iconNode);
+    DOMUtils.hideElement(dot);
   }
 
   //Secondly we handle the sharetext
@@ -634,21 +468,15 @@ const setDisplayForShareIconAndShareText = (
   }
 
   if (showShareText) {
-    showElement(textNode);
+    DOMUtils.showElement(textNode);
   } else {
-    hideElement(textNode);
+    DOMUtils.hideElement(textNode);
   }
 };
 
 const onBodyTagLoaded = async () => {
+  DOMUtils.createStyleTag();
   console.log('body tag added to DOM');
-  style = document.createElement('style');
-  style.id = 'style-tag';
-  document.head.appendChild(style);
-  console.log('added custom style tag to head tag');
-  await stateLoadedPromise;
-  // fetchLabelsAndAddToState();
-  updateStyles();
 };
 
 // document.addEventListener("DOMContentLoaded", () =>
@@ -656,3 +484,4 @@ const onBodyTagLoaded = async () => {
 // );
 
 console.log(`YOO! FB4Seniles loaded!!!`);
+init();
