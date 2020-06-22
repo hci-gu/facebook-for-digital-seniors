@@ -102,6 +102,7 @@ const showElement = (node) => {
 
 const updateVisibilityFromShowHideObject = (state, item) => {
   // console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
+  try {
   let selectorNameList = item.cssSelectorName
     .split(',')
     .map((str) => str.trim());
@@ -155,6 +156,9 @@ const updateVisibilityFromShowHideObject = (state, item) => {
     } else {
       showElement(node);
     }
+  }
+  } catch(e) {
+    console.error({ item })
   }
 };
 

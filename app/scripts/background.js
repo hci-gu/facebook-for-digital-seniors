@@ -3,6 +3,7 @@ import Fingerprint2 from 'fingerprintjs2';
 // import stateSchema from './stateSchema.js';
 import state from './background/state';
 import parseUtil from './background/parse-util';
+import wizard from './background/wizard';
 import { isPromiseResolved } from 'promise-status-async';
 
 let initState = {};
@@ -221,7 +222,12 @@ browser.runtime.onMessage.addListener(async (message) => {
     case 'wizardCompleted':
       return localStorage.getItem('wizardCompleted') === 'true';
     case 'setWizardCompleted':
-      console.log('setWizardCompleted')
+      if (message.payload) {
+        const _state = state.get()
+        wizard.updateStateHideOptionsForIds(message.payload, _state);
+        state.set(_state)
+        sendMessageToPage('stateUpdate', state.get());
+      }
       return localStorage.setItem('wizardCompleted', true);
     default:
       console.log('unknown message type');
