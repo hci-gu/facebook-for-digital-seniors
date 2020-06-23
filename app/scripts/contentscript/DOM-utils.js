@@ -15,6 +15,9 @@ const getNodeFromCssObject = (
   let node = null;
   if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
     // console.log("retrieving node from traversal string", cssSelectorObject);
+    if (cssSelectorObject.multiple) {
+      return document.querySelectorAll(cssSelectorObject.selector);
+    }
     if (cssSelectorObject.parentSelectorName) {
       startNode = getNodeFromCssObject(
         state,
@@ -151,13 +154,24 @@ const updateVisibilityFromShowHideObject = (state, item) => {
     //   // sendStateUpdate(state);
     // }
     // console.log("changing element: ", item.cssSelector, " to ", item.hide);
-    if (item.hide) {
-      hideElement(node);
-    } else {
-      showElement(node);
+    if (node.length && node.length > 0) {
+      node.forEach(_node => {
+        if (item.hide) {
+          hideElement(_node);
+        } else {
+          showElement(_node);
+        }
+      })
+    } else if (node && node.length == undefined) {
+      if (item.hide) {
+        hideElement(node);
+      } else {
+        showElement(node);
+      }
     }
   }
   } catch(e) {
+    console.log(e)
     console.error({ item })
   }
 };

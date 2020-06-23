@@ -4,6 +4,7 @@
   "composer": "#pagelet_composer",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
   "composerFooter": ".uiContextualLayerParent",
+  "popupMenu": ".uiContextualLayerPositioner",
   "composerDeepestInnerWrapper": {
     "parentSelectorName": "composer",
     "DOMSearch": "firstElementChild, firstElementChild, lastElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, lastElementChild, firstElementChild"
@@ -124,8 +125,20 @@
     "selector": ".friendBrowserForm",
     "DOMSearch": "parentElement"
   },
-  "postSettingsHide": "li[data-feed-option-name=\"HIDE\"]",
-  "postSettingsHideAd": "li[data-feed-option-name=\"HIDE_AD\"]",
-  "postSettingsSave": "li[data-feed-option-name=\"FeedSaveOption\"]",
-  "postSettingsNotifications": "li[data-feed-option-name=\"FeedFollowOption\"]"
+  "postSettingsHide": {
+    "selector": "li[data-feed-option-name=\"HIDE\"]",
+    "multiple": true
+  },
+  "postSettingsHideAd": {
+    "selector": "li[data-feed-option-name=\"HIDE_AD\"]",
+    "multiple": true
+  },
+  "postSettingsSave": {
+    "selector": "li[data-feed-option-name=\"FeedSaveOption\"]",
+    "multiple": true
+  },
+  "postSettingsNotifications": {
+    "selector": "li[data-feed-option-name=\"FeedFollowOption\"]",
+    "multiple": true
+  }
 }

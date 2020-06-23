@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 35,
+  stateBreakingChangeCounter: 36,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -220,7 +220,7 @@ export default {
         {
           id: 'post-settings-notifications',
           name: 'Följ inlägg',
-          cssSelectorName: 'postSettingsSave',
+          cssSelectorName: 'postSettingsNotifications',
           hide: false,
         },
       ]
