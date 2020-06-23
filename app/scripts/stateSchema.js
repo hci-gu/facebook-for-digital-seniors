@@ -246,6 +246,12 @@ export default {
           hide: false,
         },
         {
+          id: 'videoChats',
+          name: 'Rum',
+          cssSelectorName: 'videoChats',
+          hide: false,
+        },
+        {
           id: 'rpane',
           name: 'Högerpanel',
           cssSelectorName: 'rightPanel',
@@ -257,12 +263,12 @@ export default {
           },
           hide: false,
         },
-        // {
-        //   id: "language",
-        //   name: "Språkruta",
-        //   cssSelectorName: "languagePanel",
-        //   hide: false
-        // }
+        {
+          id: "language",
+          name: "Språkruta",
+          cssSelectorName: "languagePanel",
+          hide: false
+        }
       ],
     },
   ],
