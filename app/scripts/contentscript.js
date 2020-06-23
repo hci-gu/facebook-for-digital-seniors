@@ -185,7 +185,7 @@ const init = async () => {
 
 const nodeChangeHandler = async (summaries) => {
   console.log("node summary was triggered");
-  // console.log(summaries);
+  console.log(summaries);
 
   const state = await sendStateRequest();
 

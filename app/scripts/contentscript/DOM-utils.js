@@ -31,6 +31,9 @@ const getNodeFromCssObject = (
     }
     if (!cssSelectorObject.DOMSearch) {
       node = startNode.querySelector(cssSelectorObject.selector);
+      if (!node && cssSelectorObject.altSelector) {
+        node = startNode.querySelector(cssSelectorObject.altSelector)
+      }
     } else {
       if (cssSelectorObject.selector) {
         startNode = startNode.querySelector(cssSelectorObject.selector);

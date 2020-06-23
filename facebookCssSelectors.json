@@ -39,15 +39,18 @@
   },
   "composerCreateRoomButton": {
     "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_CHATROOM"
+    "selector": ".fbReactComposerAttachmentSelector_CHATROOM",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(1)"
   },
   "composerPhotoButton": {
     "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_MEDIA"
+    "selector": ".fbReactComposerAttachmentSelector_MEDIA",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(2)"
   },
   "composerTagFriendsButton": {
     "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_WITH_TAG"
+    "selector": ".fbReactComposerAttachmentSelector_WITH_TAG",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(3)"
   },
   "composerCheckInButton": {
     "parentSelectorName": "composer",
