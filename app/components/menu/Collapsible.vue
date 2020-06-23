@@ -1,14 +1,7 @@
 <template>
   <div>
-    <input
-      :id="group.option.id + 'collapse-checkbox'"
-      class="collapsible-checkbox"
-      type="checkbox"
-    />
-    <label
-      :for="group.option.id + 'collapse-checkbox'"
-      class="collapsible-label"
-    >
+    <input :id="group.option.id + 'collapse-checkbox'" class="collapsible-checkbox" type="checkbox" />
+    <label :for="group.option.id + 'collapse-checkbox'" class="collapsible-label">
       <label
         class="collapsible-header-label"
         v-if="group.option != undefined"
@@ -116,6 +109,7 @@ export default {
 .collapsible {
   max-height: 20rem;
   overflow: hidden;
+  overflow-y: scroll;
   border: var(--inner-border-property);
   border-width: 0 1px 1px;
 

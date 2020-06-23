@@ -1,4 +1,5 @@
 import Parse from 'parse';
+import Fingerprint2 from 'fingerprintjs2';
 
 Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
 Parse.initialize(

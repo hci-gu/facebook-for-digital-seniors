@@ -29,30 +29,12 @@
         "add": [
           "create-post-panel-safety-just-me",
           "create-post-panel-safety-friends",
-          "explore-friendlist"
+          "apps-nav-item-5"
         ]
       },
       {
         "text": "Stämmer inte",
         "keywords": []
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Ändra vilka som kan se inlägg",
-        "keywords": ["inlägg"],
-        "add": [
-          "create-post-panel-safety-just-me",
-          "create-post-panel-safety-friends",
-          "explore-friendlist"
-        ],
-        "image": "2-se-mina-inlagg"
-      },
-      {
-        "text": "Vänlistor",
-        "keywords": ["Vänlistor"],
-        "add": ["explore-friendlist"],
-        "image": "2-kategorisera-mina-vanner"
       }
     ]
   },
@@ -65,12 +47,12 @@
       {
         "text": "Ibland gör jag egna inlägg där jag lägger till en bild eller video",
         "keywords": ["bild eller video"],
-        "add": ["create-post-panel-photo", "stories"]
+        "add": ["composer-add-pic", "stories"]
       },
       {
         "text": "Samma som ovan, men ibland taggar jag också vännerna jag är med eller checkar in på platser jag besöker.",
         "keywords": ["taggar", "checkar in"],
-        "add": ["create-post-panel-tag", "create-post-panel-checkin"]
+        "add": ["composer-tag-friends", "composer-check-in"]
       },
       {
         "text": "Samma som ovan, men ibland ber jag också om rekommendationer, lägger till känsla/aktivitet, lägger till GIFs eller skapar en insamling.",
@@ -81,81 +63,19 @@
           "insamling"
         ],
         "add": [
-          "create-post-background",
-          "explore-donations",
-          "create-post-panel-feeling",
-          "create-post-panel-recommendation",
-          "create-post-panel-gif",
-          "create-post-panel-donate",
-          "create-post-panel-live",
+          "composer-background-button",
+          "apps-nav-item-4",
+          "composer-feeling",
+          "composer-recommendation",
+          "composer-gif",
+          "composer-charity",
+          "composer-live-stream",
           "create-post-more"
         ]
       },
       {
         "text": "Jag vill bara skriva inlägg med text eller inga inlägg alls.",
         "keywords": ["taggar", "checkar in"]
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Lägga upp bild eller video",
-        "keywords": [],
-        "add": ["create-post-panel-photo"],
-        "image": "3-bild-eller-video"
-      },
-      {
-        "text": "Händelser",
-        "keywords": [],
-        "image": "3-handelser",
-        "add": ["stories", "create-post-panel-story"]
-      },
-      {
-        "text": "Checka in",
-        "keywords": [],
-        "image": "3-checka-in",
-        "add": ["create-post-panel-checkin", "create-post-more"]
-      },
-      {
-        "text": "Tagga vänner",
-        "keywords": [],
-        "image": "3-taggar",
-        "add": ["create-post-panel-tag"]
-      },
-      {
-        "text": "Ändra bakgrund på posten",
-        "keywords": [],
-        "image": "3-andra-bakgrund",
-        "add": ["create-post-background"]
-      },
-      {
-        "text": "Lägg till känsla",
-        "keywords": [],
-        "image": "3-kansla-aktivitet",
-        "add": ["create-post-panel-feeling"]
-      },
-      {
-        "text": "GIF",
-        "keywords": [],
-        "image": "3-gifs",
-        "add": ["create-post-panel-gif", "create-post-more"]
-      },
-      {
-        "text": "Skapa insamling",
-        "keywords": [],
-        "image": "3-insamling",
-        "add": ["create-post-panel-donate", "create-post-more"]
-      },
-      {
-        "text": "Fråga om rekommenderingar",
-        "keywords": [],
-        "image": "3-rekommendationer",
-        "add": ["create-post-panel-recommendation", "create-post-more"]
-      },
-      {
-        "text": "Livesändning",
-        "keywords": [],
-        "image": "3-livesandning",
-        "add": ["create-post-panel-live", "create-post-more"]
       }
     ]
   },
@@ -168,42 +88,16 @@
       {
         "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner, rekommenderade inlägg eller spel",
         "keywords": ["vänner", "rekommenderade inlägg", "spel"],
-        "add": ["suggested-friends", "friends-games", "friends-games-popular"]
+        "add": ["friends-recommended", "friends-games", "friends-games-popular"]
       },
       {
         "text": "Samma som ovan, men ibland ber jag om eller ger rekommendationer",
         "keywords": ["rekommendationer"],
-        "add": ["explore-recommendations"]
+        "add": ["apps-nav-item-18"]
       },
       {
         "text": "Inget av ovanstående stämmer in på mig.",
         "keywords": []
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Vänförslag",
-        "keywords": [],
-        "image": "4-vanner",
-        "add": ["suggested-friends"]
-      },
-      {
-        "text": "Förslag i flödet",
-        "keywords": [],
-        "image": "4-rekommenderde-inlagg",
-        "add": []
-      },
-      {
-        "text": "Spelförslag i \"side-baren\"",
-        "keywords": [],
-        "image": "4-spel",
-        "add": ["friends-games", "friends-games-popular"]
-      },
-      {
-        "text": "Rekommenderingar",
-        "keywords": [],
-        "image": "4-rekommendationer",
-        "add": ["explore-recommendations"]
       }
     ]
   },
@@ -216,47 +110,22 @@
       {
         "text": "Ibland skrollar jag i mitt flöde och tittar på vad olika föreningar och företag lägger ut, intresserar mig för evenemang eller titta på minnen.",
         "keywords": ["flöde", "föreningar och företag", "evenemang", "minnen"],
-        "add": ["explore-events", "explore-memories", "explore-pages"]
+        "add": ["apps-nav-item-1", "apps-nav-item-7", "apps-nav-item-2"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
         "keywords": ["dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
-          "side-panel-watch",
-          "feed-post-save-link",
-          "feed-post-hide",
-          "feed-post-notifications"
+          "universal-nav-item-3",
+          "post-settings-save",
+          "post-settings-hide",
+          "post-settings-hide-ad",
+          "post-settings-notifications"
         ]
       },
       {
         "text": "Inget av ovanstående stämmer intresserar mig.",
         "keywords": []
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Evenemang",
-        "keywords": [],
-        "image": "5-evenemang",
-        "add": ["explore-events"]
-      },
-      {
-        "text": "Gilla-sidor",
-        "keywords": [],
-        "image": "5-foreningar-och-foretag",
-        "add": ["explore-pages"]
-      },
-      {
-        "text": "Minnen",
-        "keywords": [],
-        "image": "5-minnen",
-        "add": ["memories", "explore-memories"]
-      },
-      {
-        "text": "Videos på Watch",
-        "keywords": [],
-        "image": "5-watch",
-        "add": ["side-panel-watch"]
       }
     ]
   },
@@ -270,59 +139,21 @@
         "text": "Jag vill ibland köpa och sälja saker på Facebook eller bidra till välgörenhetsinsamlingar.",
         "keywords": ["köpa och sälja", "välgörenhetsinsamlingar"],
         "add": [
-          "side-panel-marketplace",
-          "explore-marketplace",
-          "create-post-panel-donate",
+          "universal-nav-item-4",
+          "apps-nav-item-8",
+          "composer-charity",
           "create-post-more",
-          "explore-donations"
+          "apps-nav-item-4"
         ]
       },
       {
         "text": "Samma som ovan, men ibland vill jag kolla på min annonshistorik, mina erbjudanden eller leta efter jobbannonser.",
         "keywords": ["annonshistorik", "erbjudanden", "jobbannonser"],
-        "add": ["explore-offers", "explore-work", "explore-ads"]
+        "add": ["apps-nav-item-17", "apps-nav-item-9", "apps-nav-item-13", "apps-nav-item-10"]
       },
       {
         "text": "Jag vill inte göra något av ovanstående.",
         "keywords": []
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Marketplace",
-        "keywords": [],
-        "image": "6-marketplace",
-        "add": ["side-panel-marketplace"]
-      },
-      {
-        "text": "Köp- och säljgrupper",
-        "keywords": [],
-        "image": "6-kop-salj",
-        "add": ["explore-marketplace"]
-      },
-      {
-        "text": "Insamlingar",
-        "keywords": [],
-        "image": "6-valgorenhetsinsamlingar",
-        "add": ["explore-donations"]
-      },
-      {
-        "text": "Senaste annonsaktivitet",
-        "keywords": [],
-        "image": "6-senaste-annonsaktivitet",
-        "add": ["explore-ads"]
-      },
-      {
-        "text": "Erbjudanden",
-        "keywords": [],
-        "image": "6-erbjudanden",
-        "add": ["explore-offers"]
-      },
-      {
-        "text": "Jobb",
-        "keywords": [],
-        "image": "6-jobbannonser",
-        "add": ["explore-work"]
       }
     ]
   },
@@ -335,30 +166,16 @@
       {
         "text": "Ibland spelar jag spel på Facebook.",
         "keywords": [" spel "],
-        "add": ["explore-games"]
+        "add": ["apps-nav-item-6"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag titta på spelvideos på Facebook också.",
         "keywords": ["spelvideos"],
-        "add": ["explore-games-video"]
+        "add": ["apps-nav-item-20"]
       },
       {
         "text": "Jag är inte intresserad av spel på Facebook.",
         "keywords": [" spel "]
-      }
-    ],
-    "checkboxes": [
-      {
-        "text": "Spel",
-        "keywords": [],
-        "image": "7-spel",
-        "add": ["explore-games"]
-      },
-      {
-        "text": "Spel videos",
-        "keywords": [],
-        "image": "7-spelvideos",
-        "add": ["explore-games-video"]
       }
     ]
   },

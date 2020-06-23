@@ -4,6 +4,10 @@ const initialize = async (facebookCssSelectors) => {
   console.log('stateSchema is: ', stateSchema);
   stateSchema.facebookCssSelectors = facebookCssSelectors;
 
+  if (localStorage.getItem('enabled') === null) {
+    toggleEnabled()
+  }
+
   let storedState = get();
   let state = storedState ? storedState : Object.assign({}, stateSchema);
   state.facebookCssSelectors = facebookCssSelectors;

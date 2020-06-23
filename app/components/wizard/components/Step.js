@@ -23,12 +23,6 @@ const Selection = styled.div`
 
   display: flex;
 
-  ${({ altMode }) =>
-    altMode &&
-    `
-    margin-top: 5px;
-  `}
-
   > label {
     margin-left: 10px;
     color: #000 !important;
@@ -131,20 +125,10 @@ const cleanKeyword = keyword => {
 }
 
 export default ({ step }) => {
-  const { altMode, selectedValues, index, dispatch } = useContext(StateContext)
+  const { selectedValues, index, dispatch } = useContext(StateContext)
   const selectedValue = selectedValues[index]
-  const displayAltMode = altMode && index !== 1
-  const selections = !displayAltMode ? step.selections : step.checkboxes
 
-  const onChange = (e, selectionIndex) => {
-    if (displayAltMode) {
-      return dispatch({
-        action: actions.CHECK,
-        payload: {
-          index: selectionIndex,
-        },
-      })
-    }
+  const onChange = (e) => {
     dispatch({
       action: actions.SELECTION,
       payload: {
@@ -155,31 +139,25 @@ export default ({ step }) => {
   }
   return (
     <Container>
-      <Question>{!displayAltMode ? step.question : step.altText}</Question>
+      <Question>{step.question}</Question>
       <Selections>
-        {selections &&
-          selections.map((selection, i) => (
-            <Selection key={`Selection_${i}`} altMode={displayAltMode}>
+        {step.selections &&
+          step.selections.map((selection, i) => (
+            <Selection key={`Selection_${i}`}>
               <input
-                type={!displayAltMode ? 'radio' : 'checkbox'}
+                type="radio"
                 id={`${step.name}_${i}`}
                 name={step.name}
                 value={i}
-                checked={
-                  !displayAltMode ? selectedValue === i : selection.value
-                }
+                checked={selectedValue === i}
                 onChange={e => onChange(e, i)}
               />
-              {!displayAltMode ? (
-                renderTextWithHighlights(
-                  dispatch,
-                  index,
-                  `${step.name}_${i}`,
-                  selection.text,
-                  selection.keywords
-                )
-              ) : (
-                <span style={{ marginLeft: 5 }}>{selection.text}</span>
+              {renderTextWithHighlights(
+                dispatch,
+                index,
+                `${step.name}_${i}`,
+                selection.text,
+                selection.keywords
               )}
               <br />
             </Selection>
