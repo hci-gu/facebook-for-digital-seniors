@@ -33,18 +33,20 @@ const generateCredentials = (hash) => {
 
 const signupToParse = async (browserHash) => {
   let credentials = generateCredentials(browserHash);
-  let user = Parse.User.signUp(
-    credentials.username,
-    credentials.password
-  ).catch((err) => console.error('parse signup failed', err));
-
-  if (user) {
-    console.log('registered new parse user: ', user);
-    loggedInToParse = true;
-    return user;
+  try {
+    let user = await Parse.User.signUp(
+      credentials.username,
+      credentials.password
+    )
+  
+    if (user) {
+      console.log('registered new parse user: ', user);
+      loggedInToParse = true;
+      return user;
+    }
+  } catch(err) {
+    console.error('parse signup failed', err)
   }
-
-  Promise.reject('failed to signUp new user. SAAAAD!');
 };
 
 const loginToParse = async (browserHash) => {
@@ -68,6 +70,7 @@ const loginToParse = async (browserHash) => {
 
 const sendUserInteraction = async (payload, state) => {
   if (!loggedInToParse) {
+    console.log('not logged in so just ignore')
     return; //BAIL OUT MADDAFAKKA!!!!
   }
   console.log('received user interaction: ', payload);
