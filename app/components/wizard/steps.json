@@ -25,7 +25,9 @@
     "selections": [
       {
         "text": "Stämmer",
-        "keywords": [],
+        "keywords": [
+          "se mina inlägg", "kategoriserar mina vänner"
+        ],
         "add": [
           "create-post-panel-safety-just-me",
           "create-post-panel-safety-friends",

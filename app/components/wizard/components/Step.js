@@ -1,7 +1,8 @@
-import React, { useContext } from 'react'
+import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { actions, StateContext } from '../state'
 import HelpIcon from './HelpIcon'
+import descriptionForPanel from '../descriptionForPanel'
 
 const Container = styled.div`
   height: 100%;
@@ -98,7 +99,7 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
                 payload: {
                   image: `${index}-${cleanKeyword(part)}`,
                   title: `${part[0].toUpperCase()}${part.slice(1)}`,
-                  description: '',
+                  description: descriptionForPanel(cleanKeyword(part)),
                 },
               })
             }}

@@ -264,9 +264,9 @@ export default {
           hide: false,
         },
         {
-          id: "language",
-          name: "Språkruta",
-          cssSelectorName: "languagePanel",
+          id: 'language',
+          name: 'Språkruta',
+          cssSelectorName: 'languagePanel',
           hide: false
         }
       ],
