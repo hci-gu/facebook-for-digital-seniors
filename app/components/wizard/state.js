@@ -47,6 +47,7 @@ export const actions = {
   SELECTION: 'selection',
   CHECK: 'check',
   HELP_PANEL: 'help-panel',
+  CONTACT_EDIT: 'contact-edit'
 }
 
 export const StateContext = React.createContext({})
@@ -84,7 +85,7 @@ const selectorsForChoice = (featuresToRemove, stepIndex, value) => {
 const removeFeaturesBasedOnSelections = (state) => {
   let featuresToRemove = selectors
   state.selectedValues.forEach((s, i) => {
-    if (i === 0 || i === state.selectedValues.length - 1) return
+    if (i <= 3 || i === state.selectedValues.length - 1) return
     featuresToRemove = selectorsForChoice(featuresToRemove, i, s)
   })
   return featuresToRemove
@@ -97,7 +98,14 @@ const reducer = (state, { action, payload }) => {
       let featuresToRemove
       featuresToRemove = removeFeaturesBasedOnSelections(state)
       console.log('featuresToRemove', featuresToRemove)
-      browser.runtime.sendMessage({ type: 'setWizardCompleted', payload: featuresToRemove })
+      browser.runtime.sendMessage({ 
+        type: 'setWizardCompleted',
+        payload: {
+          featuresToRemove,
+          analyticsActivated: state.selectedValues[0] <= 1,
+          contact: state.selectedValues[0] === 0 ? state.contact : null,
+        },
+      })
       return {
         ...state,
         removing: true,
@@ -120,8 +128,15 @@ const reducer = (state, { action, payload }) => {
         }),
       }
     case actions.FORWARD:
+      console.log(state.index, state.selectedValues)
       if (state.index === steps.length - 1) return
-      if (state.selectedValues[1] === 0) {
+      if (state.index === 0 && state.selectedValues[0] !== 0) {
+        return reducer(state, {
+          action: actions.JUMP_TO,
+          payload: { index: state.selectedValues[0] + 1 },
+        })
+      }
+      if (state.selectedValues[3] === 0) {
         return reducer(state, {
           action: actions.JUMP_TO,
           payload: { index: steps.length - 1 },
@@ -132,10 +147,22 @@ const reducer = (state, { action, payload }) => {
         index: state.index + 1,
       }
     case actions.BACKWARD:
-      if (state.selectedValues[1] === 0) {
+      if (state.index === 2 && state.selectedValues[0] === 1) {
         return reducer(state, {
           action: actions.JUMP_TO,
-          payload: { index: 1 },
+          payload: { index: 0 },
+        })
+      }
+      if (state.index === 3 && state.selectedValues[0] === 2) {
+        return reducer(state, {
+          action: actions.JUMP_TO,
+          payload: { index: 0 },
+        })
+      }
+      if (state.index === steps.length - 1 && state.selectedValues[3] === 0) {
+        return reducer(state, {
+          action: actions.JUMP_TO,
+          payload: { index: 3 },
         })
       }
       if (state.index === 0) return
@@ -153,6 +180,15 @@ const reducer = (state, { action, payload }) => {
         ...state,
         help: payload,
       }
+    case actions.CONTACT_EDIT:
+      const contact = {
+        ...state.contact,
+      }
+      contact[payload.type] = payload.value
+      return {
+        ...state,
+        contact
+      }
     default:
       return {
         ...state,
@@ -167,6 +203,11 @@ const initialState = () => ({
   removing: false,
   selectors: [],
   help: null,
+  contact: {
+    email: '',
+    age: '',
+    sex: ''
+  },
   steps: steps.map(step => ({
     ...step,
   })),

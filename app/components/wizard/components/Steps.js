@@ -73,15 +73,17 @@ export default () => {
   return (
     <Container>
       {steps
-        .filter((s) => s.title)
-        .map((s, i) => (
-          <Step key={`Step_${s.title}`}>
-            <Indicator active={i === index - 1} completed={i < index - 1}>
-              {i < steps.length - 2 && <Separator completed={i < index - 1} />}
-            </Indicator>
-            <Title active={i === index - 1}>{s.title}</Title>
-          </Step>
-        ))}
+        .map((s, i) => {
+          if (!s.title || s.dontShowInProgress) return
+          return (
+            <Step key={`Step_${s.title}`}>
+              <Indicator active={i === index} completed={i < index}>
+                {i < steps.length - 1 && <Separator completed={i < index} />}
+              </Indicator>
+              <Title active={i === index}>{s.title}</Title>
+            </Step>
+          )
+        })}
     </Container>
   )
 }

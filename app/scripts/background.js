@@ -221,8 +221,9 @@ browser.runtime.onMessage.addListener(async (message) => {
       return localStorage.getItem('wizardCompleted') === 'true';
     case 'setWizardCompleted':
       if (message.payload) {
+        console.log('got payload', message.payload)
         const _state = state.get()
-        wizard.updateStateHideOptionsForIds(message.payload, _state);
+        wizard.updateStateHideOptionsForIds(message.payload.featuresToRemove, _state);
         state.set(_state)
         sendMessageToPage('stateUpdate', state.get());
       }

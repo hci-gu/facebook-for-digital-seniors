@@ -1,6 +1,31 @@
 [
   {
-    "name": "intro"
+    "name": "select-data-level",
+    "title": "Hej och välkommen till detta browser-tillägg",
+    "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
+    "dontShowInProgress": true,
+    "selections": [
+      {
+        "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
+        "keywords": []
+      },
+      {
+        "text": "Jag delar gärna med mig av data men vill inte bli kontaktad.",
+        "keywords": []
+      },
+      {
+        "text": "Jag vill bara prova att använda det här tillägget och vill inte vara med i er studie eller dela med mig av data.",
+        "keywords": []
+      }
+    ]
+  },
+  {
+    "name": "share-contact-info",
+    "dontShowInProgress": true
+  },
+  {
+    "name": "share-data-info",
+    "dontShowInProgress": true
   },
   {
     "name": "general",
