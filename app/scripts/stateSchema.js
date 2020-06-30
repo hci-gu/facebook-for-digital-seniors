@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 35,
+  stateBreakingChangeCounter: 36,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -61,36 +61,36 @@ export default {
             labelCssSelectorName: 'appsNavLabel',
             hide: false,
           },
-          options: [
-            {
-              id: 'apps-nav-item-0',
-              name: 'x',
-              cssSelectorName: 'appsNavItemAtIndex:0',
-              labelCssSelectorName: 'appsNavItemLabel',
-              hide: false,
-            },
-            {
-              id: 'apps-nav-item-1',
-              name: 'y',
-              cssSelectorName: 'appsNavItemAtIndex:1',
-              labelCssSelectorName: 'appsNavItemLabel',
-              hide: false,
-            },
-            {
-              id: 'apps-nav-item-2',
-              name: 'z',
-              cssSelectorName: 'appsNavItemAtIndex:2',
-              labelCssSelectorName: 'appsNavItemLabel',
-              hide: false,
-            },
-            {
-              id: 'apps-nav-item-3',
-              name: 'w',
-              cssSelectorName: 'appsNavItemAtIndex:3',
-              labelCssSelectorName: 'appsNavItemLabel',
-              hide: false,
-            },
-          ],
+          /*
+            0 - covid info
+            1 - events
+            2 - pages
+            3 - groups
+            4 - donations
+            5 - friendlists
+            6 - games
+            7 - memories
+            8 - marketplace
+            9 - work
+            10 - ads-manager
+            11 - handle-apps
+            12 - oculus
+            13 - latest ad activity
+            14 - weather
+            15 - saved
+            17 - offers
+            18 - recommendations
+            19 - crisisresponse
+            20 - gaming-video
+            21 - live-video
+          */
+          options: Array.from({ length: 21 }).map((_, i)=> ({
+            id: `apps-nav-item-${i}`,
+            name: 'x',
+            cssSelectorName: `appsNavItemAtIndex:${i}`,
+            labelCssSelectorName: 'appsNavItemLabel',
+            hide: false,
+          }))
         },
       ],
     },
@@ -197,12 +197,58 @@ export default {
       ],
     },
     {
+      categoryName: 'Inställningar på andras inlägg',
+      options: [
+        {
+          id: 'post-settings-hide-ad',
+          name: 'Dölj annons',
+          cssSelectorName: 'postSettingsHideAd',
+          hide: false,
+        },
+        {
+          id: 'post-settings-hide',
+          name: 'Dölj inlägg',
+          cssSelectorName: 'postSettingsHide',
+          hide: false,
+        },
+        {
+          id: 'post-settings-save',
+          name: 'Spara inlägg',
+          cssSelectorName: 'postSettingsSave',
+          hide: false,
+        },
+        {
+          id: 'post-settings-notifications',
+          name: 'Följ inlägg',
+          cssSelectorName: 'postSettingsNotifications',
+          hide: false,
+        },
+      ]
+    },
+    {
+      categoryName: 'Vänner',
+      options: [
+        {
+          id: 'friends-recommended',
+          name: 'Rekommenderade Vänner',
+          cssSelectorName: 'friendsRecommendations',
+          hide: false,
+        }
+      ]
+    },
+    {
       categoryName: 'Övrigt',
       options: [
         {
           id: 'stories',
           name: 'Händelser',
           cssSelectorName: 'stories',
+          hide: false,
+        },
+        {
+          id: 'videoChats',
+          name: 'Rum',
+          cssSelectorName: 'videoChats',
           hide: false,
         },
         {
@@ -217,12 +263,12 @@ export default {
           },
           hide: false,
         },
-        // {
-        //   id: "language",
-        //   name: "Språkruta",
-        //   cssSelectorName: "languagePanel",
-        //   hide: false
-        // }
+        {
+          id: 'language',
+          name: 'Språkruta',
+          cssSelectorName: 'languagePanel',
+          hide: false
+        }
       ],
     },
   ],

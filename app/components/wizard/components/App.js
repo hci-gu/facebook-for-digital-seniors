@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Modal from './Modal'
 import Step from './Step'
 import ProgressIndicator from './ProgressIndicator'
+import ContactInfo from './ContactInfo'
 import { actions, StateContext } from '../state'
 
 const Container = styled.div`
@@ -24,6 +25,12 @@ const TextContent = styled.p`
   padding: 42px;
   height: 100%;
   font-size: 18px !important;
+
+  > ul {
+    list-style: disc;
+  }
+
+  ${({ lessPadding }) => lessPadding && `padding-top: 0; padding-bottom: 10px;`}
 `
 
 const Content = styled.div`
@@ -101,7 +108,7 @@ const Button = styled.button`
 
 const componentForStep = (step, skipped) => {
   switch (step.name) {
-    case 'intro':
+    case '':
       return (
         <TextContent>
           Svara på några frågor för att få en enklare design på Facebook.
@@ -109,6 +116,26 @@ const componentForStep = (step, skipped) => {
           <br />
           Du kan hoppa över detta och göra det senare genom inställningarna.
         </TextContent>
+      )
+    case 'share-data-info':
+      return (
+        <TextContent lessPadding>
+          Kul att du vill dela med dig av data! Följande är den data vi samlar på samt vad syftet är med datat. Du kan när som helst välja att ta tillbaka ditt data genom att klicka på ikonen högst upp.
+          <br /><br />
+          <ul>
+            <li>Varje gång du öppnar facebook och tidpunkten</li>
+            <li>Varje gång du ändrar inställningar för vad som ska visas av facebook genom detta tillägg</li>
+            <li>Svar på enkät varje vecka</li>
+          </ul>
+          <br/>
+          Syftet med datainsamlingen är att ta reda på hur det upplevs när gränssnittet för en tjänst man använder sig av ändras.
+          <br /><br />
+          Varje vecka visas några frågor som du svarar på som har att göra med din upplevelse av tillägget.
+        </TextContent>
+      )
+    case 'share-contact-info':
+      return (
+        <ContactInfo />
       )
     case 'finish':
       return (
@@ -129,7 +156,7 @@ const componentForStep = (step, skipped) => {
   }
 }
 
-const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
+const buttonsForStep = (step, selectedValue, dispatch, skipped, contact) => {
   switch (step.name) {
     case 'intro':
       return (
@@ -161,7 +188,7 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
                 return
               }
               dispatch({ action: actions.DONE })
-              setTimeout(() => dispatch({ action: actions.EXIT }), 500)
+              setTimeout(() => dispatch({ action: actions.EXIT }), 3000)
             }}
             style={{ marginLeft: 20 }}
           >
@@ -170,6 +197,11 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
         </>
       )
     default:
+      let disabled = selectedValue === null && step.title
+      if (step.name === 'share-contact-info') {
+        disabled = !contact.email || !contact.age || !contact.sex
+      }
+
       return (
         <>
           <Button
@@ -179,7 +211,7 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
             Föregående
           </Button>
           <Button
-            disabled={selectedValue === null && !altMode}
+            disabled={disabled}
             onClick={() => dispatch({ action: actions.FORWARD })}
             style={{ marginLeft: 20 }}
           >
@@ -192,18 +224,17 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, altMode) => {
 
 export default () => {
   const {
-    altMode,
     selectedValues,
     completed,
     steps,
     index,
     removing,
+    contact,
     dispatch,
   } = useContext(StateContext)
   const selectedValue = selectedValues[index]
   const step = steps[index]
   const skippedQuestions = selectedValues[1] === 0
-  const displayAltMode = altMode && index !== 1
   if (completed) return null
   return (
     <Container>
@@ -222,7 +253,7 @@ export default () => {
                 selectedValue,
                 dispatch,
                 skippedQuestions,
-                displayAltMode
+                contact
               )}
             </ButtonContainer>
           </Content>

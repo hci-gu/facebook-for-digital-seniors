@@ -1,10 +1,9 @@
 // import Parse from 'parse';
-import Fingerprint2 from 'fingerprintjs2';
 // import stateSchema from './stateSchema.js';
 import state from './background/state';
 import parseUtil from './background/parse-util';
-import { isPromiseResolved } from 'promise-status-async';
 import messageUtils from './message-utils';
+import wizard from './background/wizard';
 
 let initState = {};
 
@@ -225,7 +224,13 @@ const messageFromContentHandler = (message) => {
     case 'wizardCompleted':
       return localStorage.getItem('wizardCompleted') === 'true';
     case 'setWizardCompleted':
-      console.log('setWizardCompleted')
+      if (message.payload) {
+        console.log('got payload', message.payload)
+        const _state = state.get()
+        wizard.updateStateHideOptionsForIds(message.payload.featuresToRemove, _state);
+        state.set(_state)
+        sendMessageToPage('stateUpdate', state.get());
+      }
       return localStorage.setItem('wizardCompleted', true);
     default:
       console.log('unknown message type');
@@ -258,14 +263,6 @@ const messageFromMenuHandler = message => {
       console.log('received state update from menu', message.payload);
       state.set(message.payload);
       sendMessageToPage('stateUpdate', state.get());
-      // sendMessageToPopup("stateUpdate", message)
-      //   .then(response => {
-      //     console.log("response from sending state to popup: ", response);
-      //   })
-      //   .catch(err => {
-      //     console.error(err);
-      //     console.error("the popup is probably not open");
-      //   });
       return 'Aiight! Got your state!';
   }
 }
@@ -282,67 +279,6 @@ browser.runtime.onConnect.addListener((port) => {
     menuPort.postMessageWithAck = messageUtils.postMessageWithAck;
   }
 })
-
-// browser.runtime.onMessage.addListener(async (message) => {
-//   console.log('message received: ', message);
-//   switch (message.type) {
-//     case 'refreshState':
-//       return refreshState();
-//     case 'stateRequest':
-//       let gotState = state.get();
-//       if (gotState) {
-//         console.log('stateRequest', gotState);
-//         return gotState;
-//       } else {
-//         return Promise.reject("couldn't retrieve a state from localStorage!");
-//       }
-//     case 'stateEnabledRequest':
-//       let enabled = state.getEnabled();
-//       if (enabled !== undefined) {
-//         console.log('stateEnabledRequest', enabled);
-//         return enabled;
-//       } else {
-//         return Promise.reject(
-//           "couldn't retrieve a stateEnabled from localStorage!"
-//         );
-//       }
-//     case 'toggleState':
-//       state.toggleEnabled();
-//       sendMessageToPage('stateUpdate', state.get());
-//       return;
-//     case 'stateUpdate':
-//       // let parsedStateObject = JSON.parse(message.payload);
-//       console.log('received state update from page', message.payload);
-//       state.set(message.payload);
-//       sendMessageToPage('stateUpdate', state.get());
-//       // sendMessageToPopup("stateUpdate", message)
-//       //   .then(response => {
-//       //     console.log("response from sending state to popup: ", response);
-//       //   })
-//       //   .catch(err => {
-//       //     console.error(err);
-//       //     console.error("the popup is probably not open");
-//       //   });
-//       return 'Aiight! Got your state!';
-//     case 'initStateRequest':
-//       console.log('got initStateRequest from popup');
-//       return initState;
-//     case 'contentscriptReady':
-//       console.log('got contentscriptReady msg!');
-//       resolveContentscriptReady();
-//       return "You're ready. I, the bgscript, hereby acknowledge that!!";
-//     case 'userInteraction':
-//       return parseUtil.sendUserInteraction(message.payload, state);
-//     case 'wizardCompleted':
-//       return localStorage.getItem('wizardCompleted') === 'true';
-//     case 'setWizardCompleted':
-//       console.log('setWizardCompleted')
-//       return localStorage.setItem('wizardCompleted', true);
-//     default:
-//       console.log('unknown message type');
-//       return 'unknown message type';
-//   }
-// });
 
 const retrieveFacebookCssSelectors = async () => {
   // We ain't wanna have to push the json to github for each edit. So during development we simply require it.

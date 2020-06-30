@@ -38,7 +38,12 @@ export default () => {
       {help ? (
         <>
           <Title>{help.title}</Title>
-          <Description>{help.description}</Description>
+          <Description>{help.description.split('\n').map(text => {
+            return <>
+              <span>{text}</span>
+              <br></br>
+            </>
+          })}</Description>
           <Image src={getImage(help.image)} />
         </>
       ) : (

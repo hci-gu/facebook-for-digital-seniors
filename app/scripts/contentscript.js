@@ -152,10 +152,17 @@ const init = async () => {
   });
 
   watchedNodesQuery.push({
+    element: 'table.uiGrid',
+  });
+
+  watchedNodesQuery.push({
     element: selectors.composerFeedAudienceSelector,
   });
 
-  // To trigger when interact with checkboxes!
+  watchedNodesQuery.push({
+    element: 'ul[role=menu]',
+  });
+
   watchedNodesQuery.push({
     attribute: 'aria-checked',
   });
@@ -173,8 +180,8 @@ const init = async () => {
 };
 
 const nodeChangeHandler = async (summaries) => {
-  // console.log("node summary was triggered");
-  // console.log(summaries);
+  console.log("node summary was triggered");
+  console.log(summaries);
 
   const state = await sendStateRequest();
 
@@ -189,7 +196,6 @@ const nodeChangeHandler = async (summaries) => {
         ? summary.reparented
         : summary.added;
     for (let node of changedNodes) {
-      //was it the head tag?
       if (node.matches('body')) {
         onBodyTagLoaded();
       }
@@ -356,10 +362,11 @@ const updateComposerAudience = (state) => {
     return;
   }
   let composerFooter = composer.querySelector(selectors.composerFooter);
+  if (!composerFooter) return
   // console.log("composer: ", composer);
   let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]');
   // console.log("checkBoxes: ", checkBoxes);
-  if (checkBoxes.length) {
+  if (checkBoxes && checkBoxes.length) {
     for (let checkBox of checkBoxes) {
       let selectAudienceButton = checkBox.nextElementSibling.firstElementChild;
       if (!selectAudienceButton) {
@@ -479,5 +486,5 @@ const onBodyTagLoaded = async () => {
 //   console.log("DOCUMENT LOADED")
 // );
 
-console.log(`YOO! FB4Seniles loaded!!!`);
+console.log('YOO! FB4Seniles loaded!!!');
 init();
