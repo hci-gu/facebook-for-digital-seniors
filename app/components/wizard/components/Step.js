@@ -97,7 +97,7 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
               dispatch({
                 action: actions.HELP_PANEL,
                 payload: {
-                  image: `${index}-${cleanKeyword(part)}`,
+                  image: `${index - 2}-${cleanKeyword(part)}`,
                   title: `${part[0].toUpperCase()}${part.slice(1)}`,
                   description: descriptionForPanel(cleanKeyword(part)),
                 },

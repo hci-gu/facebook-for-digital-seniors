@@ -192,6 +192,8 @@ const sendMessageToPage = async (type, msg) => {
 const messageFromContentHandler = (message) => {
   console.log('message from contentscript received: ', message);
   switch (message.type) {
+    case 'stateRequest':
+      return state.get();
     case 'refreshState':
       return refreshState();
     case 'toggleState':

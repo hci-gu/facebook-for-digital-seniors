@@ -85,9 +85,7 @@ const sendStateUpdate = (state) => {
   backgroundPort.postMessage({ type: 'stateUpdate', payload: state });
 };
 
-const sendStateRequest = () => {
-  backgroundPort.postMessage({ type: 'stateRequest', payload: null })
-}
+const sendStateRequest = () => backgroundPort.postMessageWithAck({ type: 'stateRequest', payload: null })
 
 console.log('Sending contentScriptReady to bgscript');
 
