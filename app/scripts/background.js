@@ -2,9 +2,12 @@
 // import stateSchema from './stateSchema.js';
 import state from './background/state';
 import parseUtil from './background/parse-util';
+import messageUtils from './message-utils';
 import wizard from './background/wizard';
 
 let initState = {};
+
+let contentPort, menuPort;
 
 // browser.runtime.onInstalled.addListener(details => {
 //   console.log("previousVersion", details.previousVersion);
@@ -135,61 +138,62 @@ browser.browserAction.onClicked.addListener(async () => {
 });
 
 const sendMessageToPopup = async (type, msg) => {
-  return browser.runtime.sendMessage({ type: type, payload: msg });
-  // .then(response => {
-  //   console.log("sendStateUpdate response: ", response);
-  // });
+  // return browser.runtime.sendMessage({ type: type, payload: msg });
+  try {
+    let response = await menuPort.postMessageWithAck({
+      type: type,
+      payload: msg,
+    });
+    console.log('sent message resolved: ', response);
+    return response;
+  } catch (err) {
+    console.error("Couldn't send message to menu. Probably the menu is currently not open");
+    console.error(err);
+  }
 };
 
 const sendMessageToPage = async (type, msg) => {
   console.log('skickar till page:', type, msg);
-  return browser.tabs
-    .query({ currentWindow: true, active: true })
-    .then((tabs) => {
-      console.log(tabs);
-      return browser.tabs
-        .sendMessage(tabs[0].id, {
-          type: type,
-          payload: msg,
-        })
-        .then((answer) => {
-          console.log('sent message resolved: ', answer);
-          return answer;
-        })
-        .catch((err) => {
-          console.error('sendMessage threw error:');
-          console.error(err);
-        });
-    })
-    .catch((err) => {
-      console.error("Probably didn't find any active tab to send to");
-      console.error(err);
+  // return browser.tabs
+  //   .query({ currentWindow: true, active: true })
+  //   .then((tabs) => {
+  //     console.log(tabs);
+  //     return browser.tabs
+  //       .sendMessage(tabs[0].id, {
+  //         type: type,
+  //         payload: msg,
+  //       })
+  //       .then((answer) => {
+  //         console.log('sent message resolved: ', answer);
+  //         return answer;
+  //       })
+  //       .catch((err) => {
+  //         console.error('sendMessage threw error:');
+  //         console.error(err);
+  //       });
+  //   })
+  //   .catch((err) => {
+  //     console.error("Probably didn't find any active tab to send to");
+  //     console.error(err);
+  //   });
+  try {
+    let response = await contentPort.postMessageWithAck({
+      type: type,
+      payload: msg,
     });
+    console.log('sent message resolved: ', response);
+    return response;
+  } catch (err) {
+    console.error("Probably didn't find any active tab to send to");
+    console.error(err);
+  }
 };
 
-browser.runtime.onMessage.addListener(async (message) => {
-  console.log('message received: ', message);
+const messageFromContentHandler = (message) => {
+  console.log('message from contentscript received: ', message);
   switch (message.type) {
     case 'refreshState':
       return refreshState();
-    case 'stateRequest':
-      let gotState = state.get();
-      if (gotState) {
-        console.log('stateRequest', gotState);
-        return gotState;
-      } else {
-        return Promise.reject("couldn't retrieve a state from localStorage!");
-      }
-    case 'stateEnabledRequest':
-      let enabled = state.getEnabled();
-      if (enabled !== undefined) {
-        console.log('stateEnabledRequest', enabled);
-        return enabled;
-      } else {
-        return Promise.reject(
-          "couldn't retrieve a stateEnabled from localStorage!"
-        );
-      }
     case 'toggleState':
       state.toggleEnabled();
       sendMessageToPage('stateUpdate', state.get());
@@ -232,7 +236,49 @@ browser.runtime.onMessage.addListener(async (message) => {
       console.log('unknown message type');
       return 'unknown message type';
   }
-});
+}
+
+const messageFromMenuHandler = message => {
+  console.log('message from menu received: ', message);
+  switch (message.type) {
+    case 'stateRequest':
+      let gotState = state.get();
+      if (gotState) {
+        console.log('stateRequest', gotState);
+        return gotState;
+      } else {
+        return Promise.reject("couldn't retrieve a state from localStorage!");
+      }
+    case 'stateEnabledRequest':
+      let enabled = state.getEnabled();
+      if (enabled !== undefined) {
+        console.log('stateEnabledRequest', enabled);
+        return enabled;
+      } else {
+        return Promise.reject(
+          "couldn't retrieve a stateEnabled from localStorage!"
+        );
+      }
+    case 'stateUpdate':
+      console.log('received state update from menu', message.payload);
+      state.set(message.payload);
+      sendMessageToPage('stateUpdate', state.get());
+      return 'Aiight! Got your state!';
+  }
+}
+
+browser.runtime.onConnect.addListener((port) => {
+  console.log('port connected: ', port);
+  if (port.name === 'port-from-contentscript') {
+    contentPort = port;
+    messageUtils.addMessageHandlerWithAckAsPromise(contentPort, messageFromContentHandler);
+    contentPort.postMessageWithAck = messageUtils.postMessageWithAck;
+  } else if (port.name === 'port-from-menu') {
+    menuPort = port;
+    messageUtils.addMessageHandlerWithAckAsPromise(menuPort, messageFromMenuHandler);
+    menuPort.postMessageWithAck = messageUtils.postMessageWithAck;
+  }
+})
 
 const retrieveFacebookCssSelectors = async () => {
   // We ain't wanna have to push the json to github for each edit. So during development we simply require it.

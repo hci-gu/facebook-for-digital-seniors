@@ -111,6 +111,8 @@
 
 <script>
 import Collapsible from './Collapsible.vue';
+import messageUtils from '../../scripts/message-utils'
+let backgroundPort;
 export default {
   data() {
     return {
@@ -137,21 +139,7 @@ export default {
       }
     });
 
-    // TODO: Have the contentscript do this automatically when started
-    // this.sendMessageToPage("fetchLabelsRequest", null).then(response => {
-    //   this.state = response;
-    // });
-
-    this.sendMessageToBackground('stateRequest').then(response => {
-      console.log('got state!!!', response);
-      this.state = response;
-    });
-
-    this.sendMessageToBackground('stateEnabledRequest').then(response => {
-      this.stateEnabled = response;
-    });
-
-    browser.runtime.onMessage.addListener(message => {
+    const messageFromBgHandler = message => {
       console.log('msg received from background:', message);
       switch (message.type) {
         case 'stateUpdate':
@@ -168,12 +156,50 @@ export default {
           return Promise.resolve('unknown message type');
           break;
       }
+    }
+
+    backgroundPort = browser.runtime.connect({ name: "port-from-menu" });
+    backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck;
+    messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, messageFromBgHandler);
+
+    // browser.runtime.onMessage.addListener(message => {
+    //   console.log('msg received from background:', message);
+    //   switch (message.type) {
+    //     case 'stateUpdate':
+    //       try {
+    //         console.log('state update received');
+    //         this.state = message.payload;
+    //       } catch (err) {
+    //         console.error(err);
+    //         return 'stateUpdate failed somewhere in popup';
+    //       }
+    //       return 'performed your stateUpdate. Thaaaanx!!!';
+    //     default:
+    //       console.log('unknown message type', message.type);
+    //       return Promise.resolve('unknown message type');
+    //       break;
+    //   }
+    // });
+
+    this.sendMessageToBackground('stateRequest').then(response => {
+      console.log('got state!!!', response);
+      this.state = response;
     });
+
+    this.sendMessageToBackground('stateEnabledRequest').then(response => {
+      this.stateEnabled = response;
+    });
+
+    
   },
   methods: {
     async sendMessageToBackground(type, payload) {
       console.log('sending to background: ', type, payload);
-      return browser.runtime.sendMessage({
+      // return browser.runtime.sendMessage({
+      //   type: type,
+      //   payload: payload
+      // });
+      return backgroundPort.postMessageWithAck({
         type: type,
         payload: payload
       });

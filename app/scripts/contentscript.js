@@ -2,6 +2,7 @@ import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
 import DOMUtils from './contentscript/DOM-utils';
 import showWizard from '../components/wizard'
+import messageUtils from './message-utils';
 // import { isPromiseResolved } from "promise-status-async";
 
 let backgroundscriptReady = false;
@@ -33,8 +34,10 @@ const getFingerprint = () => {
   });
 };
 
-browser.runtime.onMessage.addListener(async (message) => {
-  console.log('msg received:', message);
+let backgroundPort = browser.runtime.connect({ name: "port-from-contentscript" });
+backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck;
+messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, (message) => {
+  // console.log('msg received:', message);
   switch (message.type) {
     case 'getFingerPrint':
       console.log('fingerprint requested from other extension script');
@@ -57,8 +60,8 @@ browser.runtime.onMessage.addListener(async (message) => {
     //   console.log('fetchLabelsRequest received');
     //   return state;
     default:
-      console.log('unknown message type', message.type);
-      return Promise.resolve('unknown message type');
+      console.log('unknown message type', message);
+      return 'unknown message type';
   }
 });
 
@@ -74,39 +77,32 @@ window.addEventListener('click', (evt) => {
 });
 
 const sendUserInteraction = (payload) => {
-  browser.runtime
-    .sendMessage({ type: 'userInteraction', payload: payload })
-    .then((response) => {
-      console.log('sendUserInteraction response: ', response);
-    });
+  backgroundPort.postMessage({ type: 'userInteraction', payload: payload });
 };
 
 const sendStateUpdate = (state) => {
   console.log('sending state to bg: ', state);
-  browser.runtime
-    .sendMessage({ type: 'stateUpdate', payload: state })
-    .then((response) => {
-      console.log('sendStateUpdate response: ', response);
-    });
+  backgroundPort.postMessage({ type: 'stateUpdate', payload: state });
 };
 
-const sendStateRequest = () =>
-  browser.runtime.sendMessage({ type: 'stateRequest', payload: null });
+const sendStateRequest = () => {
+  backgroundPort.postMessage({ type: 'stateRequest', payload: null })
+}
 
 console.log('Sending contentScriptReady to bgscript');
-browser.runtime
-  .sendMessage({ type: 'contentscriptReady', payload: null })
+
+backgroundPort.postMessageWithAck({ type: 'contentscriptReady', payload: null })
   .then((response) => {
     console.log('contentScriptReady response from bgscript: ', response);
     backgroundscriptReady = true;
     sendUserInteraction({ eventType: 'refresh' });
-  });
+  })
 
 //INIT stuff is happening here
 const init = async () => {
   console.log('init');
-  const state = await browser.runtime.sendMessage({ type: 'refreshState' });
-  const wizardCompleted = await browser.runtime.sendMessage({ type: 'wizardCompleted' });
+  const state = await backgroundPort.postMessageWithAck({ type: 'refreshState' });
+  const wizardCompleted = await backgroundPort.postMessageWithAck({ type: 'wizardCompleted' });
 
   if (!wizardCompleted) {
     showWizard()

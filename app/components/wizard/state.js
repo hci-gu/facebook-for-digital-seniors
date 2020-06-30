@@ -1,5 +1,6 @@
 import React from 'react'
 import steps from './steps.json'
+let backgroundPort = browser.runtime.connect({ name: "port-from-contentscript" })
 const selectors = [
   "universal-nav-item-3",
   "universal-nav-item-4",
@@ -94,24 +95,21 @@ const removeFeaturesBasedOnSelections = (state) => {
 const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
-      console.log(state.selectedValues)
-      let featuresToRemove
-      featuresToRemove = removeFeaturesBasedOnSelections(state)
-      console.log('featuresToRemove', featuresToRemove)
-      browser.runtime.sendMessage({ 
+      const featuresToRemove = removeFeaturesBasedOnSelections(state)
+      backgroundPort.postMessage({
         type: 'setWizardCompleted',
         payload: {
           featuresToRemove,
           analyticsActivated: state.selectedValues[0] <= 1,
           contact: state.selectedValues[0] === 0 ? state.contact : null,
         },
-      })
+      });
       return {
         ...state,
         removing: true,
       }
     case actions.EXIT:
-      browser.runtime.sendMessage({ type: 'setWizardCompleted', payload: [] })
+      backgroundPort.postMessage({ type: 'setWizardCompleted', payload: [] })
       return {
         ...state,
         completed: true,
