@@ -14,6 +14,8 @@ Check out `.env.example` for an example of how to configure the containers. Be a
 
 **A:** remove the folders `docker-persistence/parse` and `docker-persistence/parse-dashboard` and make changes to `.env` before (re-)starting the containers.
 
+or
+
 **B:** edit the two `config.json`-files in `docker-persistence/parse` and `docker-persistence/parse-dashboard` before (re-)starting the containers.
 
 ## Docker
