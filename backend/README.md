@@ -1,7 +1,7 @@
 # Backend for digital seniors
 
 ## Security on (AWS) instance
-Besides normal http and https you also need to open port 1337 to have request to parse come through.
+Besides normal http and https you also need to open port 1337 to have requests to parse come through.
 
 ## Parse
 The backend is running parse server. Check it out here: [https://parseplatform.org/](https://parseplatform.org/)
@@ -11,7 +11,9 @@ There is an instance of parse dashboard running for easier admin of data and str
 
 # .env
 Check out `.env.example` for an example of how to configure the containers. Be aware that (at least) the parse container only cares about the env-variables on first launch. After that it will fetch it's config from the persistent volumes on subsequent spin ups. If you need to change the config of parse and/or dashboard, either:
+
 **A:** remove the folders `docker-persistence/parse` and `docker-persistence/parse-dashboard` and make changes to `.env` before (re-)starting the containers.
+
 **B:** edit the two `config.json`-files in `docker-persistence/parse` and `docker-persistence/parse-dashboard` before (re-)starting the containers.
 
 ## Docker
