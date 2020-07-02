@@ -3,7 +3,10 @@
   "postContainerClass": ".userContentWrapper",
   "composer": "#pagelet_composer",
   "composerFeedAudienceSelector": ".composerAudienceWrapper",
-  "composerFooter": ".uiContextualLayerParent",
+  "composerFooter": {
+    "parentSelectorName": "composer",
+    "selector": "ol"
+  },
   "popupMenu": ".uiContextualLayerPositioner",
   "composerDeepestInnerWrapper": {
     "parentSelectorName": "composer",

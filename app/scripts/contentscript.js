@@ -167,7 +167,7 @@ const init = async () => {
 
   const analyticsReady = await backgroundPort.postMessageWithAck({ type: 'analyticsReady' });
   if (analyticsReady) {
-    
+
   }
 };
 
@@ -347,13 +347,7 @@ const updateStyles = (state) => {
 const updateComposerAudience = (state) => {
   // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
-
-  let composer = document.querySelector(selectors.composer);
-  if (!composer) {
-    console.error('no composer found. Maybe css selector changed by facebook?');
-    return;
-  }
-  let composerFooter = composer.querySelector(selectors.composerFooter);
+  let composerFooter = DOMUtils.getNodeFromCssObject(state, document, selectors['composerFooter'], null);
   if (!composerFooter) return
   // console.log("composer: ", composer);
   let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]');
