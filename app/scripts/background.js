@@ -20,10 +20,8 @@ let contentPort, menuPort;
 //we create a promise here that will settle when the fingerprint (hopefully) is received
 // let fingerPrintReceived = new Promise();
 let resolveContentscriptReady;
-let rejectContentscriptReady;
-let contentscriptReady = new Promise((resolve, reject) => {
+let contentscriptReady = new Promise((resolve) => {
   resolveContentscriptReady = resolve;
-  rejectContentscriptReady = reject;
 });
 
 //Perhaps a bit bloaty... Could just call sendMessageToPage directly...
@@ -61,22 +59,27 @@ const setup = async () => {
   console.log('state initialized: ', _state);
 
   setBrowserActionToPopup();
-  //Currently there's a bug that we need to refresh facebook to trigger the rest of setup. Should be dealt with at some point....
   await contentscriptReady;
-  console.log('contentscriptReady resolved');
 
+  const analyticsActivated = localStorage.getItem('analyticsActivated') === 'true';
+  if (analyticsActivated) {
+    getBrowserFingerPrintAndSetupParse();
+  }
+};
+
+const getBrowserFingerPrintAndSetupParse = async (contact) => {
   let browserPrint = localStorage.getItem('browserFingerPrint');
   if (!browserPrint) {
     console.log('no browserprint saved in storage. Gonna ask the page for one');
     browserPrint = await getFingerprintFromContentScript();
     if (browserPrint) {
       localStorage.setItem('browserFingerPrint', browserPrint);
-      parseUtil.setupParseConnection(browserPrint);
+      parseUtil.setupParseConnection(browserPrint, contact);
     }
   } else {
-    parseUtil.setupParseConnection(browserPrint);
+    parseUtil.setupParseConnection(browserPrint, contact);
   }
-};
+}
 
 function match(pattern, url) {
   pattern = pattern.split('/');
@@ -222,7 +225,7 @@ const messageFromContentHandler = (message) => {
       resolveContentscriptReady();
       return "You're ready. I, the bgscript, hereby acknowledge that!!";
     case 'userInteraction':
-      return parseUtil.sendUserInteraction(message.payload, state);
+      return parseUtil.sendUserInteraction(message.payload, state.get());
     case 'wizardCompleted':
       return localStorage.getItem('wizardCompleted') === 'true';
     case 'setWizardCompleted':
@@ -232,6 +235,10 @@ const messageFromContentHandler = (message) => {
         wizard.updateStateHideOptionsForIds(message.payload.featuresToRemove, _state);
         state.set(_state)
         sendMessageToPage('stateUpdate', state.get());
+        localStorage.setItem('analyticsActivated', message.payload.analyticsActivated);
+        if (message.payload.analyticsActivated) {
+          getBrowserFingerPrintAndSetupParse(message.payload.contact);
+        }
       }
       return localStorage.setItem('wizardCompleted', true);
     default:
@@ -264,6 +271,7 @@ const messageFromMenuHandler = message => {
     case 'stateUpdate':
       console.log('received state update from menu', message.payload);
       state.set(message.payload);
+      parseUtil.updateUserSettings(state.get());
       sendMessageToPage('stateUpdate', state.get());
       return 'Aiight! Got your state!';
   }

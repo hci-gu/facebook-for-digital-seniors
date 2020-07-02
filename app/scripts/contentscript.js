@@ -65,17 +65,6 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, (message) => {
   }
 });
 
-window.addEventListener('click', (evt) => {
-  // console.log(evt);
-  // console.log(evt.detail);
-  if (evt.detail == 1) {
-    sendUserInteraction({
-      eventType: 'click',
-      eventData: { x: evt.x, y: evt.y },
-    });
-  }
-});
-
 const sendUserInteraction = (payload) => {
   backgroundPort.postMessage({ type: 'userInteraction', payload: payload });
 };
@@ -175,6 +164,11 @@ const init = async () => {
     callback: nodeChangeHandler,
     queries: watchedNodesQuery,
   });
+
+  const analyticsReady = await backgroundPort.postMessageWithAck({ type: 'analyticsReady' });
+  if (analyticsReady) {
+    
+  }
 };
 
 const nodeChangeHandler = async (summaries) => {

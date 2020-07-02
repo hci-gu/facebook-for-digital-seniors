@@ -3,12 +3,12 @@
   "name": "__MSG_appName__",
   "description": "__MSG_appDescription__",
   "manifest_version": 2,
-  "default_locale": "en",
+  "default_locale": "sv",
   "icons": {
     "16": "images/fb-logo/icon-16.png",
     "36": "images/fb-logo/icon-36.png",
     "48": "images/fb-logo/icon-48.png",
-    "120": "images/fb-logo/icon-120.png",
+    "128": "images/fb-logo/icon-128.png",
     "310": "images/fb-logo/icon-310.png"
   },
   "background": {
@@ -19,7 +19,7 @@
       "16": "images/fb-logo/icon-16.png",
       "36": "images/fb-logo/icon-36.png",
       "48": "images/fb-logo/icon-48.png",
-      "120": "images/fb-logo/icon-120.png",
+      "128": "images/fb-logo/icon-128.png",
       "310": "images/fb-logo/icon-310.png"
     },
     "default_title": "__MSG_browserActionTitle__"
@@ -38,6 +38,6 @@
       "all_frames": false
     }
   ],
-  "permissions": ["storage", "tabs"],
+  "permissions": ["storage", "tabs", "https://d2sy394i9mrp8i.cloudfront.net/*"],
   "web_accessible_resources": ["images/tooltip/*.png"]
 }

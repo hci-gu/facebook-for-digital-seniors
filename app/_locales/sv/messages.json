@@ -1,0 +1,18 @@
+{
+  "appName": {
+    "message": "Facebook för digitala seniorer",
+    "description": "Name of the application"
+  },
+  "appShortName": {
+    "message": "fb-4-seniorer",
+    "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
+  },
+  "appDescription": {
+    "message": "Ett extension för att ändra utseendet och upplevelsen på Facebook. Primärt riktat för att göra det enklare för seniorer.",
+    "description": "The description of the application"
+  },
+  "browserActionTitle": {
+    "message": "Facebook för digitala seniorer",
+    "description": "The title of the browser action button"
+  }
+}

@@ -1,20 +1,20 @@
-import Parse from 'parse';
+import Parse, { isEncryptedUserEnabled } from 'parse';
 import Fingerprint2 from 'fingerprintjs2';
 
-Parse.serverURL = 'https://parseapi.back4app.com'; // This is your Server URL
+Parse.serverURL = 'https://d2sy394i9mrp8i.cloudfront.net/parse'; // This is your Server URL
 Parse.initialize(
   process.env.PARSE_APP_KEY, // This is your Application ID
-  process.env.PARSE_JAVASCRIPT_KEY // This is your Javascript key
 );
 let loggedInToParse = false;
 
-const setupParseConnection = async (browserPrint) => {
+const setupParseConnection = async (browserPrint, contact) => {
   if (!Parse.User.current()) {
     console.log('no logged in parse user found. Gonna try to login/signup');
     try {
       await loginToParse(browserPrint);
     } catch (err) {
-      let signUpResult = await signupToParse(browserPrint);
+      console.log('login failed, err', err)
+      let signUpResult = await signupToParse(browserPrint, contact);
       console.log(signUpResult);
     }
   } else {
@@ -31,7 +31,7 @@ const generateCredentials = (hash) => {
   return { username: Fingerprint2.x64hash128(hash), password: hash };
 };
 
-const signupToParse = async (browserHash) => {
+const signupToParse = async (browserHash, contact) => {
   let credentials = generateCredentials(browserHash);
   try {
     let user = await Parse.User.signUp(
@@ -41,6 +41,10 @@ const signupToParse = async (browserHash) => {
   
     if (user) {
       console.log('registered new parse user: ', user);
+      user.set('contactEmail', contact.email);
+      user.set('contactAge', contact.age);
+      user.set('contactSex', contact.sex);
+      user.save();
       loggedInToParse = true;
       return user;
     }
@@ -58,7 +62,9 @@ const loginToParse = async (browserHash) => {
   // }
   console.log('no current user. Trying to login');
   let credentials = generateCredentials(browserHash);
+  console.log('credentials', credentials)
   user = await Parse.User.logIn(credentials.username, credentials.password);
+  console.log('user', user)
 
   if (user) {
     loggedInToParse = true;
@@ -69,10 +75,7 @@ const loginToParse = async (browserHash) => {
 };
 
 const sendUserInteraction = async (payload, state) => {
-  if (!loggedInToParse) {
-    console.log('not logged in so just ignore')
-    return; //BAIL OUT MADDAFAKKA!!!!
-  }
+  if (!loggedInToParse) return;
   console.log('received user interaction: ', payload);
   const UserInteraction = Parse.Object.extend('UserInteraction');
   const interaction = new UserInteraction();
@@ -91,7 +94,27 @@ const sendUserInteraction = async (payload, state) => {
   return interaction.save();
 };
 
+const updateUserSettings = async (state) => {
+  if (!loggedInToParse) return;
+  console.log('updateUserSettings', state);
+  
+  const UserSettings = Parse.Object.extend('UserSettings');
+  const query = new Parse.Query(UserSettings);
+  query.equalTo('user', Parse.User.current());
+  const result = await query.find();
+  let userSettings;
+  if (result.length > 0) {
+    userSettings = result[0];
+  } else {
+    userSettings = new UserSettings();
+    userSettings.set('user', Parse.User.current());
+  }
+  userSettings.set('settings', state);
+  userSettings.save();
+}
+
 export default {
   setupParseConnection,
   sendUserInteraction,
+  updateUserSettings
 };
