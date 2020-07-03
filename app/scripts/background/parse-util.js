@@ -38,6 +38,7 @@ const signupToParse = async (browserHash, contact) => {
       credentials.username,
       credentials.password
     )
+    user.setACL(new Parse.ACL(user));
   
     if (user) {
       console.log('registered new parse user: ', user);
@@ -79,6 +80,7 @@ const sendUserInteraction = async (payload, state) => {
   console.log('received user interaction: ', payload);
   const UserInteraction = Parse.Object.extend('UserInteraction');
   const interaction = new UserInteraction();
+  interaction.setACL(new Parse.ACL(Parse.User.current()));
 
   interaction.set('user', Parse.User.current());
   interaction.set('when', new Date());
@@ -108,6 +110,7 @@ const updateUserSettings = async (state) => {
   } else {
     userSettings = new UserSettings();
     userSettings.set('user', Parse.User.current());
+    userSettings.setACL(new Parse.ACL(Parse.User.current()));
   }
   userSettings.set('settings', state);
   userSettings.save();
