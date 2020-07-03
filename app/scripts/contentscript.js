@@ -164,11 +164,6 @@ const init = async () => {
     callback: nodeChangeHandler,
     queries: watchedNodesQuery,
   });
-
-  const analyticsReady = await backgroundPort.postMessageWithAck({ type: 'analyticsReady' });
-  if (analyticsReady) {
-
-  }
 };
 
 const nodeChangeHandler = async (summaries) => {
@@ -347,7 +342,8 @@ const updateStyles = (state) => {
 const updateComposerAudience = (state) => {
   // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
-  let composerFooter = DOMUtils.getNodeFromCssObject(state, document, selectors['composerFooter'], null);
+  let composer = document.querySelector(selectors.composer);
+  let composerFooter = DOMUtils.getNodeFromCssObject(state, composer, selectors['composerFooter'], null);
   if (!composerFooter) return
   // console.log("composer: ", composer);
   let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]');
