@@ -1,24 +1,19 @@
 <template>
   <div id="main-container">
-    <div v-if="state.simpleMode">
-      <label class="checkbox-label">
-        <input
-          type="checkbox"
-          v-model="stateEnabled"
-          @change="sendMessageToBackground('toggleState')"
-          :true-value="true"
-          :false-value="false"
-        />
-        PÅ/AV
-      </label>
-    </div>
-    <div v-else>
+    <label class="checkbox-label">
+      <input
+        type="checkbox"
+        v-model="stateEnabled"
+        @change="toggleState()"
+        :true-value="true"
+        :false-value="false"
+      />
+      PÅ/AV
+    </label>
+    <div v-if="stateEnabled">
       <fieldset>
         <legend>Visa</legend>
-        <div
-          v-for="category of state.thingsToHide"
-          :key="category.categoryName"
-        >
+        <div v-for="category of state.thingsToHide" :key="category.categoryName">
           <div>
             <p>{{ category.categoryName }}</p>
             <template v-for="(group, index) of category.groups">
@@ -27,8 +22,7 @@
                 v-if="group.options"
                 :group.sync="group"
                 :key="index"
-              >
-              </collapsible>
+              ></collapsible>
               <div v-else :key="index">
                 <label :for="group.option.id" class="single-checkbox-label">
                   <input
@@ -66,7 +60,7 @@
       <fieldset v-for="(customCss, index) of state.customCss" :key="index">
         <legend>
           <!-- <label>
-          <input type="checkbox" v-model="customCss.enabled" /> -->
+          <input type="checkbox" v-model="customCss.enabled" />-->
           {{ customCss.name }}
           <!-- </label> -->
         </legend>
@@ -91,17 +85,11 @@
       <fieldset v-if="state.audienceSettings">
         <legend>Mottagare</legend>
         <label class="checkbox-label">
-          <input
-            type="checkbox"
-            v-model="state.audienceSettings.replaceAudienceIconsWithText"
-          />
+          <input type="checkbox" v-model="state.audienceSettings.replaceAudienceIconsWithText" />
           Visa mottagare med text istället för ikon
         </label>
         <label class="checkbox-label">
-          <input
-            type="checkbox"
-            v-model="state.audienceSettings.highlightAudienceWhenPosting"
-          />
+          <input type="checkbox" v-model="state.audienceSettings.highlightAudienceWhenPosting" />
           Belys mottagare när man skapar ny post
         </label>
       </fieldset>
@@ -110,8 +98,8 @@
 </template>
 
 <script>
-import Collapsible from './Collapsible.vue';
-import messageUtils from '../../scripts/message-utils'
+import Collapsible from "./Collapsible.vue";
+import messageUtils from "../../scripts/message-utils";
 let backgroundPort;
 export default {
   data() {
@@ -124,81 +112,59 @@ export default {
     state: {
       deep: true,
       handler: function() {
-        this.sendMessageToBackground('stateUpdate', this.state);
+        if (this.stateEnabled) {
+          this.sendMessageToBackground("stateUpdate", this.state);
+        }
       }
     }
   },
   mounted() {
-    console.log('mounted');
-
-    window.addEventListener('keydown', evt => {
-      console.log('keydown: ', evt.key);
-      if (!this.state) return;
-      if (evt.key == 'b') {
-        this.state.simpleMode = !this.state.simpleMode;
-      }
-    });
+    console.log("mounted");
 
     const messageFromBgHandler = message => {
-      console.log('msg received from background:', message);
+      console.log("msg received from background:", message);
       switch (message.type) {
-        case 'stateUpdate':
+        case "stateUpdate":
           try {
-            console.log('state update received');
+            console.log("state update received");
             this.state = message.payload;
           } catch (err) {
             console.error(err);
-            return 'stateUpdate failed somewhere in popup';
+            return "stateUpdate failed somewhere in popup";
           }
-          return 'performed your stateUpdate. Thaaaanx!!!';
+          return "performed your stateUpdate. Thaaaanx!!!";
         default:
-          console.log('unknown message type', message.type);
-          return Promise.resolve('unknown message type');
+          console.log("unknown message type", message.type);
+          return Promise.resolve("unknown message type");
           break;
       }
-    }
+    };
 
     backgroundPort = browser.runtime.connect({ name: "port-from-menu" });
     backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck;
-    messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, messageFromBgHandler);
-
-    // browser.runtime.onMessage.addListener(message => {
-    //   console.log('msg received from background:', message);
-    //   switch (message.type) {
-    //     case 'stateUpdate':
-    //       try {
-    //         console.log('state update received');
-    //         this.state = message.payload;
-    //       } catch (err) {
-    //         console.error(err);
-    //         return 'stateUpdate failed somewhere in popup';
-    //       }
-    //       return 'performed your stateUpdate. Thaaaanx!!!';
-    //     default:
-    //       console.log('unknown message type', message.type);
-    //       return Promise.resolve('unknown message type');
-    //       break;
-    //   }
-    // });
-
-    this.sendMessageToBackground('stateRequest').then(response => {
-      console.log('got state!!!', response);
-      this.state = response;
-    });
-
-    this.sendMessageToBackground('stateEnabledRequest').then(response => {
+    messageUtils.addMessageHandlerWithAckAsPromise(
+      backgroundPort,
+      messageFromBgHandler
+    );
+    this.sendMessageToBackground("stateEnabledRequest").then(response => {
       this.stateEnabled = response;
+      if (this.stateEnabled) {
+        this.sendMessageToBackground("stateRequest").then(response => {
+          this.state = response;
+        });
+      }
     });
-
-    
   },
   methods: {
+    async toggleState() {
+      await this.sendMessageToBackground("toggleState");
+      if (this.stateEnabled) {
+        this.sendMessageToBackground("stateRequest").then(response => {
+          this.state = response;
+        });
+      }
+    },
     async sendMessageToBackground(type, payload) {
-      console.log('sending to background: ', type, payload);
-      // return browser.runtime.sendMessage({
-      //   type: type,
-      //   payload: payload
-      // });
       return backgroundPort.postMessageWithAck({
         type: type,
         payload: payload
@@ -213,7 +179,7 @@ export default {
 
 <style>
 body {
-  font-family: 'Fira Sans', sans-serif;
+  font-family: "Fira Sans", sans-serif;
   --x: 1.5rem;
   margin: var(--x) var(--x) var(--x) var(--x);
 
@@ -224,7 +190,7 @@ html {
   overflow-y: overlay; /* scrollbar jump fix */
 }
 
-input[type='range'] {
+input[type="range"] {
   cursor: pointer;
 }
 

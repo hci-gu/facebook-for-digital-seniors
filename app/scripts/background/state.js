@@ -41,6 +41,7 @@ const get = () => {
 const set = (state) => {
   if (!getEnabled()) {
     console.error("You probably don't want to set state while disabled");
+    return;
   }
   localStorage.setItem('state', JSON.stringify(state));
 };

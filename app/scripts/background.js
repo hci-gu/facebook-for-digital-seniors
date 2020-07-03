@@ -199,10 +199,6 @@ const messageFromContentHandler = (message) => {
       return state.get();
     case 'refreshState':
       return refreshState();
-    case 'toggleState':
-      state.toggleEnabled();
-      sendMessageToPage('stateUpdate', state.get());
-      return;
     case 'stateUpdate':
       // let parsedStateObject = JSON.parse(message.payload);
       console.log('received state update from page', message.payload);
@@ -250,6 +246,10 @@ const messageFromContentHandler = (message) => {
 const messageFromMenuHandler = message => {
   console.log('message from menu received: ', message);
   switch (message.type) {
+    case 'toggleState':
+      state.toggleEnabled();
+      sendMessageToPage('stateUpdate', state.get());
+      return;
     case 'stateRequest':
       let gotState = state.get();
       if (gotState) {
