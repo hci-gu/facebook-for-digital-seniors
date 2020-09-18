@@ -1,7 +1,7 @@
 import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
 import DOMUtils from './contentscript/DOM-utils';
-import showWizard from '../components/wizard'
+import showWizard, { showWizardAfterDomLoaded } from '../components/wizard'
 import messageUtils from './message-utils';
 // import { isPromiseResolved } from "promise-status-async";
 
@@ -56,6 +56,8 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, (message) => {
         return 'stateUpdate failed somewhere in contentscript';
       }
       return 'performed your stateUpdate. Thaaaanx!!!';
+    case 'redoIntro':
+      return showWizardAfterDomLoaded();
     // case 'fetchLabelsRequest':
     //   console.log('fetchLabelsRequest received');
     //   return state;
@@ -92,7 +94,7 @@ const init = async () => {
   const wizardCompleted = await backgroundPort.postMessageWithAck({ type: 'wizardCompleted' });
 
   if (!wizardCompleted) {
-    showWizard()
+    // showWizard()
   }
   console.log('response received: ', state);
   // state = response;
@@ -375,7 +377,11 @@ const updateComposerAudience = (state) => {
     for (let selectAudienceButton of selectAudienceButtons) {
       let buttonContainer =
         selectAudienceButton.parentElement.parentElement.parentElement;
-      buttonContainer.classList.add('red-highlight-border');
+      if (state.audienceSettings.highlightAudienceWhenPosting) {
+        buttonContainer.classList.add('red-highlight-border');
+      } else {
+        buttonContainer.classList.remove('red-highlight-border');
+      }
     }
   }
 };

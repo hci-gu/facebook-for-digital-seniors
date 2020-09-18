@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 36,
+  stateBreakingChangeCounter: 50,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -8,86 +8,66 @@ export default {
       groups: [
         {
           option: {
-            id: 'universalNav',
+            id: 'top-panel-explore',
             name: 'Huvudsektioner',
-            cssSelectorName: 'universalNav',
+            cssSelectorName: 'topPanelExplore',
             hide: false,
           },
-          options: [
-            {
-              id: 'universal-nav-item-0',
-              name: 'x',
-              cssSelectorName: 'universalNavItemAtIndex:0',
-              labelCssSelectorName: 'universalNavItemLabel',
+          options: ['Home', 'Pages', 'Watch', 'Marketplace', 'Groups'].map((name, i) => ({
+            id: `top-panel-explore-item-${i}`,
+            name,
+              cssSelectorName: `topPanelExploreIndex:${i}`,
               hide: false,
-            },
-            {
-              id: 'universal-nav-item-1',
-              name: 'x',
-              cssSelectorName: 'universalNavItemAtIndex:1',
-              labelCssSelectorName: 'universalNavItemLabel',
-              hide: false,
-            },
-            {
-              id: 'universal-nav-item-2',
-              name: 'x',
-              cssSelectorName: 'universalNavItemAtIndex:2',
-              labelCssSelectorName: 'universalNavItemLabel',
-              hide: false,
-            },
-            {
-              id: 'universal-nav-item-3',
-              name: 'x',
-              cssSelectorName: 'universalNavItemAtIndex:3',
-              labelCssSelectorName: 'universalNavItemLabel',
-              hide: false,
-            },
-          ],
+          }))
         },
         {
           option: {
-            id: 'pinnedNav',
+            id: 'leftPanelShortCuts',
             name: 'Genvägar',
-            cssSelectorName: 'pinnedNav',
-            labelCssSelectorName: 'pinnedNavLabel',
+            cssSelectorName: 'leftPanelShortCuts',
+            labelCssSelectorName: '',
             hide: false,
           },
         },
         {
           option: {
-            id: 'appsNav',
+            id: 'leftPanelExplore',
             name: 'Utforska',
-            cssSelectorName: 'appsNav',
-            labelCssSelectorName: 'appsNavLabel',
+            cssSelectorName: 'leftPanelExplore',
             hide: false,
           },
           /*
             0 - covid info
-            1 - events
-            2 - pages
-            3 - groups
-            4 - donations
-            5 - friendlists
-            6 - games
-            7 - memories
-            8 - marketplace
-            9 - work
-            10 - ads-manager
-            11 - handle-apps
-            12 - oculus
-            13 - latest ad activity
-            14 - weather
-            15 - saved
-            17 - offers
-            18 - recommendations
-            19 - crisisresponse
-            20 - gaming-video
-            21 - live-video
+            1 - pages
+            2 - friends
+            3 - messenger
+            4 - events
+            5 - marketplace
+            6 - videos
+            7 - groups
+            8 - fundraisers
+            9 - friendlists
+            10 - games
+            11 - memories
+            12 - weather
+            13 - buy and sell groups
+            14 - work
+            15 - latest
+            17 - ads
+            18 - gaming videos
+            19 - saved
+            20 - crisis-response
+            21 - offers
+            22 - oculus
+            23 - latest-ad-activity
+            24 - live-videos
+            25 - facebook pay
+            document.querySelector('[data-pagelet="LeftRail"] > div > div > div > ul > li')
           */
-          options: Array.from({ length: 21 }).map((_, i)=> ({
-            id: `apps-nav-item-${i}`,
+          options: Array.from({ length: 25 }).map((_, i)=> ({
+            id: `leftPanelExploreItemAtIndex-${i}`,
             name: 'x',
-            cssSelectorName: `appsNavItemAtIndex:${i}`,
+            cssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
             labelCssSelectorName: 'appsNavItemLabel',
             hide: false,
           }))
@@ -97,6 +77,14 @@ export default {
     {
       categoryName: 'När man skapar inlägg',
       groups: [
+        {
+          option: {
+            id: 'composer',
+            name: 'Skapa inlägg',
+            cssSelectorName: 'composer, composerFeed',
+            hide: false,
+          },
+        },
         {
           option: {
             id: 'composer-background-button',
@@ -115,66 +103,66 @@ export default {
         },
         {
           option: {
-            id: 'composer-attachments-bar',
+            id: 'composer-toolbar',
             name: '"Lägg till"-knappar',
             cssSelectorName:
-              'composerAttachmentBar, composerCollapsedAttachmentBar',
+              'composerToolbar, composerFeedToolbar',
             hide: false,
           },
           options: [
             {
               id: 'composer-create-room',
               name: 'x',
-              cssSelectorName: 'composerCreateRoomButton',
+              cssSelectorName: 'composerToolbarIndex:0',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-add-pic',
               name: 'x',
-              cssSelectorName: 'composerPhotoButton',
+              cssSelectorName: 'composerToolbarIndex:1',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-tag-friends',
               name: 'x',
-              cssSelectorName: 'composerTagFriendsButton',
+              cssSelectorName: 'composerToolbarIndex:2',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-check-in',
               name: 'x',
-              cssSelectorName: 'composerCheckInButton',
+              cssSelectorName: 'composerToolbarIndex:3',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-feeling',
               name: 'x',
-              cssSelectorName: 'composerFeelingButton',
+              cssSelectorName: 'composerToolbarIndex:4',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-gif',
               name: 'x',
-              cssSelectorName: 'composerGIFButton',
+              cssSelectorName: 'composerToolbarIndex:5',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-live-stream',
               name: 'x',
-              cssSelectorName: 'composerLiveStreamButton',
+              cssSelectorName: 'composerToolbarIndex:6',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
             {
               id: 'composer-video-party',
               name: 'x',
-              cssSelectorName: 'composerVideoPartyButton',
+              cssSelectorName: 'composerToolbarIndex:7',
               labelCssSelectorName: 'composerAttachmentButtonLabel',
               hide: false,
             },
@@ -252,22 +240,10 @@ export default {
           hide: false,
         },
         {
-          id: 'rpane',
-          name: 'Högerpanel',
-          cssSelectorName: 'rightPanel',
-          customStylesWhenHidden: {
-            cssSelectorName: 'languagePanel',
-            enabled: false,
-            property: 'margin-top',
-            value: 0,
-          },
+          id: 'right-panel-sponsored',
+          name: 'Högerpanel sponsrad',
+          cssSelectorName: 'rightPanelSponsored',
           hide: false,
-        },
-        {
-          id: 'language',
-          name: 'Språkruta',
-          cssSelectorName: 'languagePanel',
-          hide: false
         }
       ],
     },

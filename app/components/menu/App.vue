@@ -94,6 +94,9 @@
         </label>
       </fieldset>
     </div>
+    <label class="checkbox-label">
+      <button @click="redoIntro()">Gör om introduktion</button>
+    </label>
   </div>
 </template>
 
@@ -105,23 +108,23 @@ export default {
   data() {
     return {
       state: {},
-      stateEnabled: false
+      stateEnabled: false,
     };
   },
   watch: {
     state: {
       deep: true,
-      handler: function() {
+      handler: function () {
         if (this.stateEnabled) {
           this.sendMessageToBackground("stateUpdate", this.state);
         }
-      }
-    }
+      },
+    },
   },
   mounted() {
     console.log("mounted");
 
-    const messageFromBgHandler = message => {
+    const messageFromBgHandler = (message) => {
       console.log("msg received from background:", message);
       switch (message.type) {
         case "stateUpdate":
@@ -146,10 +149,10 @@ export default {
       backgroundPort,
       messageFromBgHandler
     );
-    this.sendMessageToBackground("stateEnabledRequest").then(response => {
+    this.sendMessageToBackground("stateEnabledRequest").then((response) => {
       this.stateEnabled = response;
       if (this.stateEnabled) {
-        this.sendMessageToBackground("stateRequest").then(response => {
+        this.sendMessageToBackground("stateRequest").then((response) => {
           this.state = response;
         });
       }
@@ -159,7 +162,7 @@ export default {
     async toggleState() {
       await this.sendMessageToBackground("toggleState");
       if (this.stateEnabled) {
-        this.sendMessageToBackground("stateRequest").then(response => {
+        this.sendMessageToBackground("stateRequest").then((response) => {
           this.state = response;
         });
       }
@@ -167,13 +170,24 @@ export default {
     async sendMessageToBackground(type, payload) {
       return backgroundPort.postMessageWithAck({
         type: type,
-        payload: payload
+        payload: payload,
       });
-    }
+    },
+    async redoIntro() {
+      if (
+        confirm(
+          "Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar."
+        )
+      ) {
+        this.sendMessageToBackground("redoIntro").then((response) => {
+          this.state = response;
+        });
+      }
+    },
   },
   components: {
-    Collapsible
-  }
+    Collapsible,
+  },
 };
 </script>
 
