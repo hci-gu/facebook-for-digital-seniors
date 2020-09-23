@@ -56,7 +56,7 @@
         "add": [
           "create-post-panel-safety-just-me",
           "create-post-panel-safety-friends",
-          "apps-nav-item-5"
+          "explore-5"
         ]
       },
       {
@@ -91,7 +91,7 @@
         ],
         "add": [
           "composer-background-button",
-          "apps-nav-item-4",
+          "explore-4",
           "composer-feeling",
           "composer-recommendation",
           "composer-gif",
@@ -120,7 +120,7 @@
       {
         "text": "Samma som ovan, men ibland ber jag om eller ger rekommendationer",
         "keywords": ["rekommendationer"],
-        "add": ["apps-nav-item-18"]
+        "add": ["explore-18"]
       },
       {
         "text": "Inget av ovanstående stämmer in på mig.",
@@ -137,16 +137,15 @@
       {
         "text": "Ibland skrollar jag i mitt flöde och tittar på vad olika föreningar och företag lägger ut, intresserar mig för evenemang eller titta på minnen.",
         "keywords": ["flöde", "föreningar och företag", "evenemang", "minnen"],
-        "add": ["apps-nav-item-1", "apps-nav-item-7", "apps-nav-item-2"]
+        "add": ["explore-1", "explore-7", "explore-2"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
         "keywords": ["dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
-          "universal-nav-item-3",
+          "top-panel-explore-item-3",
           "post-settings-save",
           "post-settings-hide",
-          "post-settings-hide-ad",
           "post-settings-notifications"
         ]
       },
@@ -166,17 +165,17 @@
         "text": "Jag vill ibland köpa och sälja saker på Facebook eller bidra till välgörenhetsinsamlingar.",
         "keywords": ["köpa och sälja", "välgörenhetsinsamlingar"],
         "add": [
-          "universal-nav-item-4",
-          "apps-nav-item-8",
+          "top-panel-explore-item-4",
+          "explore-8",
           "composer-charity",
           "create-post-more",
-          "apps-nav-item-4"
+          "explore-4"
         ]
       },
       {
         "text": "Samma som ovan, men ibland vill jag kolla på min annonshistorik, mina erbjudanden eller leta efter jobbannonser.",
         "keywords": ["annonshistorik", "erbjudanden", "jobbannonser"],
-        "add": ["apps-nav-item-17", "apps-nav-item-9", "apps-nav-item-13", "apps-nav-item-10"]
+        "add": ["explore-17", "explore-9", "explore-13", "explore-10"]
       },
       {
         "text": "Jag vill inte göra något av ovanstående.",
@@ -193,12 +192,12 @@
       {
         "text": "Ibland spelar jag spel på Facebook.",
         "keywords": [" spel "],
-        "add": ["apps-nav-item-6"]
+        "add": ["explore-6"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag titta på spelvideos på Facebook också.",
         "keywords": ["spelvideos"],
-        "add": ["apps-nav-item-20"]
+        "add": ["explore-20"]
       },
       {
         "text": "Jag är inte intresserad av spel på Facebook.",

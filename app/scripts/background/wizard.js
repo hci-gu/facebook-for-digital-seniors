@@ -18,13 +18,14 @@ const setHiddenForId = (state, id) => {
   }
 }
 
+const updateStateHideOptionsForIds = (ids, state) => ids.forEach(id => setHiddenForId(state, id))
+
 const setCompleted = (payload) => {
   if (payload) {
     console.log('got payload', payload);
     const _state = state.get()
-    wizard.updateStateHideOptionsForIds(payload.featuresToRemove, _state);
+    updateStateHideOptionsForIds(payload.featuresToRemove, _state);
     state.set(_state);
-    sendMessageToPage('stateUpdate', state.get());
     localStorage.setItem('analyticsActivated', payload.analyticsActivated);
     if (payload.analyticsActivated) {
       getBrowserFingerPrintAndSetupParse(payload.contact);
@@ -35,6 +36,6 @@ const setCompleted = (payload) => {
 
 
 export default {
-  updateStateHideOptionsForIds: (ids, state) => ids.forEach(id => setHiddenForId(state, id)),
-  setCompleted
+  setCompleted,
+  isCompleted: () => localStorage.getItem('wizardCompleted') === 'true'
 }

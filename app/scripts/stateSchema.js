@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 50,
+  stateBreakingChangeCounter: 61,
   simpleMode: true,
   globalToggle: false,
   thingsToHide: [
@@ -65,10 +65,10 @@ export default {
             document.querySelector('[data-pagelet="LeftRail"] > div > div > div > ul > li')
           */
           options: Array.from({ length: 25 }).map((_, i)=> ({
-            id: `leftPanelExploreItemAtIndex-${i}`,
+            id: `explore-${i}`,
             name: 'x',
             cssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
-            labelCssSelectorName: 'appsNavItemLabel',
+            labelCssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
             hide: false,
           }))
         },
@@ -81,7 +81,7 @@ export default {
           option: {
             id: 'composer',
             name: 'Skapa inlägg',
-            cssSelectorName: 'composer, composerFeed',
+            cssSelectorName: 'composer, composerFeed, composerToolbarFull',
             hide: false,
           },
         },
@@ -103,6 +103,14 @@ export default {
         },
         {
           option: {
+            id: 'composer-audience-button',
+            name: 'Knapp för att hantera mottagare',
+            cssSelectorName: 'composerAudienceButton',
+            hide: false,
+          },
+        },
+        {
+          option: {
             id: 'composer-toolbar',
             name: '"Lägg till"-knappar',
             cssSelectorName:
@@ -112,72 +120,65 @@ export default {
           options: [
             {
               id: 'composer-create-room',
-              name: 'x',
+              name: 'Skapa rum',
               cssSelectorName: 'composerToolbarIndex:0',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:0',
               hide: false,
             },
             {
               id: 'composer-add-pic',
-              name: 'x',
+              name: 'Foto/video',
               cssSelectorName: 'composerToolbarIndex:1',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:1',
               hide: false,
             },
             {
               id: 'composer-tag-friends',
-              name: 'x',
+              name: 'Tagga vänner',
               cssSelectorName: 'composerToolbarIndex:2',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false,
-            },
-            {
-              id: 'composer-check-in',
-              name: 'x',
-              cssSelectorName: 'composerToolbarIndex:3',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:2',
               hide: false,
             },
             {
               id: 'composer-feeling',
-              name: 'x',
+              name: 'Känsla/aktivitet',
+              cssSelectorName: 'composerToolbarIndex:3',
+              labelCssSelectorName: 'composerToolbarIndex:3',
+              hide: false,
+            },
+            {
+              id: 'composer-check-in',
+              name: 'Checka in',
               cssSelectorName: 'composerToolbarIndex:4',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:4',
               hide: false,
             },
             {
               id: 'composer-gif',
-              name: 'x',
+              name: 'GIF',
               cssSelectorName: 'composerToolbarIndex:5',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:5',
               hide: false,
             },
             {
               id: 'composer-live-stream',
-              name: 'x',
+              name: 'Livevideo',
               cssSelectorName: 'composerToolbarIndex:6',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false,
-            },
-            {
-              id: 'composer-video-party',
-              name: 'x',
-              cssSelectorName: 'composerToolbarIndex:7',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
-              hide: false,
-            },
-            {
-              id: 'composer-recommendation',
-              name: 'x',
-              cssSelectorName: 'composerRecommendationButton',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              labelCssSelectorName: 'composerToolbarIndex:6',
               hide: false,
             },
             {
               id: 'composer-charity',
-              name: 'x',
-              cssSelectorName: 'composerCharityButton',
-              labelCssSelectorName: 'composerAttachmentButtonLabel',
+              name: 'Samla in pengar',
+              cssSelectorName: 'composerToolbarIndex:7',
+              labelCssSelectorName: 'composerToolbarIndex:7',
+              hide: false,
+            },
+            {
+              id: 'composer-video-party',
+              name: 'Videoparty',
+              cssSelectorName: 'composerToolbarIndex:8',
+              labelCssSelectorName: 'composerToolbarIndex:8',
               hide: false,
             },
           ],
@@ -188,21 +189,15 @@ export default {
       categoryName: 'Inställningar på andras inlägg',
       options: [
         {
-          id: 'post-settings-hide-ad',
-          name: 'Dölj annons',
-          cssSelectorName: 'postSettingsHideAd',
-          hide: false,
-        },
-        {
-          id: 'post-settings-hide',
-          name: 'Dölj inlägg',
-          cssSelectorName: 'postSettingsHide',
-          hide: false,
-        },
-        {
           id: 'post-settings-save',
           name: 'Spara inlägg',
           cssSelectorName: 'postSettingsSave',
+          hide: false,
+        },
+        {
+          id: 'post-settings-hide-ad',
+          name: 'Dölj inlägg/annons',
+          cssSelectorName: 'postSettingsHide',
           hide: false,
         },
         {

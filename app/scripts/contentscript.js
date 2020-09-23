@@ -94,7 +94,7 @@ const init = async () => {
   const wizardCompleted = await backgroundPort.postMessageWithAck({ type: 'wizardCompleted' });
 
   if (!wizardCompleted) {
-    // showWizard()
+    showWizard()
   }
   console.log('response received: ', state);
   // state = response;
@@ -110,7 +110,7 @@ const init = async () => {
   // updateStyles();
   updateShareIcons(state);
 
-  // updateVisibilityAll();
+  updateVisibilityAll();
 
   let watchedNodesQuery = [];
 
@@ -133,27 +133,23 @@ const init = async () => {
       sendStateUpdate(fetchLabelsAndAddToState(state));
       initialNodeObserver.disconnect();
     },
-    queries: [{ element: selectors.universalNav }],
+    queries: [{ element: selectors.composerToolbar.selector }],
   });
 
-  watchedNodesQuery.push({
-    element: selectors.postContainerClass,
-  });
+  // watchedNodesQuery.push({
+  //   element: selectors.composer,
+  // });
+
+  // watchedNodesQuery.push({
+  //   element: 'table.uiGrid',
+  // });
+
+  // watchedNodesQuery.push({
+  //   element: selectors.composerToolbar,
+  // });
 
   watchedNodesQuery.push({
-    element: 'table.uiGrid',
-  });
-
-  watchedNodesQuery.push({
-    element: selectors.composerFeedAudienceSelector,
-  });
-
-  watchedNodesQuery.push({
-    element: 'ul[role=menu]',
-  });
-
-  watchedNodesQuery.push({
-    attribute: 'aria-checked',
+    element: '[data-testid=\"Keycommand_wrapper_ModalLayer\"]',
   });
 
   // we want to react as soon the head tag is inserted into the DOM.
@@ -188,15 +184,16 @@ const nodeChangeHandler = async (summaries) => {
       if (node.matches('body')) {
         onBodyTagLoaded();
       }
-      // for (let item of state.thingsToHide) {
-      //   if (node.matches(item.cssSelector)) {
-      //     if (item.hide) {
-      //       hideElement(node);
-      //     } else {
-      //       showElement(node);
-      //     }
-      //   }
-      // }
+      console.log(node)
+      for (let item of state.thingsToHide) {
+        if (node.matches(item.cssSelector)) {
+          if (item.hide) {
+            hideElement(node);
+          } else {
+            showElement(node);
+          }
+        }
+      }
 
       if (node.matches(selectors.postContainerClass)) {
         updateShareIcons(state);

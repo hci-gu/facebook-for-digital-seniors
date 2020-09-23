@@ -223,9 +223,10 @@ const messageFromContentHandler = (message) => {
     case 'userInteraction':
       return parseUtil.sendUserInteraction(message.payload, state.get());
     case 'wizardCompleted':
-      return localStorage.getItem('wizardCompleted') === 'true';
+      return wizard.isCompleted()
     case 'setWizardCompleted':
-      wizard.setCompleted();
+      wizard.setCompleted(message.payload);
+      sendMessageToPage('stateUpdate', state.get());
       return;
     default:
       console.log('unknown message type');

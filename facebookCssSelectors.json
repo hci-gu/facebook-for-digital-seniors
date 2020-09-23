@@ -8,7 +8,7 @@
   },
   "stories": "[data-pagelet=\"Stories\"]",
   "videoChats": "[data-pagelet=\"VideoChatHomeUnit\"]",
-  "popupMenu": "[data-testid=\"Keycommand_wrapper\"]",
+  "popupMenu": "[data-testid=\"Keycommand_wrapper_ModalLayer\"]",
   "composerBackgroundButton": {
     "parentSelectorName": "composer",
     "selector": "div [role=\"presentation\"]",
@@ -19,6 +19,11 @@
     "selector": "div [role=\"presentation\"]",
     "DOMSearch": "children:2"
   },
+  "composerAudienceButton": {
+    "parentSelectorName": "composer",
+    "selector": "div span:nth-child(2)",
+    "DOMSearch": "parentElement, parentElement"
+  },
   "composerFeedToolbar": {
     "parentSelectorName": "composerFeed",
     "selector": "div[role=\"region\"]",
@@ -28,6 +33,10 @@
     "parentSelectorName": "composer",
     "selector": "[aria-labelledby=\"toolbarLabel\"]",
     "DOMSearch": "parentElement"
+  },
+  "composerToolbarFull": {
+    "selector": "form[method=\"POST\"] > [data-testid=\"Keycommand_wrapper_ModalLayer\"] > div",
+    "DOMSearch": "children:2"
   },
   "composerToolbarIndex": {
     "parentSelectorName": "composerToolbar",
@@ -71,5 +80,20 @@
   "rightPanelSponsored": {
     "parentSelectorName": "rightPanel",
     "selector": "div > div"
+  },
+  "postSettingsSave": {
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:0",
+    "multiple": true
+  },
+  "postSettingsNotification": {
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:2",
+    "multiple": true
+  },
+  "postSettingsHide": {
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:5",
+    "multiple": true
   }
 }
