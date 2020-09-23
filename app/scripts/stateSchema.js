@@ -36,37 +36,35 @@ export default {
             cssSelectorName: 'leftPanelExplore',
             hide: false,
           },
-          /*
-            0 - covid info
-            1 - pages
-            2 - friends
-            3 - messenger
-            4 - events
-            5 - marketplace
-            6 - videos
-            7 - groups
-            8 - fundraisers
-            9 - friendlists
-            10 - games
-            11 - memories
-            12 - weather
-            13 - buy and sell groups
-            14 - work
-            15 - latest
-            17 - ads
-            18 - gaming videos
-            19 - saved
-            20 - crisis-response
-            21 - offers
-            22 - oculus
-            23 - latest-ad-activity
-            24 - live-videos
-            25 - facebook pay
-            document.querySelector('[data-pagelet="LeftRail"] > div > div > div > ul > li')
-          */
-          options: Array.from({ length: 25 }).map((_, i)=> ({
+          options: [
+            'Covid-19-informationscentret',
+            'Sidor',
+            'Vänner',
+            'Messenger',
+            'Evenemang',
+            'Marketplace',
+            'Videos',
+            'Insamlingar',
+            'Grupper',
+            'Vänlistor',
+            'Minnen',
+            'Spel',
+            'Erbjudanden',
+            'Spelvideo',
+            'Köp- och säljgrupper',
+            'Jobb',
+            'Senaste',
+            'Annonser',
+            'Facebook Pay',
+            'Sparat',
+            'Krisrespons',
+            'Oculus',
+            'Senaste annonsaktivitet',
+            'Livevideor',
+            'Vädret',
+          ].map((name, i)=> ({
             id: `explore-${i}`,
-            name: 'x',
+            name,
             cssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
             labelCssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
             hide: false,
