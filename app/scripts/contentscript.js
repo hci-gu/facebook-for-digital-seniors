@@ -110,7 +110,7 @@ const init = async () => {
   // updateStyles();
   updateShareIcons(state);
 
-  updateVisibilityAll();
+  setTimeout(() => updateVisibilityAll(state), 1000);
 
   let watchedNodesQuery = [];
 
