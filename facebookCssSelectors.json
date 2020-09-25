@@ -8,7 +8,10 @@
   },
   "stories": "[data-pagelet=\"Stories\"]",
   "videoChats": "[data-pagelet=\"VideoChatHomeUnit\"]",
-  "popupMenu": "[data-testid=\"Keycommand_wrapper_ModalLayer\"]",
+  "popupMenu": {
+    "selector": "[data-testid=\"Keycommand_wrapper_ModalLayer\"] [data-testid=\"Keycommand_wrapper\"]",
+    "multiple": true
+  },
   "composerBackgroundButton": {
     "parentSelectorName": "composer",
     "selector": "div [role=\"presentation\"]",

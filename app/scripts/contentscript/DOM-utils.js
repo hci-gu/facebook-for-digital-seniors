@@ -1,17 +1,14 @@
 let style = undefined;
+let selectors
+const init = (facebookCssSelectors) => {
+  selectors = facebookCssSelectors
+}
 
 const getNodeFromCssObject = (
-  state,
-  startNode,
   cssSelectorObject,
+  startNode = document,
   selectorParameter
 ) => {
-  // console.log(
-  //   'getNodeFromCssObject:',
-  //   startNode,
-  //   cssSelectorObject,
-  //   selectorParameter
-  // );
   let node = null;
   if (typeof cssSelectorObject === 'object' && cssSelectorObject !== null) {
     // console.log("retrieving node from traversal string", cssSelectorObject);
@@ -20,10 +17,8 @@ const getNodeFromCssObject = (
     }
     if (cssSelectorObject.parentSelectorName) {
       startNode = getNodeFromCssObject(
-        state,
+        selectors[cssSelectorObject.parentSelectorName],
         startNode,
-        state.facebookCssSelectors[cssSelectorObject.parentSelectorName],
-        null
       );
       if (!startNode) {
         return;
@@ -48,10 +43,8 @@ const getNodeFromCssObject = (
     node = document.querySelector(cssSelectorObject);
   }
   if (!node) {
-    // console.error("didn't find the node", cssSelectorObject);
     return null;
   }
-  // console.log('found a node:', node);
   return node;
 };
 
@@ -106,7 +99,7 @@ const showElement = (node) => {
   node.classList.remove('hide');
 };
 
-const updateVisibilityFromShowHideObject = (state, item) => {
+const updateVisibilityFromShowHideObject = (item) => {
   // console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
   try {
   let selectorNameList = item.cssSelectorName
@@ -122,19 +115,18 @@ const updateVisibilityFromShowHideObject = (state, item) => {
     if (selectorAndParameter[1]) {
       selectorParameter = selectorAndParameter[1];
     }
-    let cssSelectorObject = state.facebookCssSelectors[selectorName];
+    let cssSelectorObject = selectors[selectorName];
     // console.log("retrieved cssSelectorObject: ", cssSelectorObject);
 
     let node;
     try {
       node = getNodeFromCssObject(
-        state,
-        document,
         cssSelectorObject,
+        document,
         selectorParameter
       );
     } catch (e) {
-      console.error('error finding node: ', cssSelectorObject, selectorParameter)
+      console.error('error finding node: ', e, cssSelectorObject, selectorParameter)
     }
     if (!node) {
       continue;
@@ -142,21 +134,9 @@ const updateVisibilityFromShowHideObject = (state, item) => {
 
     if (item.customStylesWhenHidden) {
       item.customStylesWhenHidden.enabled = item.hide;
-      applyCustomCssObject(state, item.customStylesWhenHidden);
+      applyCustomCssObject(item.customStylesWhenHidden);
     }
 
-    // if (item.labelCssSelectorName) {
-    //   console.log(
-    //     "Also extracting option label from DOM using",
-    //     item.labelCssSelectorName
-    //   );
-    //   let labelCssSelectorObject =
-    //     state.facebookCssSelectors[item.labelCssSelectorName];
-    //   let label = getNodeFromCssObject(node, labelCssSelectorObject, null);
-    //   item.name = label;
-    //   // sendStateUpdate(state);
-    // }
-    // console.log("changing element: ", item.cssSelector, " to ", item.hide);
     if (node.length && node.length > 0) {
       node.forEach(_node => {
         if (item.hide) {
@@ -179,7 +159,7 @@ const updateVisibilityFromShowHideObject = (state, item) => {
   }
 };
 
-const applyCustomCssObject = (state, customCssObj) => {
+const applyCustomCssObject = (customCssObj) => {
   if (!style) {
     return;
   }
@@ -187,7 +167,7 @@ const applyCustomCssObject = (state, customCssObj) => {
   if (customCssObj.selector) {
     selector = customCssObj.selector;
   } else if (customCssObj.cssSelectorName) {
-    selector = state.facebookCssSelectors[customCssObj.cssSelectorName];
+    selector = selectors[customCssObj.cssSelectorName];
   } else {
     console.error('OOMG!!! CRASH OF DOOOM!!! CRYYY');
     return;
@@ -237,6 +217,7 @@ const createStyleTag = () => {
 };
 
 export default {
+  init,
   getNodeFromCssObject,
   updateVisibilityFromShowHideObject,
   applyCustomCssObject,

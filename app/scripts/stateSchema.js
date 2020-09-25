@@ -1,6 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 61,
-  simpleMode: true,
+  stateBreakingChangeCounter: 66,
   globalToggle: false,
   thingsToHide: [
     {
