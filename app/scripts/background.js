@@ -296,7 +296,7 @@ const retrieveFacebookCssSelectors = async () => {
   } else {
     let githubRawUrl = 'https://raw.githubusercontent.com/';
     let facebookCssSelectorsJsonPath =
-      'Dealerpriest/facebook-for-elderly/master/facebookCssSelectors.json';
+      'hci-gu/facebook-for-digital-seniors/master/facebookCssSelectors.json';
 
     let response = await fetch(githubRawUrl + facebookCssSelectorsJsonPath);
     console.log('fetched json from github');
