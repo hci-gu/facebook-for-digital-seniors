@@ -1,0 +1,151 @@
+{
+  "body": "body",
+  "postContainerClass": ".userContentWrapper",
+  "composer": "#pagelet_composer",
+  "composerFeedAudienceSelector": ".composerAudienceWrapper",
+  "composerFooter": {
+    "parentSelectorName": "composer",
+    "selector": "ol"
+  },
+  "popupMenu": ".uiContextualLayerPositioner",
+  "composerDeepestInnerWrapper": {
+    "parentSelectorName": "composer",
+    "DOMSearch": "firstElementChild, firstElementChild, lastElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, lastElementChild, firstElementChild"
+  },
+  "composerBackgroundButton": {
+    "parentSelectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, firstElementChild"
+  },
+  "composerEmojiButton": {
+    "parentSelectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, lastElementChild"
+  },
+  "composerAttachmentBar": {
+    "parentSelectorName": "composerDeepestInnerWrapper",
+    "DOMSearch": "lastElementChild, children:1"
+  },
+  "composerAttachmentButtonAtIndex": {
+    "parentSelectorName": "composerAttachmentBar",
+    "DOMSearch": "firstElementChild, children:i"
+  },
+  "composerAttachmentButtonLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, children:1, textContent"
+  },
+  "composerCollapsedAttachmentBar": {
+    "parentSelectorName": "composer",
+    "selector": "form",
+    "DOMSearch": "children:3"
+  },
+  "composerCollapsedAttachmentButtonAtIndex": {
+    "parentSelectorName": "composerAttachmentBar",
+    "DOMSearch": "firstElementChild, children:i"
+  },
+  "composerCreateRoomButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_CHATROOM",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(1)"
+  },
+  "composerPhotoButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_MEDIA",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(2)"
+  },
+  "composerTagFriendsButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_WITH_TAG",
+    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(3)"
+  },
+  "composerCheckInButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_LOCATION"
+  },
+  "composerFeelingButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_MINUTIAE"
+  },
+  "composerGIFButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_GIF"
+  },
+  "composerLiveStreamButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_FACECAST"
+  },
+  "composerVideoPartyButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_LIVING_ROOM"
+  },
+  "composerRecommendationButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_RECOMMENDATION"
+  },
+  "composerCharityButton": {
+    "parentSelectorName": "composer",
+    "selector": ".fbReactComposerAttachmentSelector_FUNDRAISER"
+  },
+  "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
+  "navigationPanel": "#left_nav_section_nodes",
+  "universalNav": "#universalNav",
+  "universalNavItemAtIndex": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:i"
+  },
+  "universalNavItemLabel": {
+    "DOMSearch": "lastElementChild, lastElementChild, textContent"
+  },
+  "navItemNewsFeed": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:0"
+  },
+  "navItemMessenger": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:1"
+  },
+  "navItemWatch": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:2"
+  },
+  "navItemMarketplace": {
+    "selector": "#universalNav ul",
+    "DOMSearch": "children:3"
+  },
+  "pinnedNav": "#pinnedNav",
+  "pinnedNavLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, textContent"
+  },
+  "appsNav": "#appsNav",
+  "appsNavLabel": {
+    "DOMSearch": "firstElementChild, firstElementChild, textContent"
+  },
+  "appsNavItemAtIndex": {
+    "selector": "#appsNav ul",
+    "DOMSearch": "children:i"
+  },
+  "appsNavItemLabel": {
+    "DOMSearch": "firstElementChild, lastElementChild,textContent"
+  },
+  "stories": "#stories_pagelet_below_composer",
+  "videoChats": "#video_chats",
+  "rightPanel": ".home_right_column",
+  "languagePanel": "#pagelet_rhc_footer > :first-child",
+  "friendsRecommendations": {
+    "selector": ".friendBrowserForm",
+    "DOMSearch": "parentElement"
+  },
+  "postSettingsHide": {
+    "selector": "li[data-feed-option-name=\"HIDE\"]",
+    "multiple": true
+  },
+  "postSettingsHideAd": {
+    "selector": "li[data-feed-option-name=\"HIDE_AD\"]",
+    "multiple": true
+  },
+  "postSettingsSave": {
+    "selector": "li[data-feed-option-name=\"FeedSaveOption\"]",
+    "multiple": true
+  },
+  "postSettingsNotifications": {
+    "selector": "li[data-feed-option-name=\"FeedFollowOption\"]",
+    "multiple": true
+  }
+}

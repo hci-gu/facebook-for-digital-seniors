@@ -223,20 +223,11 @@ const messageFromContentHandler = (message) => {
     case 'userInteraction':
       return parseUtil.sendUserInteraction(message.payload, state.get());
     case 'wizardCompleted':
-      return localStorage.getItem('wizardCompleted') === 'true';
+      return wizard.isCompleted()
     case 'setWizardCompleted':
-      if (message.payload) {
-        console.log('got payload', message.payload)
-        const _state = state.get()
-        wizard.updateStateHideOptionsForIds(message.payload.featuresToRemove, _state);
-        state.set(_state)
-        sendMessageToPage('stateUpdate', state.get());
-        localStorage.setItem('analyticsActivated', message.payload.analyticsActivated);
-        if (message.payload.analyticsActivated) {
-          getBrowserFingerPrintAndSetupParse(message.payload.contact);
-        }
-      }
-      return localStorage.setItem('wizardCompleted', true);
+      wizard.setCompleted(message.payload);
+      sendMessageToPage('stateUpdate', state.get());
+      return;
     default:
       console.log('unknown message type');
       return 'unknown message type';
@@ -274,6 +265,12 @@ const messageFromMenuHandler = message => {
       parseUtil.updateUserSettings(state.get());
       sendMessageToPage('stateUpdate', state.get());
       return 'Aiight! Got your state!';
+    case 'redoIntro':
+      console.log('redo intro');
+      state.reset();
+      localStorage.setItem('wizardCompleted', false);
+      sendMessageToPage('redoIntro');
+      return;
   }
 }
 

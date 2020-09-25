@@ -1,151 +1,102 @@
 {
   "body": "body",
   "postContainerClass": ".userContentWrapper",
-  "composer": "#pagelet_composer",
-  "composerFeedAudienceSelector": ".composerAudienceWrapper",
-  "composerFooter": {
-    "parentSelectorName": "composer",
-    "selector": "ol"
+  "composer": "[role=\"dialog\"] > form > div > div > div > div",
+  "composerFeed": {
+    "selector": "#ssrb_composer_start",
+    "DOMSearch": "parentElement, children: 2"
   },
-  "popupMenu": ".uiContextualLayerPositioner",
-  "composerDeepestInnerWrapper": {
-    "parentSelectorName": "composer",
-    "DOMSearch": "firstElementChild, firstElementChild, lastElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, lastElementChild, firstElementChild"
+  "stories": "[data-pagelet=\"Stories\"]",
+  "videoChats": "[data-pagelet=\"VideoChatHomeUnit\"]",
+  "popupMenu": {
+    "selector": "[data-testid=\"Keycommand_wrapper_ModalLayer\"] [data-testid=\"Keycommand_wrapper\"]",
+    "multiple": true
   },
   "composerBackgroundButton": {
-    "parentSelectorName": "composerDeepestInnerWrapper",
-    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, firstElementChild"
-  },
-  "composerEmojiButton": {
-    "parentSelectorName": "composerDeepestInnerWrapper",
-    "DOMSearch": "children:1, firstElementChild, firstElementChild, children:1, lastElementChild"
-  },
-  "composerAttachmentBar": {
-    "parentSelectorName": "composerDeepestInnerWrapper",
-    "DOMSearch": "lastElementChild, children:1"
-  },
-  "composerAttachmentButtonAtIndex": {
-    "parentSelectorName": "composerAttachmentBar",
-    "DOMSearch": "firstElementChild, children:i"
-  },
-  "composerAttachmentButtonLabel": {
-    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, children:1, textContent"
-  },
-  "composerCollapsedAttachmentBar": {
     "parentSelectorName": "composer",
-    "selector": "form",
-    "DOMSearch": "children:3"
-  },
-  "composerCollapsedAttachmentButtonAtIndex": {
-    "parentSelectorName": "composerAttachmentBar",
-    "DOMSearch": "firstElementChild, children:i"
-  },
-  "composerCreateRoomButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_CHATROOM",
-    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(1)"
-  },
-  "composerPhotoButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_MEDIA",
-    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(2)"
-  },
-  "composerTagFriendsButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_WITH_TAG",
-    "altSelector": "form[method=post] div:nth-child(4) > span > div:nth-child(3)"
-  },
-  "composerCheckInButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_LOCATION"
-  },
-  "composerFeelingButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_MINUTIAE"
-  },
-  "composerGIFButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_GIF"
-  },
-  "composerLiveStreamButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_FACECAST"
-  },
-  "composerVideoPartyButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_LIVING_ROOM"
-  },
-  "composerRecommendationButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_RECOMMENDATION"
-  },
-  "composerCharityButton": {
-    "parentSelectorName": "composer",
-    "selector": ".fbReactComposerAttachmentSelector_FUNDRAISER"
-  },
-  "shareIconAttributes": "[data-tooltip-content][aria-label][role=\"img\"]",
-  "navigationPanel": "#left_nav_section_nodes",
-  "universalNav": "#universalNav",
-  "universalNavItemAtIndex": {
-    "selector": "#universalNav ul",
-    "DOMSearch": "children:i"
-  },
-  "universalNavItemLabel": {
-    "DOMSearch": "lastElementChild, lastElementChild, textContent"
-  },
-  "navItemNewsFeed": {
-    "selector": "#universalNav ul",
-    "DOMSearch": "children:0"
-  },
-  "navItemMessenger": {
-    "selector": "#universalNav ul",
+    "selector": "div [role=\"presentation\"]",
     "DOMSearch": "children:1"
   },
-  "navItemWatch": {
-    "selector": "#universalNav ul",
+  "composerEmojiButton": {
+    "parentSelectorName": "composer",
+    "selector": "div [role=\"presentation\"]",
     "DOMSearch": "children:2"
   },
-  "navItemMarketplace": {
-    "selector": "#universalNav ul",
-    "DOMSearch": "children:3"
+  "composerAudienceButton": {
+    "parentSelectorName": "composer",
+    "selector": "div span:nth-child(2)",
+    "DOMSearch": "parentElement, parentElement"
   },
-  "pinnedNav": "#pinnedNav",
-  "pinnedNavLabel": {
-    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, firstElementChild, firstElementChild, textContent"
+  "composerFeedToolbar": {
+    "parentSelectorName": "composerFeed",
+    "selector": "div[role=\"region\"]",
+    "DOMSearch": "children:1"
   },
-  "appsNav": "#appsNav",
-  "appsNavLabel": {
-    "DOMSearch": "firstElementChild, firstElementChild, textContent"
-  },
-  "appsNavItemAtIndex": {
-    "selector": "#appsNav ul",
-    "DOMSearch": "children:i"
-  },
-  "appsNavItemLabel": {
-    "DOMSearch": "firstElementChild, lastElementChild,textContent"
-  },
-  "stories": "#stories_pagelet_below_composer",
-  "videoChats": "#video_chats",
-  "rightPanel": ".home_right_column",
-  "languagePanel": "#pagelet_rhc_footer > :first-child",
-  "friendsRecommendations": {
-    "selector": ".friendBrowserForm",
+  "composerToolbar": {
+    "parentSelectorName": "composer",
+    "selector": "[aria-labelledby=\"toolbarLabel\"]",
     "DOMSearch": "parentElement"
   },
-  "postSettingsHide": {
-    "selector": "li[data-feed-option-name=\"HIDE\"]",
-    "multiple": true
+  "composerToolbarFull": {
+    "selector": "form[method=\"POST\"] > [data-testid=\"Keycommand_wrapper_ModalLayer\"] > div",
+    "DOMSearch": "children:2"
   },
-  "postSettingsHideAd": {
-    "selector": "li[data-feed-option-name=\"HIDE_AD\"]",
-    "multiple": true
+  "composerToolbarIndex": {
+    "parentSelectorName": "composerToolbar",
+    "selector": "[aria-labelledby=\"toolbarLabel\"] > div",
+    "DOMSearch": "children:i"
+  },
+  "topPanelExplore": "div[role=\"navigation\"] > ul",
+  "topPanelExploreIndex": {
+    "parentSelectorName": "topPanelExplore",
+    "DOMSearch": "children:i"
+  },
+  "friendsPanel": {
+    "selector": "[aria-label=\"Vänner\"]"
+  },
+  "friendsPanelSuggestedFriends": {
+    "parentSelectorName": "friendsPanel",
+    "selector": "div",
+    "DOMSearch": "children:2"
+  },
+  "leftPanel": {
+    "selector": "[data-pagelet=\"LeftRail\"] > div > div"
+  },
+  "leftPanelShortCuts": {
+    "parentSelectorName": "leftPanel",
+    "DOMSearch": "children:2"
+  },
+  "leftPanelExplore": {
+    "parentSelectorName": "leftPanel",
+    "DOMSearch": "children:1"
+  },
+  "leftPanelShowMore": {
+    "parentSelectorName": "leftPanel",
+    "selector": "div > div"
+  },
+  "leftPanelExploreItemAtIndex": {
+    "parentSelectorName": "leftPanelExplore",
+    "selector": "div > ul",
+    "DOMSearch": "children:i"
+  },
+  "rightPanel": "[data-pagelet=\"RightRail\"]",
+  "rightPanelSponsored": {
+    "parentSelectorName": "rightPanel",
+    "selector": "div > div"
   },
   "postSettingsSave": {
-    "selector": "li[data-feed-option-name=\"FeedSaveOption\"]",
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:0",
     "multiple": true
   },
-  "postSettingsNotifications": {
-    "selector": "li[data-feed-option-name=\"FeedFollowOption\"]",
+  "postSettingsNotification": {
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:2",
+    "multiple": true
+  },
+  "postSettingsHide": {
+    "parentSelectorName": "popupMenu",
+    "DOMSearch": "children:5",
     "multiple": true
   }
 }

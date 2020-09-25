@@ -23,6 +23,8 @@ const initialize = async (facebookCssSelectors) => {
   }
 };
 
+const reset = () => set(Object.assign({}, stateSchema));
+
 const get = () => {
   if (!getEnabled()) {
     console.log('state disabled, return default');
@@ -99,6 +101,7 @@ export default {
   initialize,
   get,
   set,
+  reset,
   getEnabled,
   toggleEnabled,
 };

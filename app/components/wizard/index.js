@@ -17,5 +17,18 @@ export default () => {
       app
     )
   })
-  
+}
+
+export const showWizardAfterDomLoaded = () => {
+  const app = document.createElement('div')
+  app.id = 'extension-root'
+  document.body.appendChild(app)
+  ReactDOM.render(
+    <React.StrictMode>
+      <StateProvider>
+        <App />
+      </StateProvider>
+    </React.StrictMode>,
+    app
+  )
 }

@@ -1,13 +1,9 @@
 import MutationSummary from 'mutation-summary';
 import Fingerprint2 from 'fingerprintjs2';
 import DOMUtils from './contentscript/DOM-utils';
-import showWizard from '../components/wizard'
+import showWizard, { showWizardAfterDomLoaded } from '../components/wizard'
 import messageUtils from './message-utils';
 // import { isPromiseResolved } from "promise-status-async";
-
-let backgroundscriptReady = false;
-
-let style = undefined;
 
 const getFingerprint = () => {
   const calculateFingerprint = async () => {
@@ -56,6 +52,8 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, (message) => {
         return 'stateUpdate failed somewhere in contentscript';
       }
       return 'performed your stateUpdate. Thaaaanx!!!';
+    case 'redoIntro':
+      return showWizardAfterDomLoaded();
     // case 'fetchLabelsRequest':
     //   console.log('fetchLabelsRequest received');
     //   return state;
@@ -81,7 +79,6 @@ console.log('Sending contentScriptReady to bgscript');
 backgroundPort.postMessageWithAck({ type: 'contentscriptReady', payload: null })
   .then((response) => {
     console.log('contentScriptReady response from bgscript: ', response);
-    backgroundscriptReady = true;
     sendUserInteraction({ eventType: 'refresh' });
   })
 
@@ -97,6 +94,7 @@ const init = async () => {
   console.log('response received: ', state);
   // state = response;
   let selectors = state.facebookCssSelectors;
+  DOMUtils.init(selectors)
 
   if (!state.thingsToHide) {
     console.error('thingsToHide is null or undefined');
@@ -108,61 +106,12 @@ const init = async () => {
   // updateStyles();
   updateShareIcons(state);
 
-  // updateVisibilityAll();
-
-  let watchedNodesQuery = [];
-
-  // Warning. Non obvious use of reduce function (as is always the case when using reduce...)
-  // We simply merge the hide/show cssSelectors to a string with comma separation (css selector list)
-  // TODO: MAKE THIS WORK WITH THE NEW STRUCTURE OF STATESCHEMA!!!
-  // let hideSelectorListString = state.thingsToHide.reduce(
-  //   (accuString, currentSelector, idx) => {
-  //     // console.log(accuString);
-  //     return idx == 0
-  //       ? currentSelector.cssSelector
-  //       : accuString + ", " + currentSelector.cssSelector;
-  //   },
-  //   ""
-  // );
-  // watchedNodesQuery.push({ element: hideSelectorListString });
-  let initialNodeObserver = new MutationSummary({
+  let bodyLoaded = new MutationSummary({
     callback: () => {
-      console.log('FETCH LABELS AND UPDATE STATE', state);
-      sendStateUpdate(fetchLabelsAndAddToState(state));
-      initialNodeObserver.disconnect();
+      onBodyTagLoaded(state, selectors)
+      bodyLoaded.disconnect()
     },
-    queries: [{ element: selectors.universalNav }],
-  });
-
-  watchedNodesQuery.push({
-    element: selectors.postContainerClass,
-  });
-
-  watchedNodesQuery.push({
-    element: 'table.uiGrid',
-  });
-
-  watchedNodesQuery.push({
-    element: selectors.composerFeedAudienceSelector,
-  });
-
-  watchedNodesQuery.push({
-    element: 'ul[role=menu]',
-  });
-
-  watchedNodesQuery.push({
-    attribute: 'aria-checked',
-  });
-
-  // we want to react as soon the head tag is inserted into the DOM.
-  // Unfortunately it doesn't seem possible to observe the head tag.
-  // So let's instead observe the body tag. It should presumably load directly after the head tag.
-  watchedNodesQuery.push({ element: 'body' });
-
-  console.log('watchedNodes: ', watchedNodesQuery);
-  let nodeObserver = new MutationSummary({
-    callback: nodeChangeHandler,
-    queries: watchedNodesQuery,
+    queries: [{ element: 'body' }],
   });
 };
 
@@ -183,18 +132,16 @@ const nodeChangeHandler = async (summaries) => {
         ? summary.reparented
         : summary.added;
     for (let node of changedNodes) {
-      if (node.matches('body')) {
-        onBodyTagLoaded();
+      console.log(node)
+      for (let item of state.thingsToHide) {
+        if (node.matches(item.cssSelector)) {
+          if (item.hide) {
+            hideElement(node);
+          } else {
+            showElement(node);
+          }
+        }
       }
-      // for (let item of state.thingsToHide) {
-      //   if (node.matches(item.cssSelector)) {
-      //     if (item.hide) {
-      //       hideElement(node);
-      //     } else {
-      //       showElement(node);
-      //     }
-      //   }
-      // }
 
       if (node.matches(selectors.postContainerClass)) {
         updateShareIcons(state);
@@ -221,18 +168,18 @@ const updateVisibilityAll = (state) => {
       if (category.groups) {
         for (let group of category.groups) {
           if (group.option) {
-            DOMUtils.updateVisibilityFromShowHideObject(state, group.option);
+            DOMUtils.updateVisibilityFromShowHideObject(group.option);
           }
           if (group.options) {
             for (let option of group.options) {
-              DOMUtils.updateVisibilityFromShowHideObject(state, option);
+              DOMUtils.updateVisibilityFromShowHideObject(option);
             }
           }
         }
       }
       if (category.options) {
         for (let option of category.options) {
-          DOMUtils.updateVisibilityFromShowHideObject(state, option);
+          DOMUtils.updateVisibilityFromShowHideObject(option);
         }
       }
     }
@@ -297,9 +244,8 @@ const fetchLabelsAndAddToState = (state) => {
       console.log('retrieved cssSelectorObject: ', cssSelectorObject);
 
       let node = DOMUtils.getNodeFromCssObject(
-        state,
-        document,
         cssSelectorObject,
+        document,
         selectorParameter
       );
       if (!node) {
@@ -314,9 +260,8 @@ const fetchLabelsAndAddToState = (state) => {
       let labelCssSelectorObject =
         state.facebookCssSelectors[optionObj.labelCssSelectorName];
       let label = DOMUtils.getNodeFromCssObject(
-        state,
-        node,
         labelCssSelectorObject,
+        node,
         null
       );
       if (!label) {
@@ -335,7 +280,7 @@ const fetchLabelsAndAddToState = (state) => {
 
 const updateStyles = (state) => {
   for (let customCssItem of state.customCss) {
-    DOMUtils.applyCustomCssObject(state, customCssItem);
+    DOMUtils.applyCustomCssObject(customCssItem);
   }
 };
 
@@ -343,7 +288,7 @@ const updateComposerAudience = (state) => {
   // console.log("updateComposerAudience Called");
   let selectors = state.facebookCssSelectors;
   let composer = document.querySelector(selectors.composer);
-  let composerFooter = DOMUtils.getNodeFromCssObject(state, composer, selectors['composerFooter'], null);
+  let composerFooter = DOMUtils.getNodeFromCssObject(selectors['composerFooter'], composer, null);
   if (!composerFooter) return
   // console.log("composer: ", composer);
   let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]');
@@ -375,7 +320,11 @@ const updateComposerAudience = (state) => {
     for (let selectAudienceButton of selectAudienceButtons) {
       let buttonContainer =
         selectAudienceButton.parentElement.parentElement.parentElement;
-      buttonContainer.classList.add('red-highlight-border');
+      if (state.audienceSettings.highlightAudienceWhenPosting) {
+        buttonContainer.classList.add('red-highlight-border');
+      } else {
+        buttonContainer.classList.remove('red-highlight-border');
+      }
     }
   }
 };
@@ -459,9 +408,45 @@ const setDisplayForShareIconAndShareText = (
   }
 };
 
-const onBodyTagLoaded = async () => {
+const onBodyTagLoaded = async (state, selectors) => {
   DOMUtils.createStyleTag();
   console.log('body tag added to DOM');
+
+  const setupObservers = () => {
+    updateVisibilityAll(state)
+
+    let watchedNodesQuery = [];
+    let initialNodeObserver = new MutationSummary({
+      callback: () => {
+        console.log('FETCH LABELS AND UPDATE STATE', state);
+        sendStateUpdate(fetchLabelsAndAddToState(state));
+        initialNodeObserver.disconnect();
+      },
+      queries: [{ element: selectors.composerToolbar.selector }],
+    });
+
+    let leftPanelObserver = new MutationObserver(nodeChangeHandler);
+    leftPanelObserver.observe(DOMUtils.getNodeFromCssObject(selectors.leftPanelExplore), { childList: true });
+
+    watchedNodesQuery.push({
+      element: 'div[data-testid="Keycommand_wrapper_ModalLayer"]',
+    });
+
+    console.log('watchedNodes: ', watchedNodesQuery);
+    let nodeObserver = new MutationSummary({
+      callback: nodeChangeHandler,
+      queries: watchedNodesQuery,
+    });
+  }
+
+  let interval = setInterval(() => {
+    const node = DOMUtils.getNodeFromCssObject(selectors.leftPanel)
+    if (node) {
+      setupObservers()
+      clearInterval(interval)
+    }
+
+  }, 100);
 };
 
 // document.addEventListener("DOMContentLoaded", () =>
