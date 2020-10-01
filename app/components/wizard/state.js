@@ -102,13 +102,20 @@ const reducer = (state, { action, payload }) => {
           analyticsActivated: state.selectedValues[0] <= 1,
           contact: state.selectedValues[0] === 0 ? state.contact : null,
         },
-      });
+      })
       return {
         ...state,
         removing: true,
       }
     case actions.EXIT:
-      backgroundPort.postMessage({ type: 'setWizardCompleted', payload: [] })
+      backgroundPort.postMessage({ 
+        type: 'setWizardCompleted',
+        payload: {
+          featuresToRemove: [],
+          analyticsActivated: false,
+          contact: null,
+        }
+      })
       return {
         ...state,
         completed: true,

@@ -225,7 +225,10 @@ const messageFromContentHandler = (message) => {
     case 'wizardCompleted':
       return wizard.isCompleted()
     case 'setWizardCompleted':
-      wizard.setCompleted(message.payload);
+      const contact = wizard.setCompleted(message.payload);
+      if (contact) {
+        getBrowserFingerPrintAndSetupParse(contact);
+      }
       sendMessageToPage('stateUpdate', state.get());
       return;
     default:

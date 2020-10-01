@@ -21,6 +21,7 @@ const setHiddenForId = (state, id) => {
 const updateStateHideOptionsForIds = (ids, state) => ids.forEach(id => setHiddenForId(state, id))
 
 const setCompleted = (payload) => {
+  let contact;
   if (payload) {
     console.log('got payload', payload);
     const _state = state.get()
@@ -28,10 +29,11 @@ const setCompleted = (payload) => {
     state.set(_state);
     localStorage.setItem('analyticsActivated', payload.analyticsActivated);
     if (payload.analyticsActivated) {
-      getBrowserFingerPrintAndSetupParse(payload.contact);
+      contact = payload.contact;
     }
   }
   localStorage.setItem('wizardCompleted', true);
+  return contact;
 }
 
 

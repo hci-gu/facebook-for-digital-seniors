@@ -14,7 +14,7 @@ export default (key) => {
     case 'taggar':
       return 'Du kan låta dina vänner se vilka du är med genom att tagga dessa personer i ett inlägg. Äter du t.ex. lunch med din dotter så kan du tagga hennes namn i inlägget så ser dina vänner att det är henne du är med. \n\n Nedan ser du en bild på var du taggar personer.'
     case 'rekommendationer':
-      return 'Du kan använda rekommendationer för att be dina Facebook vänner om tips på tex. trevliga restauranger om du besöker en ny stad eller bra hantverkare för att renovera badrummet. \n\n Nedan ser du en bild på var du hittar dina egna och andras rekommendationer.'
+      return 'Du kan använda rekommendationer för att be medlemmar i dina Facebook-grupper om tips. Du kan t.ex. be om tips på trevliga restauranger om du besöker en ny stad, eller bra hantverkare för att renovera badrummet. \n\n Nedan ser du en bild på hur du ber om rekommendationer.'
     case 'kansla-aktivitet':
       return 'Du kan lägga till en känsla eller aktivitet i ett inlägg för att förmedla tydligare hur du känner eller vad du gör. \n\n Nedan ser du en bild på var du lägger till en känsla eller aktivitet.'
     case 'insamling':
