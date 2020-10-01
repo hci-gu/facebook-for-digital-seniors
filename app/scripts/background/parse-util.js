@@ -44,6 +44,10 @@ const signupToParse = async (browserHash, contact) => {
       console.log('registered new parse user: ', user);
       user.set('contactEmail', contact.email);
       user.set('contactAge', contact.age);
+      if (process.env.NODE_ENV == 'development') {
+        console.log('creating user as testUser');
+        user.set('isTestUser', true);
+      }
       user.set('contactSex', contact.sex);
       user.save();
       loggedInToParse = true;
