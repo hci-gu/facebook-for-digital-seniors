@@ -112,8 +112,8 @@ const reducer = (state, { action, payload }) => {
         type: 'setWizardCompleted',
         payload: {
           featuresToRemove: [],
-          analyticsActivated: false,
-          contact: null,
+          analyticsActivated: state.selectedValues[0] <= 1,
+          contact: state.selectedValues[0] === 0 ? state.contact : null,
         }
       })
       return {
