@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 66,
+  stateBreakingChangeCounter: 70,
   globalToggle: false,
   thingsToHide: [
     {
@@ -12,10 +12,10 @@ export default {
             cssSelectorName: 'topPanelExplore',
             hide: false,
           },
-          options: ['Home', 'Pages', 'Watch', 'Marketplace', 'Groups'].map((name, i) => ({
-            id: `top-panel-explore-item-${i}`,
+          options: ['Home', 'Pages', 'Watch', 'Marketplace', 'Groups', 'Games'].map((name, i) => ({
+            id: `top-panel-explore-${name}`,
             name,
-              cssSelectorName: `topPanelExploreIndex:${i}`,
+              cssSelectorName: `topPanelExplore${name}`,
               hide: false,
           }))
         },
@@ -64,8 +64,8 @@ export default {
           ].map((name, i)=> ({
             id: `explore-${i}`,
             name,
-            cssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
-            labelCssSelectorName: `leftPanelExploreItemAtIndex:${i}`,
+            cssSelectorName: `leftPanelExploreTextSearch:${name}`,
+            labelCssSelectorName: `leftPanelExploreTextSearch:${name}`,
             hide: false,
           }))
         },

@@ -24,7 +24,19 @@ const getNodeFromCssObject = (
         return;
       }
     }
-    if (!cssSelectorObject.DOMSearch) {
+    if (cssSelectorObject.evaluate && selectorParameter) {
+      if (cssSelectorObject.DOMSearch) {
+        startNode = document.evaluate(`//*[text()='${selectorParameter}']`, startNode, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+        node = findRelativeNode(
+          startNode,
+          cssSelectorObject.DOMSearch,
+          selectorParameter
+        );
+      } else {
+        node = document.evaluate(`//*[text()='${selectorParameter}']`, startNode, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+      }
+    }
+    else if (!cssSelectorObject.DOMSearch) {
       node = startNode.querySelector(cssSelectorObject.selector);
       if (!node && cssSelectorObject.altSelector) {
         node = startNode.querySelector(cssSelectorObject.altSelector)

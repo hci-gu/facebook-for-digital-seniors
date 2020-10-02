@@ -21,19 +21,16 @@ const setHiddenForId = (state, id) => {
 const updateStateHideOptionsForIds = (ids, state) => ids.forEach(id => setHiddenForId(state, id))
 
 const setCompleted = (payload) => {
-  let contact;
+  let analyticsActivated = false;
   if (payload) {
-    console.log('got payload', payload);
     const _state = state.get()
     updateStateHideOptionsForIds(payload.featuresToRemove, _state);
     state.set(_state);
     localStorage.setItem('analyticsActivated', payload.analyticsActivated);
-    if (payload.analyticsActivated) {
-      contact = payload.contact;
-    }
+    analyticsActivated = payload.analyticsActivated;
   }
   localStorage.setItem('wizardCompleted', true);
-  return contact;
+  return analyticsActivated;
 }
 
 

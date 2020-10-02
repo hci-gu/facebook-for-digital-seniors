@@ -47,9 +47,35 @@
     "DOMSearch": "children:i"
   },
   "topPanelExplore": "div[role=\"navigation\"] > ul",
-  "topPanelExploreIndex": {
+  "topPanelExploreHome": {
     "parentSelectorName": "topPanelExplore",
-    "DOMSearch": "children:i"
+    "selector": "[aria-label=\"Startsida\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
+  "topPanelExplorePages": {
+    "parentSelectorName": "topPanelExplore",
+    "selector": "[aria-label=\"Sidor\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
+  "topPanelExploreMarketplace": {
+    "parentSelectorName": "topPanelExplore",
+    "selector": "[aria-label=\"Marketplace\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
+  "topPanelExploreGroups": {
+    "parentSelectorName": "topPanelExplore",
+    "selector": "[aria-label=\"Grupper\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
+  "topPanelExploreWatch": {
+    "parentSelectorName": "topPanelExplore",
+    "selector": "[aria-label=\"Watch\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
+  "topPanelExploreGames": {
+    "parentSelectorName": "topPanelExplore",
+    "selector": "[aria-label=\"Spel (gaming)\"]",
+    "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "friendsPanel": {
     "selector": "[aria-label=\"Vänner\"]"
@@ -78,6 +104,11 @@
     "parentSelectorName": "leftPanelExplore",
     "selector": "div > ul",
     "DOMSearch": "children:i"
+  },
+  "leftPanelExploreTextSearch": {
+    "parentSelectorName": "leftPanelExplore",
+    "evaluate": true,
+    "DOMSearch": "parentElement, parentElement, parentElement, parentElement, parentElement, parentElement, parentElement"
   },
   "rightPanel": "[data-pagelet=\"RightRail\"]",
   "rightPanelSponsored": {
