@@ -2,8 +2,9 @@ import React from 'react'
 import steps from './steps.json'
 let backgroundPort = browser.runtime.connect({ name: "port-from-contentscript" })
 const selectors = [
-  "top-panel-explore-item-3",
-  "top-panel-explore-item-4",
+  "top-panel-explore-Marketplace",
+  "top-panel-explore-Games",
+  "top-panel-explore-Pages",
   "create-post-panel-safety-just-me",
   "create-post-panel-safety-friends",
   "explore-1",

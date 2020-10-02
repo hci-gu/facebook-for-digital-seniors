@@ -143,7 +143,7 @@
         "text": "Samma som ovan, men ibland vill jag dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
         "keywords": ["dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
-          "top-panel-explore-item-3",
+          "top-panel-explore-Pages",
           "post-settings-save",
           "post-settings-hide",
           "post-settings-notifications"
@@ -166,7 +166,7 @@
         "keywords": ["köpa och sälja", "välgörenhetsinsamlingar"],
         "add": [
           "explore-8",
-          "top-panel-explore-item-3",
+          "top-panel-explore-Marketplace",
           "composer-charity",
           "create-post-more",
           "explore-4"
@@ -192,7 +192,7 @@
       {
         "text": "Ibland spelar jag spel på Facebook.",
         "keywords": [" spel "],
-        "add": ["explore-6"]
+        "add": ["explore-6", "top-panel-explore-Games"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag titta på spelvideos på Facebook också.",

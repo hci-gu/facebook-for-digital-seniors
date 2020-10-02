@@ -46,6 +46,11 @@
     "selector": "[aria-labelledby=\"toolbarLabel\"] > div",
     "DOMSearch": "children:i"
   },
+  "composerFeedToolbarText": {
+    "parentSelectorName": "composerFeedToolbar",
+    "evaluate": true,
+    "DOMSearch": "parentElement, parentElement, parentElement"
+  },
   "topPanelExplore": "div[role=\"navigation\"] > ul",
   "topPanelExploreHome": {
     "parentSelectorName": "topPanelExplore",
