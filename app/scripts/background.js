@@ -4,18 +4,11 @@ import state from './background/state';
 import parseUtil from './background/parse-util';
 import messageUtils from './message-utils';
 import wizard from './background/wizard';
+import browserActions from './background/browserActions';
 
 let initState = {};
 
 let contentPort, menuPort;
-
-// browser.runtime.onInstalled.addListener(details => {
-//   console.log("previousVersion", details.previousVersion);
-// });
-
-// browser.browserAction.setBadgeText({
-//   text: `BFB`
-// });
 
 //we create a promise here that will settle when the fingerprint (hopefully) is received
 // let fingerPrintReceived = new Promise();
@@ -58,7 +51,7 @@ const setup = async () => {
   const _state = refreshState();
   console.log('state initialized: ', _state);
 
-  setBrowserActionToPopup();
+  browserActions.setBrowserActionToPopup();
   await contentscriptReady;
 
   const analyticsActivated = localStorage.getItem('analyticsActivated') === 'true';
@@ -81,104 +74,8 @@ const getBrowserFingerPrintAndSetupParse = async (contact) => {
   }
 }
 
-function match(pattern, url) {
-  pattern = pattern.split('/');
-  url = url.split('/');
-
-  while (url.length) {
-    const p = pattern.shift();
-    if (p !== url.shift() && p !== '*') return false;
-  }
-  return true;
-}
-
-browser.tabs.onActivated.addListener(async (activeInfo) => {
-  console.log(activeInfo);
-  let activatedTab = await browser.tabs.get(activeInfo.tabId);
-  console.log('activatedTab', activatedTab);
-  if (
-    match('https://www.facebook.com/*', activatedTab.url) ||
-    match('http://www.facebook.com/*', activatedTab.url)
-  ) {
-    console.log('activated tab matched');
-    setBrowserActionToPopup();
-  } else {
-    setBrowserActionToChangeTab();
-    console.log("activated tab didn't match");
-  }
-});
-
-const setBrowserActionToPopup = () => {
-  console.log('setting browser action to popup');
-  browser.browserAction.setPopup({ popup: 'pages/menu.html' });
-};
-
-const setBrowserActionToChangeTab = () => {
-  console.log('setting browser action to change tab');
-  browser.browserAction.setPopup({ popup: '' });
-};
-
-browser.browserAction.onClicked.addListener(async () => {
-  let tabs = await browser.tabs.query({
-    currentWindow: true,
-    url: ['*://www.facebook.com/*', '*://www.facebook.se/*'],
-  });
-
-  console.log(tabs);
-
-  if (tabs.length) {
-    console.log('gonna highlight a tab!');
-    browser.tabs.highlight({
-      tabs: [tabs[0].index],
-    });
-  } else {
-    console.log('creating a tab!');
-    browser.tabs.create({
-      url: 'https://www.facebook.com',
-      active: true,
-    });
-  }
-});
-
-const sendMessageToPopup = async (type, msg) => {
-  // return browser.runtime.sendMessage({ type: type, payload: msg });
-  try {
-    let response = await menuPort.postMessageWithAck({
-      type: type,
-      payload: msg,
-    });
-    console.log('sent message resolved: ', response);
-    return response;
-  } catch (err) {
-    console.error("Couldn't send message to menu. Probably the menu is currently not open");
-    console.error(err);
-  }
-};
-
 const sendMessageToPage = async (type, msg) => {
   console.log('skickar till page:', type, msg);
-  // return browser.tabs
-  //   .query({ currentWindow: true, active: true })
-  //   .then((tabs) => {
-  //     console.log(tabs);
-  //     return browser.tabs
-  //       .sendMessage(tabs[0].id, {
-  //         type: type,
-  //         payload: msg,
-  //       })
-  //       .then((answer) => {
-  //         console.log('sent message resolved: ', answer);
-  //         return answer;
-  //       })
-  //       .catch((err) => {
-  //         console.error('sendMessage threw error:');
-  //         console.error(err);
-  //       });
-  //   })
-  //   .catch((err) => {
-  //     console.error("Probably didn't find any active tab to send to");
-  //     console.error(err);
-  //   });
   try {
     let response = await contentPort.postMessageWithAck({
       type: type,
@@ -204,14 +101,6 @@ const messageFromContentHandler = (message) => {
       console.log('received state update from page', message.payload);
       state.set(message.payload);
       sendMessageToPage('stateUpdate', state.get());
-      // sendMessageToPopup("stateUpdate", message)
-      //   .then(response => {
-      //     console.log("response from sending state to popup: ", response);
-      //   })
-      //   .catch(err => {
-      //     console.error(err);
-      //     console.error("the popup is probably not open");
-      //   });
       return 'Aiight! Got your state!';
     case 'initStateRequest':
       console.log('got initStateRequest from popup');
