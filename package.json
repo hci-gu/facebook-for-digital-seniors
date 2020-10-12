@@ -16,13 +16,14 @@
     "mutation-summary": "^0.1.1",
     "parse": "^2.11.0",
     "promise-status-async": "^1.1.11",
-    "vue": "^2.6.10",
-    "vue-loader": "^15.7.2",
-    "vue-template-compiler": "^2.6.10",
     "rc-tooltip": "^4.0.3",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-tooltip": "^4.2.0",
-    "styled-components": "^5.0.1"
+    "recursive-diff": "^1.0.8",
+    "styled-components": "^5.0.1",
+    "vue": "^2.6.10",
+    "vue-loader": "^15.7.2",
+    "vue-template-compiler": "^2.6.10"
   }
 }

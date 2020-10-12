@@ -6,6 +6,8 @@ import messageUtils from './message-utils';
 import wizard from './background/wizard';
 import browserActions from './background/browserActions';
 
+import { getDiff } from 'recursive-diff';
+
 let initState = {};
 
 let contentPort, menuPort;
@@ -168,6 +170,9 @@ const messageFromMenuHandler = message => {
 
 browser.runtime.onConnect.addListener((port) => {
   console.log('port connected: ', port);
+  port.onDisconnect.addListener((p) => {
+    console.log('port disconnected:', p.name);
+  })
   if (port.name === 'port-from-contentscript') {
     contentPort = port;
     messageUtils.addMessageHandlerWithAckAsPromise(contentPort, messageFromContentHandler);
@@ -176,6 +181,35 @@ browser.runtime.onConnect.addListener((port) => {
     menuPort = port;
     messageUtils.addMessageHandlerWithAckAsPromise(menuPort, messageFromMenuHandler);
     menuPort.postMessageWithAck = messageUtils.postMessageWithAck;
+    let priorState = state.get();
+
+    menuPort.onDisconnect.addListener((p) => {
+      // console.log('popup closed');
+      let changedSettingsArray = getDiff(priorState, state.get());
+      // console.log('changedSettings: ', changedSettingsArray);
+      if (changedSettingsArray.length) {
+        let changesObject = {}
+        for (let elem of changedSettingsArray) {
+          let tempDepthref = changesObject;
+          for (let [i, key] of elem.path.entries()) {
+            if (i >= elem.path.length - 1) {
+              tempDepthref[key] = elem.val;
+              break;
+            }
+            else if (!tempDepthref[key]) {
+              let thing = typeof key == 'number' ? [] : {};
+              tempDepthref[key] = thing;
+            }
+            tempDepthref = tempDepthref[key];
+          }
+        }
+        // console.log(changesObject);
+
+        let payload = { eventType: 'settingsChange', eventData: { changes: changesObject } }
+        parseUtil.sendUserInteraction(payload, state.get());
+      }
+    })
+
   }
 })
 
