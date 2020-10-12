@@ -90,6 +90,7 @@ const sendUserInteraction = async (payload, state) => {
   interaction.set('when', new Date());
   interaction.set('eventType', payload.eventType);
   interaction.set('eventData', payload.eventData);
+  interaction.set('userSettings', state);
 
   //Gotta get extension state during this interaction
   if (state.globalToggle != undefined) {
