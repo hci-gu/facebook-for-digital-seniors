@@ -1,6 +1,6 @@
 import React from 'react'
 import steps from './steps.json'
-let backgroundPort = browser.runtime.connect({ name: "port-from-contentscript" })
+let backgroundPort = browser && browser.runtime ? browser.runtime.connect({ name: "port-from-contentscript" }) : null
 const selectors = [
   "top-panel-explore-Marketplace",
   "top-panel-explore-Games",

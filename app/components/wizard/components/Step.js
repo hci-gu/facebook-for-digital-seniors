@@ -163,7 +163,7 @@ export default ({ step }) => {
               <br />
             </Selection>
           ))}
-      </Selections>
+      </Selections> 
     </Container>
   )
 }

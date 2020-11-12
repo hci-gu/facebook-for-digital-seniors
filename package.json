@@ -18,6 +18,7 @@
     "promise-status-async": "^1.1.11",
     "rc-tooltip": "^4.0.3",
     "react": "^16.13.1",
+    "react-compare-slider": "^1.2.0",
     "react-dom": "^16.13.1",
     "react-tooltip": "^4.2.0",
     "recursive-diff": "^1.0.8",

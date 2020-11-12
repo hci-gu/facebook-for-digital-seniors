@@ -1,9 +1,15 @@
 [
   {
+    "name": "intro",
+    "title": "Intro",
+    "showHelpPanel": false
+  },
+  {
     "name": "select-data-level",
     "title": "Hej och välkommen till detta browser-tillägg",
     "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
     "dontShowInProgress": true,
+    "showHelpPanel": false,
     "selections": [
       {
         "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
@@ -21,15 +27,18 @@
   },
   {
     "name": "share-contact-info",
-    "dontShowInProgress": true
+    "dontShowInProgress": true,
+    "showHelpPanel": false
   },
   {
     "name": "share-data-info",
-    "dontShowInProgress": true
+    "dontShowInProgress": true,
+    "showHelpPanel": false
   },
   {
     "name": "general",
     "title": "Allmänt om Facebook",
+    "showHelpPanel": false,
     "question": "Jag tycker om Facebook som det är och vill inte att någonting ska ändras.",
     "selections": [
       {
@@ -45,6 +54,7 @@
   {
     "name": "safety",
     "title": "Säkerhet",
+    "showHelpPanel": true,
     "question": "Ibland ändrar jag vilka som kan se mina inlägg eller kategoriserar mina vänner som till exempel “nära vänner” och “bekanta”.",
     "altText": "Markera det nu använder",
     "selections": [
@@ -68,6 +78,7 @@
   {
     "name": "create-post",
     "title": "Skapa inlägg",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder när du gör inlägg",
     "selections": [
@@ -109,6 +120,7 @@
   {
     "name": "suggestions",
     "title": "Facebook förslag",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera de förslag du använder dig av",
     "selections": [
@@ -131,6 +143,7 @@
   {
     "name": "posts",
     "title": "Titta på inlägg",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [
@@ -158,6 +171,7 @@
   {
     "name": "shop",
     "title": "Handla",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [
@@ -186,6 +200,7 @@
   {
     "name": "games",
     "title": "Spel",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [

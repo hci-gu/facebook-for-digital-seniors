@@ -32,7 +32,11 @@ const getImage = image => {
 }
 
 export default () => {
-  const { help } = useContext(StateContext)
+  const { help, steps, index } = useContext(StateContext)
+  const step = steps[index]
+
+  if (!step.showHelpPanel) return null
+
   return (
     <Container>
       {help ? (

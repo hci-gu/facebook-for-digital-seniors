@@ -4,6 +4,7 @@ import Modal from './Modal'
 import Step from './Step'
 import ProgressIndicator from './ProgressIndicator'
 import ContactInfo from './ContactInfo'
+import Intro from './Intro'
 import { actions, StateContext } from '../state'
 
 const Container = styled.div`
@@ -108,6 +109,8 @@ const Button = styled.button`
 
 const componentForStep = (step, skipped) => {
   switch (step.name) {
+    case 'intro':
+      return <Intro />
     case '':
       return (
         <TextContent>
