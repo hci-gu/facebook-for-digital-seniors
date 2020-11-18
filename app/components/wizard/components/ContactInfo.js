@@ -7,8 +7,7 @@ const ContactInfo = styled.div`
   height: 100%;
 `
 
-const Text = styled.span`
-`
+const Text = styled.span``
 
 const Input = styled.div`
   margin-top: 10px;
@@ -18,7 +17,8 @@ const Input = styled.div`
   > span {
     width: 75px;
   }
-  > input, > select {
+  > input,
+  > select {
     margin-left: 10px;
   }
 `
@@ -31,25 +31,37 @@ export default () => {
       action: actions.CONTACT_EDIT,
       payload: {
         type,
-        value: e.target.value
+        value: e.target.value,
       },
     })
   }
 
   return (
     <ContactInfo>
-      <Text>Roligt att du vill delta i studien. För att göra det behöver vi lite mer information om dig. Vänligen fyll i nedanstående</Text>
+      <Text>
+        Roligt att du vill delta i studien. För att göra det behöver vi lite mer
+        information om dig. Vänligen fyll i nedanstående
+      </Text>
       <Input>
         <span>Mail:</span>
-        <input onChange={(e) => onChange(e, 'email')} value={contact.email} style={{ width: 300 }}></input>
+        <input
+          onChange={e => onChange(e, 'email')}
+          value={contact.email}
+          style={{ width: 300 }}
+        ></input>
       </Input>
       <Input>
         <span>Ålder:</span>
-        <input onChange={(e) => onChange(e, 'age')} value={contact.age} type="number"  style={{ width: 100 }}></input>
+        <input
+          onChange={e => onChange(e, 'age')}
+          value={contact.age}
+          type="number"
+          style={{ width: 100 }}
+        ></input>
       </Input>
       <Input>
         <span>Kön:</span>
-        <select onChange={(e) => onChange(e, 'sex')} value={contact.sex}>
+        <select onChange={e => onChange(e, 'sex')} value={contact.sex}>
           <option value={undefined}> -- Välj -- </option>
           <option value="female">Kvinna</option>
           <option value="male">Man</option>

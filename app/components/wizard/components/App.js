@@ -123,23 +123,30 @@ const componentForStep = (step, skipped) => {
     case 'share-data-info':
       return (
         <TextContent lessPadding>
-          Kul att du vill dela med dig av data! Följande är den data vi samlar på samt vad syftet är med datat. Du kan när som helst välja att ta tillbaka ditt data genom att klicka på ikonen högst upp.
-          <br /><br />
+          Kul att du vill dela med dig av data! Följande är den data vi samlar
+          på samt vad syftet är med datat. Du kan när som helst välja att ta
+          tillbaka ditt data genom att klicka på ikonen högst upp.
+          <br />
+          <br />
           <ul>
             <li>Varje gång du öppnar facebook och tidpunkten</li>
-            <li>Varje gång du ändrar inställningar för vad som ska visas av facebook genom detta tillägg</li>
+            <li>
+              Varje gång du ändrar inställningar för vad som ska visas av
+              facebook genom detta tillägg
+            </li>
             <li>Svar på enkät varje vecka</li>
           </ul>
-          <br/>
-          Syftet med datainsamlingen är att ta reda på hur det upplevs när gränssnittet för en tjänst man använder sig av ändras.
-          <br /><br />
-          Varje vecka visas några frågor som du svarar på som har att göra med din upplevelse av tillägget.
+          <br />
+          Syftet med datainsamlingen är att ta reda på hur det upplevs när
+          gränssnittet för en tjänst man använder sig av ändras.
+          <br />
+          <br />
+          Varje vecka visas några frågor som du svarar på som har att göra med
+          din upplevelse av tillägget.
         </TextContent>
       )
     case 'share-contact-info':
-      return (
-        <ContactInfo />
-      )
+      return <ContactInfo />
     case 'finish':
       return (
         <TextContent>

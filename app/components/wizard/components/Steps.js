@@ -88,8 +88,7 @@ export default () => {
   return (
     <Container>
       <Steps numSteps={displaySteps.length}>
-      {steps
-        .map((s, i) => {
+        {steps.map((s, i) => {
           if (!s.title || s.dontShowInProgress) return
           return (
             <Step key={`Step_${s.title}`}>

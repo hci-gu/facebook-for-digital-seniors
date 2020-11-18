@@ -29,7 +29,7 @@ const Navbar = styled.div`
     color: white;
     text-align: center;
     text-decoration: none;
-    outline:none;
+    outline: none;
 
     font-size: 14px;
     font-weight: bold;

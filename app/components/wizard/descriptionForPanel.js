@@ -1,4 +1,4 @@
-export default (key) => {
+export default key => {
   console.log('panel', key)
   switch (key) {
     case 'se-mina-inlagg':

@@ -129,7 +129,7 @@ export default ({ step }) => {
   const { selectedValues, index, dispatch } = useContext(StateContext)
   const selectedValue = selectedValues[index]
 
-  const onChange = (e) => {
+  const onChange = e => {
     dispatch({
       action: actions.SELECTION,
       payload: {
@@ -138,9 +138,18 @@ export default ({ step }) => {
       },
     })
   }
+
   return (
     <Container>
-      <Question>{step.question}</Question>
+      <Question>
+        {renderTextWithHighlights(
+          dispatch,
+          index,
+          `${step.name}_-1`,
+          step.question,
+          step.keywords ? steps.keywords : []
+        )}
+      </Question>
       <Selections>
         {step.selections &&
           step.selections.map((selection, i) => (
@@ -163,7 +172,7 @@ export default ({ step }) => {
               <br />
             </Selection>
           ))}
-      </Selections> 
+      </Selections>
     </Container>
   )
 }

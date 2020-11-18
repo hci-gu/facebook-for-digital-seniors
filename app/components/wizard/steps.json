@@ -5,37 +5,6 @@
     "showHelpPanel": false
   },
   {
-    "name": "select-data-level",
-    "title": "Hej och välkommen till detta browser-tillägg",
-    "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
-    "dontShowInProgress": true,
-    "showHelpPanel": false,
-    "selections": [
-      {
-        "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
-        "keywords": []
-      },
-      {
-        "text": "Jag delar gärna med mig av data men vill inte bli kontaktad.",
-        "keywords": []
-      },
-      {
-        "text": "Jag vill bara prova att använda det här tillägget och vill inte vara med i er studie eller dela med mig av data.",
-        "keywords": []
-      }
-    ]
-  },
-  {
-    "name": "share-contact-info",
-    "dontShowInProgress": true,
-    "showHelpPanel": false
-  },
-  {
-    "name": "share-data-info",
-    "dontShowInProgress": true,
-    "showHelpPanel": false
-  },
-  {
     "name": "general",
     "title": "Allmänt om Facebook",
     "showHelpPanel": false,
@@ -55,25 +24,43 @@
     "name": "safety",
     "title": "Säkerhet",
     "showHelpPanel": true,
-    "question": "Ibland ändrar jag vilka som kan se mina inlägg eller kategoriserar mina vänner som till exempel “nära vänner” och “bekanta”.",
-    "altText": "Markera det nu använder",
-    "selections": [
+    "subSteps": [
       {
-        "text": "Stämmer",
-        "keywords": [
-          "se mina inlägg", "kategoriserar mina vänner"
-        ],
-        "add": [
-          "create-post-panel-safety-just-me",
-          "create-post-panel-safety-friends",
-          "explore-5"
+        "question": "Ibland är jag osäker på vilka som ser de inlägg jag delar på Facebook.",
+        "keywords": [],
+        "selections": [
+          {
+            "text": "Stämmer",
+            "add": []
+          },
+          {
+            "text": "Stämmer inte",
+            "add": []
+          }
         ]
       },
       {
-        "text": "Stämmer inte",
-        "keywords": []
+        "question": "Ibland ändrar jag vilka som kan se de inlägg jag delar på Facebook, till exempel genom att välja att ett inlägg ska vara \"offentligt\" eller bara visas för \"vänner\"",
+        "keywords": [
+          "offentligt", "vänner"
+        ],
+        "selections": [
+          {
+            "text": "Stämmer",
+            "add": [
+              "create-post-panel-safety-just-me",
+              "create-post-panel-safety-friends",
+              "explore-5"
+            ]
+          },
+          {
+            "text": "Stämmer inte",
+            "keywords": []
+          }
+        ]
       }
-    ]
+    ],
+    "altText": "Markera det nu använder"
   },
   {
     "name": "create-post",
@@ -219,6 +206,37 @@
         "keywords": [" spel "]
       }
     ]
+  },
+  {
+    "name": "select-data-level",
+    "title": "Om studien",
+    "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
+    "dontShowInProgress": false,
+    "showHelpPanel": false,
+    "selections": [
+      {
+        "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
+        "keywords": []
+      },
+      {
+        "text": "Jag delar gärna med mig av data men vill inte bli kontaktad.",
+        "keywords": []
+      },
+      {
+        "text": "Jag vill bara prova att använda det här tillägget och vill inte vara med i er studie eller dela med mig av data.",
+        "keywords": []
+      }
+    ]
+  },
+  {
+    "name": "share-contact-info",
+    "dontShowInProgress": true,
+    "showHelpPanel": false
+  },
+  {
+    "name": "share-data-info",
+    "dontShowInProgress": true,
+    "showHelpPanel": false
   },
   {
     "name": "finish",

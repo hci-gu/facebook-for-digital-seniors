@@ -15,10 +15,27 @@ const Container = styled.div`
     padding: 5px;
   }
 
-  > div {
+  > div:nth-child(2) {
     border: 2px solid rgba(0, 0, 0, 0.1);
     width: 640px;
     height: 320px;
+  }
+`
+
+const Texts = styled.div`
+  margin: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  > h1 {
+    font-size: 28px !important;
+    font-weight: bold !important;
+    margin: 0 !important;
+  }
+  > h2 {
+    font-size: 18px !important;
   }
 `
 
@@ -98,7 +115,10 @@ export default () => {
   
   return (
     <Container>
-      <h1>Hej</h1>
+      <Texts>
+        <h1>Facebook för digitala seniorer</h1>
+        <h2>Simplifiera din facebook upplevelse</h2>
+      </Texts>
       <ReactCompareSlider itemOne={image('before')} itemTwo={image('after')} handle={handle()} />
       <span>Exempel på hur facebook kan se ut före och efter du gått igenom den här introduktionen.</span>
     </Container>

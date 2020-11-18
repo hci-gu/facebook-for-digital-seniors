@@ -135,10 +135,10 @@ const reducer = (state, { action, payload }) => {
     case actions.FORWARD:
       console.log(state.index, state.selectedValues)
       if (state.index === steps.length - 1) return
-      if (state.index === 0 && state.selectedValues[0] !== 0) {
+      if (state.index === 1 && state.selectedValues[0] !== 0) {
         return reducer(state, {
           action: actions.JUMP_TO,
-          payload: { index: state.selectedValues[0] + 1 },
+          payload: { index: state.selectedValues[0] + 2 },
         })
       }
       if (state.selectedValues[3] === 0) {
