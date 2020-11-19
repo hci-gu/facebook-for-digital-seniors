@@ -17,7 +17,6 @@ const Title = styled.h1`
 const Description = styled.p``
 
 const Image = styled.img`
-  background-color: gray;
   max-width: 100%;
 `
 

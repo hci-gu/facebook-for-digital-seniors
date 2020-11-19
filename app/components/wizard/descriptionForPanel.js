@@ -1,7 +1,7 @@
 export default key => {
   console.log('panel', key)
   switch (key) {
-    case 'se-mina-inlagg':
+    case 'ser-de-inlagg':
       return 'När du skapar ett inlägg på Facebook kan du ändra vilka som kan se ditt inlägg, t.ex. vänner, allmänheten eller bara du. \n\n Nedan ser du var man ändrar vilka som kan se dina inlägg.'
     case 'kategoriserar-mina-vanner':
       return 'Kategorisering av vänner kan användas för att gruppera dina Facebook vänner i olika grupper, t.ex. nära vänner, bekanta eller familj. Detta kan sedan användas för att exempelvis lättare styra vilka som ser dina inlägg.\n\n Nedan ser du en bild på var du hittar katergoriseringarna, även kallat vänlistor.'
@@ -65,6 +65,10 @@ export default key => {
       return 'Du kan spela spel på Facebook. Ett exempel på ett vanligt Facebook spel är “Quiz planet”. \n\n Nedan ser du en bild på var du hittar spel.'
     case 'spelvideos':
       return 'Du kan titta på när andra spelar spel genom spelvideos. Ofta pratar de som spelar och förklarar vad de gör. \n\n Nedan ser du en bild på var du hittar spelvideos.'
+    case 'handelser':
+      'På Facebook kan du dela och se dina vänners händelser. Det är foton, videoklipp och inlägg som bara syns i 24 timmar.\n\n Händelserna syns högst upp i ditt flöde. Här nedan ser du hur dina samlade händelser ser ut, och hur det ser ut när du spelar upp en händelse.'
+    case 'rum':
+      return 'I rum kan du ha videomöten med vänner med och utan Facebook-konto. Du kan skapa egna rum och bjuda in upp till 50 vänner. Du kan också gå in i andras rum om de bjuder in dig. \n\nRum hittar du innan det första inlägget i ditt flöde. Här ser du hur rum ser ut, och hur det ser ut när du skapar rum.'
     default:
       return ''
   }

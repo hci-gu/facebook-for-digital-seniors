@@ -90,12 +90,18 @@ export default () => {
       <Steps numSteps={displaySteps.length}>
         {steps.map((s, i) => {
           if (!s.title || s.dontShowInProgress) return
+          const active = i === index
           return (
             <Step key={`Step_${s.title}`}>
-              <Indicator active={i === index} completed={i < index}>
+              <Indicator active={active} completed={i < index}>
                 {i < steps.length - 1 && <Separator completed={i < index} />}
               </Indicator>
-              <Title active={i === index}>{s.title}</Title>
+              <Title active={active}>
+                {s.title}{' '}
+                {active &&
+                  s.subSteps &&
+                  `${s.subStepIndex + 1} / ${s.subSteps.length}`}
+              </Title>
             </Step>
           )
         })}

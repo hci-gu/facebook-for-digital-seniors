@@ -24,40 +24,21 @@
     "name": "safety",
     "title": "Säkerhet",
     "showHelpPanel": true,
-    "subSteps": [
+    "question": "Ibland är jag osäker på vilka som ser de inlägg jag delar på Facebook.",
+    "keywords": ["ser de inlägg"],
+    "selections": [
       {
-        "question": "Ibland är jag osäker på vilka som ser de inlägg jag delar på Facebook.",
+        "text": "Stämmer",
         "keywords": [],
-        "selections": [
-          {
-            "text": "Stämmer",
-            "add": []
-          },
-          {
-            "text": "Stämmer inte",
-            "add": []
-          }
+        "add": [
+          "create-post-panel-safety-just-me",
+          "create-post-panel-safety-friends",
+          "explore-5"
         ]
       },
       {
-        "question": "Ibland ändrar jag vilka som kan se de inlägg jag delar på Facebook, till exempel genom att välja att ett inlägg ska vara \"offentligt\" eller bara visas för \"vänner\"",
-        "keywords": [
-          "offentligt", "vänner"
-        ],
-        "selections": [
-          {
-            "text": "Stämmer",
-            "add": [
-              "create-post-panel-safety-just-me",
-              "create-post-panel-safety-friends",
-              "explore-5"
-            ]
-          },
-          {
-            "text": "Stämmer inte",
-            "keywords": []
-          }
-        ]
+        "text": "Stämmer inte",
+        "keywords": []
       }
     ],
     "altText": "Markera det nu använder"
@@ -135,13 +116,17 @@
     "altText": "Markera det du använder",
     "selections": [
       {
-        "text": "Ibland skrollar jag i mitt flöde och tittar på vad olika föreningar och företag lägger ut, intresserar mig för evenemang eller titta på minnen.",
-        "keywords": ["flöde", "föreningar och företag", "evenemang", "minnen"],
-        "add": ["explore-1", "explore-7", "explore-2"]
+        "text": "När jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
+        "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
+        "add": [
+          "post-settings-save",
+          "post-settings-hide",
+          "post-settings-notifications"
+        ]
       },
       {
-        "text": "Samma som ovan, men ibland vill jag dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
-        "keywords": ["dölja inlägg", "spara inlägg", "slå på notiser"],
+        "text": "Samma som ovan, men ibland händer det också att jag delar eller tittar på andras händelser, pratar med andra i rum, eller intresserar mig för evenemang.",
+        "keywords": ["händelser", "rum", "evenemang"],
         "add": [
           "top-panel-explore-Pages",
           "post-settings-save",
@@ -150,7 +135,7 @@
         ]
       },
       {
-        "text": "Inget av ovanstående stämmer intresserar mig.",
+        "text": "Inget av ovanstående intresserar mig.",
         "keywords": []
       }
     ]
@@ -163,12 +148,11 @@
     "altText": "Markera det du använder",
     "selections": [
       {
-        "text": "Jag vill ibland köpa och sälja saker på Facebook eller bidra till välgörenhetsinsamlingar.",
-        "keywords": ["köpa och sälja", "välgörenhetsinsamlingar"],
+        "text": "Jag vill ibland köpa och sälja saker på Facebook.",
+        "keywords": ["köpa och sälja"],
         "add": [
           "explore-8",
           "top-panel-explore-Marketplace",
-          "composer-charity",
           "create-post-more",
           "explore-4"
         ]

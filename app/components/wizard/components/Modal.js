@@ -1,7 +1,9 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Steps from './Steps'
 import HelpPanel from './HelpPanel'
+import Navbar from './Navbar'
+import Dialog from './Dialog'
 
 const Container = styled.div`
   width: 1263px;
@@ -12,33 +14,6 @@ const Container = styled.div`
 
   display: flex;
   flex-direction: column;
-`
-
-const Navbar = styled.div`
-  width: 100%;
-  height: 35px;
-  background-color: #4469b0;
-
-  display: flex;
-  justify-content: flex-end;
-
-  > button {
-    cursor: pointer;
-    background-color: #4469b0;
-    border: none;
-    color: white;
-    text-align: center;
-    text-decoration: none;
-    outline: none;
-
-    font-size: 14px;
-    font-weight: bold;
-    padding: 0 10px;
-
-    :active {
-      opacity: 0.5;
-    }
-  }
 `
 
 const Inner = styled.div`
@@ -60,20 +35,27 @@ const Content = styled.div`
 `
 
 export default ({ children }) => {
+  const [dialogVisible, setDialogVisible] = useState(true)
+
+  const onNavbarClose = () => {
+    setDialogVisible(!dialogVisible)
+  }
+
   return (
-    <Container>
-      <Navbar>
-        <button>╳</button>
-      </Navbar>
-      <Inner>
-        <Sidebar>
-          <Steps />
-        </Sidebar>
-        <Content>{children}</Content>
-        <Sidebar>
-          <HelpPanel />
-        </Sidebar>
-      </Inner>
-    </Container>
+    <>
+      <Container>
+        <Navbar onClick={onNavbarClose} />
+        <Inner>
+          <Sidebar>
+            <Steps />
+          </Sidebar>
+          <Content>{children}</Content>
+          <Sidebar>
+            <HelpPanel />
+          </Sidebar>
+        </Inner>
+      </Container>
+      {dialogVisible && <Dialog onClose={() => setDialogVisible(false)} />}
+    </>
   )
 }

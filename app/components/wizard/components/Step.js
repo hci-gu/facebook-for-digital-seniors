@@ -10,6 +10,10 @@ const Container = styled.div`
 
 const Question = styled.h1`
   font-size: 24px !important;
+
+  > label > span > a {
+    cursor: pointer;
+  }
 `
 
 const Selections = styled.div`
@@ -97,7 +101,7 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
               dispatch({
                 action: actions.HELP_PANEL,
                 payload: {
-                  image: `${index - 2}-${cleanKeyword(part)}`,
+                  image: `${index}-${cleanKeyword(part)}`,
                   title: `${part[0].toUpperCase()}${part.slice(1)}`,
                   description: descriptionForPanel(cleanKeyword(part)),
                 },
@@ -125,9 +129,14 @@ const cleanKeyword = keyword => {
     .replace(/ö/g, 'o')
 }
 
-export default ({ step }) => {
-  const { selectedValues, index, dispatch } = useContext(StateContext)
-  const selectedValue = selectedValues[index]
+export default () => {
+  const { selectedValues, index, dispatch, steps } = useContext(StateContext)
+  let step = steps[index]
+  let selectedValue = selectedValues[index]
+  if (step.subSteps) {
+    selectedValue = step.selectedValues[step.subStepIndex]
+    step = step.subSteps[step.subStepIndex]
+  }
 
   const onChange = e => {
     dispatch({
@@ -147,7 +156,7 @@ export default ({ step }) => {
           index,
           `${step.name}_-1`,
           step.question,
-          step.keywords ? steps.keywords : []
+          step.keywords ? step.keywords : []
         )}
       </Question>
       <Selections>
