@@ -93,8 +93,8 @@
     "altText": "Markera de förslag du använder dig av",
     "selections": [
       {
-        "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner, rekommenderade inlägg eller spel",
-        "keywords": ["vänner", "rekommenderade inlägg", "spel"],
+        "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner eller spel",
+        "keywords": ["vänner", "spel"],
         "add": ["friends-recommended", "friends-games", "friends-games-popular"]
       },
       {
@@ -116,19 +116,14 @@
     "altText": "Markera det du använder",
     "selections": [
       {
-        "text": "När jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
-        "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
-        "add": [
-          "post-settings-save",
-          "post-settings-hide",
-          "post-settings-notifications"
-        ]
+        "text": "Ibland händer det att jag delar eller tittar på andras händelser, pratar med andra i rum, eller intresserar mig för evenemang.",
+        "keywords": ["händelser", "rum", "evenemang"],
+        "add": ["top-panel-explore-Events", "stories", "videoChats"]
       },
       {
-        "text": "Samma som ovan, men ibland händer det också att jag delar eller tittar på andras händelser, pratar med andra i rum, eller intresserar mig för evenemang.",
-        "keywords": ["händelser", "rum", "evenemang"],
+        "text": "Samma som oven, men när jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
+        "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
-          "top-panel-explore-Pages",
           "post-settings-save",
           "post-settings-hide",
           "post-settings-notifications"
@@ -194,33 +189,34 @@
   {
     "name": "select-data-level",
     "title": "Om studien",
-    "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
+    "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
     "dontShowInProgress": false,
     "showHelpPanel": false,
-    "selections": [
+    "subStepIndex": 0,
+    "subSteps": [
       {
-        "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
-        "keywords": []
+        "name": "select-data-level-1",
+        "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
+        "selections": [
+          {
+            "text": "Jag vill gärna delta i studien och bli kontaktad genom epost.",
+            "keywords": []
+          },
+          {
+            "text": "Jag vill gärna delta i studien men inte bli kontaktad.",
+            "keywords": []
+          },
+          {
+            "text": "Jag vill inte delta i studien men vill prova extensionet.",
+            "keywords": []
+          }
+        ]
       },
       {
-        "text": "Jag delar gärna med mig av data men vill inte bli kontaktad.",
-        "keywords": []
-      },
-      {
-        "text": "Jag vill bara prova att använda det här tillägget och vill inte vara med i er studie eller dela med mig av data.",
-        "keywords": []
+        "name": "share-contact-info",
+        "showHelpPanel": false
       }
     ]
-  },
-  {
-    "name": "share-contact-info",
-    "dontShowInProgress": true,
-    "showHelpPanel": false
-  },
-  {
-    "name": "share-data-info",
-    "dontShowInProgress": true,
-    "showHelpPanel": false
   },
   {
     "name": "finish",

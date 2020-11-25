@@ -26,7 +26,7 @@ const initialState = () => ({
     ...step,
     selectedValues: step.subSteps ? step.subSteps.map(_ => null) : [],
   })),
-  index: 2,
+  index: 0,
   selectedValues: steps.map(_ => null),
 })
 

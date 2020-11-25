@@ -1,4 +1,4 @@
-import { actions } from './constants'
+import { actions, selectors } from './constants'
 import steps from '../steps.json'
 let backgroundPort =
   browser && browser.runtime
@@ -6,9 +6,13 @@ let backgroundPort =
     : null
 
 const selectorsForStep = (step, index) => {
-  if (index === step.selections.length - 1) return []
+  if (step.subSteps)
+    return step.subSteps.reduce((acc, subStep) => {
+      return [...acc, ...selectorsForStep(subStep)]
+    }, [])
+  if (!step.selections) return []
   return step.selections
-    .filter((_, i) => i <= index)
+    .filter((_, i) => i > index)
     .reduce((acc, curr) => {
       if (curr.add) {
         return [...acc, ...curr.add]
@@ -25,8 +29,8 @@ const selectorsForChoice = (featuresToRemove, stepIndex, value) => {
   } else if (stepIndex === 1) {
     return []
   }
-
   const featuresToAddBack = selectorsForStep(step, value)
+  console.log('featuresToAddBack', step, featuresToAddBack)
 
   return featuresToRemove.filter(val => !featuresToAddBack.includes(val))
 }
@@ -44,6 +48,15 @@ const goForward = state => {
   const step = state.steps[state.index]
   if (state.index === steps.length - 1) return
   if (step.subSteps && step.subStepIndex < step.subSteps.length - 1) {
+    if (
+      state.index === steps.length - 2 &&
+      step.selectedValues[step.subStepIndex] > 0
+    ) {
+      return reducer(state, {
+        action: actions.JUMP_TO,
+        payload: { index: steps.length - 1 },
+      })
+    }
     step.subStepIndex++
     return reducer(state, {
       ...state,
@@ -53,12 +66,6 @@ const goForward = state => {
     return reducer(state, {
       action: actions.JUMP_TO,
       payload: { index: steps.length - 1 },
-    })
-  }
-  if (state.index === steps.length - 3 && state.selectedValues[0] !== 0) {
-    return reducer(state, {
-      action: actions.JUMP_TO,
-      payload: { index: state.selectedValues[0] + 2 },
     })
   }
   return {
@@ -87,10 +94,10 @@ const goBack = state => {
       payload: { index: 0 },
     })
   }
-  if (state.index === steps.length - 1 && state.selectedValues[3] === 0) {
+  if (state.index === steps.length - 1 && state.selectedValues[1] === 0) {
     return reducer(state, {
       action: actions.JUMP_TO,
-      payload: { index: 3 },
+      payload: { index: 1 },
     })
   }
   if (state.index === 0) return
@@ -104,6 +111,12 @@ const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
       const featuresToRemove = removeFeaturesBasedOnSelections(state)
+      console.log(
+        state.steps.map(
+          (step, i) => `${step.name} - ${state.selectedValues[i]}`
+        )
+      )
+      console.log('featuresToRemove', featuresToRemove)
       backgroundPort.postMessage({
         type: 'setWizardCompleted',
         payload: {
@@ -125,6 +138,12 @@ const reducer = (state, { action, payload }) => {
           contact: state.selectedValues[0] === 0 ? state.contact : null,
         },
       })
+      return {
+        ...state,
+        completed: true,
+        removing: false,
+      }
+    case actions.ABORT:
       return {
         ...state,
         completed: true,

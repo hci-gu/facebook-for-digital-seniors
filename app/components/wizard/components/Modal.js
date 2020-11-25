@@ -35,7 +35,7 @@ const Content = styled.div`
 `
 
 export default ({ children }) => {
-  const [dialogVisible, setDialogVisible] = useState(true)
+  const [dialogVisible, setDialogVisible] = useState(false)
 
   const onNavbarClose = () => {
     setDialogVisible(!dialogVisible)

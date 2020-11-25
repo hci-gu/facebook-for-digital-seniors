@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { actions, StateContext } from '../state'
 import HelpIcon from './HelpIcon'
+import StudyInfo from './StudyInfo'
 import descriptionForPanel from '../descriptionForPanel'
 
 const Container = styled.div`
@@ -159,6 +160,7 @@ export default () => {
           step.keywords ? step.keywords : []
         )}
       </Question>
+      {step.name === 'select-data-level-1' && <StudyInfo />}
       <Selections>
         {step.selections &&
           step.selections.map((selection, i) => (

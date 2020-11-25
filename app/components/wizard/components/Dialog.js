@@ -69,7 +69,7 @@ export default ({ onClose }) => {
               Avbryt
             </Button>
             <Button
-              onClick={() => dispatch({ action: actions.EXIT })}
+              onClick={() => dispatch({ action: actions.ABORT })}
               style={{ marginLeft: 20 }}
             >
               Avsluta

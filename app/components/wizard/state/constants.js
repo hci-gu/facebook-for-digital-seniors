@@ -31,12 +31,15 @@ export const selectors = [
   'composer-live-stream',
   'create-post-more',
   'stories',
+  'videoChats',
+  'right-panel-sponsored',
   'friends-recommended',
   'friends-games',
   'friends-games-popular',
 ]
 
 export const actions = {
+  ABORT: 'abort',
   EXIT: 'exit',
   DONE: 'done',
   FORWARD: 'forward',

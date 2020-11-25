@@ -8,6 +8,13 @@ const Container = styled.div`
 
   display: flex;
   justify-content: flex-end;
+  justify-content: space-between;
+
+  > span {
+    color: white;
+    padding: 10px;
+    line-height: 100%;
+  }
 
   > button {
     cursor: pointer;
@@ -28,9 +35,10 @@ const Container = styled.div`
   }
 `
 
-export default ({ onClick }) => {
+export default ({ title = '', onClick }) => {
   return (
     <Container>
+      <span>{title}</span>
       <button onClick={onClick}>╳</button>
     </Container>
   )

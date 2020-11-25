@@ -68,7 +68,11 @@ const ButtonContainer = styled.div`
 `
 
 const componentForStep = (step, skipped) => {
-  switch (step.name) {
+  let name = step.name
+  if (step.subSteps) {
+    name = step.subSteps[step.subStepIndex].name
+  }
+  switch (name) {
     case 'intro':
       return <Intro />
     case '':
@@ -126,10 +130,12 @@ const componentForStep = (step, skipped) => {
 }
 
 const buttonsForStep = (step, selectedValue, dispatch, skipped, contact) => {
+  let name = step.name
   if (step.subSteps) {
+    name = step.subSteps[step.subStepIndex].name
     selectedValue = step.selectedValues[step.subStepIndex]
   }
-  switch (step.name) {
+  switch (name) {
     case 'intro':
       return (
         <>
@@ -170,8 +176,11 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, contact) => {
       )
     default:
       let disabled = selectedValue === null && step.title
-      if (step.name === 'share-contact-info') {
+      if (name === 'share-contact-info') {
         disabled = !contact.email || !contact.age || !contact.sex
+      }
+      if (name === 'share-data-info') {
+        disabled = false
       }
 
       return (
