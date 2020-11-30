@@ -12,12 +12,19 @@ export default {
             cssSelectorName: 'topPanelExplore',
             hide: false,
           },
-          options: ['Home', 'Pages', 'Watch', 'Marketplace', 'Groups', 'Games'].map((name, i) => ({
+          options: [
+            'Home',
+            'Pages',
+            'Watch',
+            'Marketplace',
+            'Groups',
+            'Games',
+          ].map((name, i) => ({
             id: `top-panel-explore-${name}`,
             name,
-              cssSelectorName: `topPanelExplore${name}`,
-              hide: false,
-          }))
+            cssSelectorName: `topPanelExplore${name}`,
+            hide: false,
+          })),
         },
         {
           option: {
@@ -61,13 +68,13 @@ export default {
             'Senaste annonsaktivitet',
             'Livevideor',
             'Vädret',
-          ].map((name, i)=> ({
+          ].map((name, i) => ({
             id: `explore-${i}`,
             name,
             cssSelectorName: `leftPanelExploreTextSearch:${name}`,
             labelCssSelectorName: `leftPanelExploreTextSearch:${name}`,
             hide: false,
-          }))
+          })),
         },
       ],
     },
@@ -110,8 +117,7 @@ export default {
           option: {
             id: 'composer-toolbar',
             name: '"Lägg till"-knappar',
-            cssSelectorName:
-              'composerToolbar, composerFeedToolbar',
+            cssSelectorName: 'composerToolbar, composerFeedToolbar',
             hide: false,
           },
           options: [
@@ -130,7 +136,7 @@ export default {
             cssSelectorName: `composerToolbarIndex:${i}, composerFeedToolbarText:${text}`,
             labelCssSelectorName: `composerToolbarIndex:${i}`,
             hide: false,
-          }))
+          })),
         },
       ],
     },
@@ -155,7 +161,7 @@ export default {
           cssSelectorName: 'postSettingsNotifications',
           hide: false,
         },
-      ]
+      ],
     },
     {
       categoryName: 'Vänner',
@@ -165,8 +171,8 @@ export default {
           name: 'Rekommenderade Vänner',
           cssSelectorName: 'friendsRecommendations',
           hide: false,
-        }
-      ]
+        },
+      ],
     },
     {
       categoryName: 'Övrigt',
@@ -188,7 +194,7 @@ export default {
           name: 'Högerpanel sponsrad',
           cssSelectorName: 'rightPanelSponsored',
           hide: false,
-        }
+        },
       ],
     },
   ],
@@ -232,4 +238,4 @@ export default {
     highlightAudienceWhenPosting: false,
   },
   facebookCssSelectors: {},
-};
+}

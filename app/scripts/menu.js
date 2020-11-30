@@ -1,9 +1,9 @@
-console.log(`Gunnar är bäst`);
+console.log(`Gunnar är bäst`)
 
-import Vue from "vue";
-import App from "../components/menu/App.vue";
+import Vue from 'vue'
+import App from '../components/menu/App.vue'
 
 new Vue({
-  el: "#extension-menu",
-  render: h => h(App)
-});
+  el: '#extension-menu',
+  render: h => h(App),
+})
