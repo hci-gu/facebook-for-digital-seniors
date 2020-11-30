@@ -2,6 +2,7 @@ import React, { useEffect, useContext } from 'react'
 import styled from 'styled-components'
 import { actions, StateContext } from '../state'
 import HelpIcon from './HelpIcon'
+import StudyInfo from './StudyInfo'
 import descriptionForPanel from '../descriptionForPanel'
 
 const Container = styled.div`
@@ -10,6 +11,10 @@ const Container = styled.div`
 
 const Question = styled.h1`
   font-size: 24px !important;
+
+  > label > span > a {
+    cursor: pointer;
+  }
 `
 
 const Selections = styled.div`
@@ -97,7 +102,7 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
               dispatch({
                 action: actions.HELP_PANEL,
                 payload: {
-                  image: `${index - 2}-${cleanKeyword(part)}`,
+                  image: `${index}-${cleanKeyword(part)}`,
                   title: `${part[0].toUpperCase()}${part.slice(1)}`,
                   description: descriptionForPanel(cleanKeyword(part)),
                 },
@@ -125,11 +130,16 @@ const cleanKeyword = keyword => {
     .replace(/ö/g, 'o')
 }
 
-export default ({ step }) => {
-  const { selectedValues, index, dispatch } = useContext(StateContext)
-  const selectedValue = selectedValues[index]
+export default () => {
+  const { selectedValues, index, dispatch, steps } = useContext(StateContext)
+  let step = steps[index]
+  let selectedValue = selectedValues[index]
+  if (step.subSteps) {
+    selectedValue = step.selectedValues[step.subStepIndex]
+    step = step.subSteps[step.subStepIndex]
+  }
 
-  const onChange = (e) => {
+  const onChange = e => {
     dispatch({
       action: actions.SELECTION,
       payload: {
@@ -138,9 +148,19 @@ export default ({ step }) => {
       },
     })
   }
+
   return (
     <Container>
-      <Question>{step.question}</Question>
+      <Question>
+        {renderTextWithHighlights(
+          dispatch,
+          index,
+          `${step.name}_-1`,
+          step.question,
+          step.keywords ? step.keywords : []
+        )}
+      </Question>
+      {step.name === 'select-data-level-1' && <StudyInfo />}
       <Selections>
         {step.selections &&
           step.selections.map((selection, i) => (

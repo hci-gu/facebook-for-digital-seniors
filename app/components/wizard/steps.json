@@ -1,35 +1,13 @@
 [
   {
-    "name": "select-data-level",
-    "title": "Hej och välkommen till detta browser-tillägg",
-    "question": "Detta är en del i ett forskningsprojekt. Du får nu tre alternativ.",
-    "dontShowInProgress": true,
-    "selections": [
-      {
-        "text": "Jag vill gärna dela data och vara med i er studie genom att bli kontaktad.",
-        "keywords": []
-      },
-      {
-        "text": "Jag delar gärna med mig av data men vill inte bli kontaktad.",
-        "keywords": []
-      },
-      {
-        "text": "Jag vill bara prova att använda det här tillägget och vill inte vara med i er studie eller dela med mig av data.",
-        "keywords": []
-      }
-    ]
-  },
-  {
-    "name": "share-contact-info",
-    "dontShowInProgress": true
-  },
-  {
-    "name": "share-data-info",
-    "dontShowInProgress": true
+    "name": "intro",
+    "title": "Intro",
+    "showHelpPanel": false
   },
   {
     "name": "general",
     "title": "Allmänt om Facebook",
+    "showHelpPanel": false,
     "question": "Jag tycker om Facebook som det är och vill inte att någonting ska ändras.",
     "selections": [
       {
@@ -45,14 +23,13 @@
   {
     "name": "safety",
     "title": "Säkerhet",
-    "question": "Ibland ändrar jag vilka som kan se mina inlägg eller kategoriserar mina vänner som till exempel “nära vänner” och “bekanta”.",
-    "altText": "Markera det nu använder",
+    "showHelpPanel": true,
+    "question": "Ibland är jag osäker på vilka som ser de inlägg jag delar på Facebook.",
+    "keywords": ["ser de inlägg"],
     "selections": [
       {
         "text": "Stämmer",
-        "keywords": [
-          "se mina inlägg", "kategoriserar mina vänner"
-        ],
+        "keywords": [],
         "add": [
           "create-post-panel-safety-just-me",
           "create-post-panel-safety-friends",
@@ -63,11 +40,13 @@
         "text": "Stämmer inte",
         "keywords": []
       }
-    ]
+    ],
+    "altText": "Markera det nu använder"
   },
   {
     "name": "create-post",
     "title": "Skapa inlägg",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder när du gör inlägg",
     "selections": [
@@ -109,12 +88,13 @@
   {
     "name": "suggestions",
     "title": "Facebook förslag",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera de förslag du använder dig av",
     "selections": [
       {
-        "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner, rekommenderade inlägg eller spel",
-        "keywords": ["vänner", "rekommenderade inlägg", "spel"],
+        "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner eller spel",
+        "keywords": ["vänner", "spel"],
         "add": ["friends-recommended", "friends-games", "friends-games-popular"]
       },
       {
@@ -131,26 +111,26 @@
   {
     "name": "posts",
     "title": "Titta på inlägg",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [
       {
-        "text": "Ibland skrollar jag i mitt flöde och tittar på vad olika föreningar och företag lägger ut, intresserar mig för evenemang eller titta på minnen.",
-        "keywords": ["flöde", "föreningar och företag", "evenemang", "minnen"],
-        "add": ["explore-1", "explore-7", "explore-2"]
+        "text": "Ibland händer det att jag delar eller tittar på andras händelser, pratar med andra i rum, eller intresserar mig för evenemang.",
+        "keywords": ["händelser", "rum", "evenemang"],
+        "add": ["top-panel-explore-Events", "stories", "videoChats"]
       },
       {
-        "text": "Samma som ovan, men ibland vill jag dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
-        "keywords": ["dölja inlägg", "spara inlägg", "slå på notiser"],
+        "text": "Samma som oven, men när jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
+        "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
-          "top-panel-explore-Pages",
           "post-settings-save",
           "post-settings-hide",
           "post-settings-notifications"
         ]
       },
       {
-        "text": "Inget av ovanstående stämmer intresserar mig.",
+        "text": "Inget av ovanstående intresserar mig.",
         "keywords": []
       }
     ]
@@ -158,16 +138,16 @@
   {
     "name": "shop",
     "title": "Handla",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [
       {
-        "text": "Jag vill ibland köpa och sälja saker på Facebook eller bidra till välgörenhetsinsamlingar.",
-        "keywords": ["köpa och sälja", "välgörenhetsinsamlingar"],
+        "text": "Jag vill ibland köpa och sälja saker på Facebook.",
+        "keywords": ["köpa och sälja"],
         "add": [
           "explore-8",
           "top-panel-explore-Marketplace",
-          "composer-charity",
           "create-post-more",
           "explore-4"
         ]
@@ -186,6 +166,7 @@
   {
     "name": "games",
     "title": "Spel",
+    "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
     "selections": [
@@ -202,6 +183,38 @@
       {
         "text": "Jag är inte intresserad av spel på Facebook.",
         "keywords": [" spel "]
+      }
+    ]
+  },
+  {
+    "name": "select-data-level",
+    "title": "Om studien",
+    "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
+    "dontShowInProgress": false,
+    "showHelpPanel": false,
+    "subStepIndex": 0,
+    "subSteps": [
+      {
+        "name": "select-data-level-1",
+        "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
+        "selections": [
+          {
+            "text": "Jag vill gärna delta i studien och bli kontaktad genom epost.",
+            "keywords": []
+          },
+          {
+            "text": "Jag vill gärna delta i studien men inte bli kontaktad.",
+            "keywords": []
+          },
+          {
+            "text": "Jag vill inte delta i studien men vill prova extensionet.",
+            "keywords": []
+          }
+        ]
+      },
+      {
+        "name": "share-contact-info",
+        "showHelpPanel": false
       }
     ]
   },

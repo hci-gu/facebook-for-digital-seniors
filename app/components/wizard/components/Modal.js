@@ -1,23 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import styled from 'styled-components'
 import Steps from './Steps'
 import HelpPanel from './HelpPanel'
+import Navbar from './Navbar'
+import Dialog from './Dialog'
 
 const Container = styled.div`
   width: 1263px;
-  height: 555px;
+  height: 655px;
   background-color: #fff;
   border-radius: 3px;
   overflow: hidden;
 
   display: flex;
   flex-direction: column;
-`
-
-const Navbar = styled.div`
-  width: 100%;
-  height: 35px;
-  background-color: #4469b0;
 `
 
 const Inner = styled.div`
@@ -39,18 +35,27 @@ const Content = styled.div`
 `
 
 export default ({ children }) => {
+  const [dialogVisible, setDialogVisible] = useState(false)
+
+  const onNavbarClose = () => {
+    setDialogVisible(!dialogVisible)
+  }
+
   return (
-    <Container>
-      <Navbar />
-      <Inner>
-        <Sidebar>
-          <Steps />
-        </Sidebar>
-        <Content>{children}</Content>
-        <Sidebar>
-          <HelpPanel />
-        </Sidebar>
-      </Inner>
-    </Container>
+    <>
+      <Container>
+        <Navbar onClick={onNavbarClose} />
+        <Inner>
+          <Sidebar>
+            <Steps />
+          </Sidebar>
+          <Content>{children}</Content>
+          <Sidebar>
+            <HelpPanel />
+          </Sidebar>
+        </Inner>
+      </Container>
+      {dialogVisible && <Dialog onClose={() => setDialogVisible(false)} />}
+    </>
   )
 }

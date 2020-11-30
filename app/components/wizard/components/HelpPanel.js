@@ -17,7 +17,6 @@ const Title = styled.h1`
 const Description = styled.p``
 
 const Image = styled.img`
-  background-color: gray;
   max-width: 100%;
 `
 
@@ -32,18 +31,26 @@ const getImage = image => {
 }
 
 export default () => {
-  const { help } = useContext(StateContext)
+  const { help, steps, index } = useContext(StateContext)
+  const step = steps[index]
+
+  if (!step.showHelpPanel) return null
+
   return (
     <Container>
       {help ? (
         <>
           <Title>{help.title}</Title>
-          <Description>{help.description.split('\n').map(text => {
-            return <>
-              <span>{text}</span>
-              <br></br>
-            </>
-          })}</Description>
+          <Description>
+            {help.description.split('\n').map(text => {
+              return (
+                <>
+                  <span>{text}</span>
+                  <br></br>
+                </>
+              )
+            })}
+          </Description>
           <Image src={getImage(help.image)} />
         </>
       ) : (

@@ -42,7 +42,7 @@ export default {
             'Messenger',
             'Evenemang',
             'Marketplace',
-            'Videos',
+            'Videor',
             'Insamlingar',
             'Grupper',
             'Vänlistor',

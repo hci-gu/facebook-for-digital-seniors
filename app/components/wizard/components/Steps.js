@@ -3,13 +3,27 @@ import styled from 'styled-components'
 import { StateContext } from '../state'
 
 const Container = styled.div`
-  width: 247px;
-  padding: 50px 42px;
+  width: 250px;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+`
+
+const Steps = styled.div`
+  height: 100%;
+  ${({ numSteps }) => `padding-top: calc(100% / ${numSteps});`}
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 `
 
 const Step = styled.div`
   display: flex;
-  height: 58px;
+  height: 100%;
 `
 
 const Indicator = styled.div`
@@ -40,7 +54,6 @@ const Title = styled.span`
   padding-left: 10px;
   margin-top: 5px;
   width: 120px;
-  height: 30px;
   font-size: 14px !important;
 
   ${({ active }) =>
@@ -56,7 +69,7 @@ const Separator = styled.div`
   left: 5px;
   top: 21px;
   width: 8px;
-  height: calc(100% + 20px);
+  height: calc(100% + 30px);
   background-color: #d2d5da;
   transition: all 0.25s ease;
 
@@ -70,20 +83,29 @@ const Separator = styled.div`
 
 export default () => {
   const { steps, index } = useContext(StateContext)
+  const displaySteps = steps.filter(s => s.title && !s.dontShowInProgress)
+
   return (
     <Container>
-      {steps
-        .map((s, i) => {
+      <Steps numSteps={displaySteps.length}>
+        {steps.map((s, i) => {
           if (!s.title || s.dontShowInProgress) return
+          const active = i === index
           return (
             <Step key={`Step_${s.title}`}>
-              <Indicator active={i === index} completed={i < index}>
+              <Indicator active={active} completed={i < index}>
                 {i < steps.length - 1 && <Separator completed={i < index} />}
               </Indicator>
-              <Title active={i === index}>{s.title}</Title>
+              <Title active={active}>
+                {s.title}{' '}
+                {active &&
+                  s.subSteps &&
+                  `${s.subStepIndex + 1} / ${s.subSteps.length}`}
+              </Title>
             </Step>
           )
         })}
+      </Steps>
     </Container>
   )
 }
