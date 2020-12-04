@@ -1,7 +1,9 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { ReactCompareSlider, ReactCompareSliderImage } from 'react-compare-slider';
-
+import {
+  ReactCompareSlider,
+  ReactCompareSliderImage,
+} from 'react-compare-slider'
 
 const Container = styled.div`
   width: 100%;
@@ -96,8 +98,14 @@ const getImage = image => {
   return imagePath
 }
 
-const image = (name) => {
-  return <ReactCompareSliderImage src={getImage(name)} srcSet={getImage(name)} alt={`Facebook ${name}`} />
+const image = name => {
+  return (
+    <ReactCompareSliderImage
+      src={getImage(name)}
+      srcSet={getImage(name)}
+      alt={`Facebook ${name}`}
+    />
+  )
 }
 
 const handle = () => {
@@ -112,15 +120,21 @@ const handle = () => {
 }
 
 export default () => {
-  
   return (
     <Container>
       <Texts>
-        <h1>Facebook för digitala seniorer</h1>
-        <h2>Simplifiera din facebook upplevelse</h2>
+        <h1>Klara Facebook</h1>
+        <h2>Simplifiera din upplevelse på Facebook</h2>
       </Texts>
-      <ReactCompareSlider itemOne={image('before')} itemTwo={image('after')} handle={handle()} />
-      <span>Exempel på hur facebook kan se ut före och efter du gått igenom den här introduktionen.</span>
+      <ReactCompareSlider
+        itemOne={image('before')}
+        itemTwo={image('after')}
+        handle={handle()}
+      />
+      <span>
+        Exempel på hur Facebook kan se ut före och efter du gått igenom den här
+        introduktionen.
+      </span>
     </Container>
   )
 }

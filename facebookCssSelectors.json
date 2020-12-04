@@ -9,7 +9,8 @@
   "stories": "[data-pagelet=\"Stories\"]",
   "videoChats": "[data-pagelet=\"VideoChatHomeUnit\"]",
   "popupMenu": {
-    "selector": "[data-testid=\"Keycommand_wrapper_ModalLayer\"] [data-testid=\"Keycommand_wrapper\"]",
+    "selector": "[data-pagelet=\"root\"] > [role=\"menu\"]",
+    "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, firstElementChild",
     "multiple": true
   },
   "composerBackgroundButton": {
@@ -34,12 +35,16 @@
   },
   "composerToolbar": {
     "parentSelectorName": "composer",
-    "selector": "[aria-labelledby=\"toolbarLabel\"]",
-    "DOMSearch": "parentElement"
+    "DOMSearch": "lastElementChild, firstElementChild, lastElementChild, firstElementChild"
   },
   "composerToolbarFull": {
     "selector": "form[method=\"POST\"] > [data-testid=\"Keycommand_wrapper_ModalLayer\"] > div",
     "DOMSearch": "children:2"
+  },
+  "composerToolbarText": {
+    "parentSelectorName": "composerToolbar",
+    "evaluate": true,
+    "evaluateKey": "aria-label"
   },
   "composerToolbarIndex": {
     "parentSelectorName": "composerToolbar",
@@ -118,21 +123,10 @@
   "rightPanel": "[data-pagelet=\"RightRail\"]",
   "rightPanelSponsored": {
     "parentSelectorName": "rightPanel",
-    "selector": "div > div"
+    "selector": "div > div > div"
   },
-  "postSettingsSave": {
-    "parentSelectorName": "popupMenu",
-    "DOMSearch": "children:0",
-    "multiple": true
-  },
-  "postSettingsNotification": {
-    "parentSelectorName": "popupMenu",
-    "DOMSearch": "children:2",
-    "multiple": true
-  },
-  "postSettingsHide": {
-    "parentSelectorName": "popupMenu",
-    "DOMSearch": "children:5",
+  "postSettings": {
+    "evaluate": true,
     "multiple": true
   }
 }

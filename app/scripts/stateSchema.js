@@ -1,5 +1,5 @@
 export default {
-  stateBreakingChangeCounter: 80,
+  stateBreakingChangeCounter: 89,
   globalToggle: false,
   thingsToHide: [
     {
@@ -31,7 +31,6 @@ export default {
             id: 'leftPanelShortCuts',
             name: 'Genvägar',
             cssSelectorName: 'leftPanelShortCuts',
-            labelCssSelectorName: '',
             hide: false,
           },
         },
@@ -72,7 +71,6 @@ export default {
             id: `explore-${i}`,
             name,
             cssSelectorName: `leftPanelExploreTextSearch:${name}`,
-            labelCssSelectorName: `leftPanelExploreTextSearch:${name}`,
             hide: false,
           })),
         },
@@ -133,8 +131,7 @@ export default {
           ].map(({ id, text }, i) => ({
             id,
             name: text,
-            cssSelectorName: `composerToolbarIndex:${i}, composerFeedToolbarText:${text}`,
-            labelCssSelectorName: `composerToolbarIndex:${i}`,
+            cssSelectorName: `composerToolbarText:${text}, composerFeedToolbarText:${text}`,
             hide: false,
           })),
         },
@@ -146,19 +143,43 @@ export default {
         {
           id: 'post-settings-save',
           name: 'Spara inlägg',
-          cssSelectorName: 'postSettingsSave',
+          textSearch: 'Spara inlägg',
+          digForParents: 4,
+          hide: false,
+        },
+        {
+          id: 'post-settings-hide',
+          name: 'Dölj inlägg/annons',
+          textSearch: 'Dölj inlägg',
+          digForParents: 4,
+          hide: false,
+        },
+        {
+          id: 'post-settings-save-link',
+          name: 'Spara inlägg',
+          textSearch: 'Spara länk',
+          digForParents: 4,
+          hide: false,
+        },
+        {
+          id: 'post-settings-save-video',
+          name: 'Spara inlägg',
+          textSearch: 'Spara video',
+          digForParents: 4,
           hide: false,
         },
         {
           id: 'post-settings-hide-ad',
           name: 'Dölj inlägg/annons',
-          cssSelectorName: 'postSettingsHide',
+          textSearch: 'Dölj annons',
+          digForParents: 4,
           hide: false,
         },
         {
           id: 'post-settings-notifications',
           name: 'Följ inlägg',
-          cssSelectorName: 'postSettingsNotifications',
+          textSearch: 'Aktivera aviseringar för det här inlägget',
+          digForParents: 4,
           hide: false,
         },
       ],
@@ -197,41 +218,6 @@ export default {
         },
       ],
     },
-  ],
-  customCss: [
-    {
-      enabled: true,
-      id: 'zoom',
-      name: 'Zoom',
-      cssSelectorName: 'body',
-      property: 'zoom',
-      unit: '%',
-      value: 100,
-      min: 50,
-      max: 200,
-    },
-    // {
-    //   enabled: false,
-    //   id: "paragraphsize",
-    //   name: "Brödtext textstorlek",
-    //   selector: "p",
-    //   property: "font-size",
-    //   unit: "px",
-    //   value: 19,
-    //   min: 10,
-    //   max: 40
-    // },
-    // {
-    //   enabled: false,
-    //   id: "textsize",
-    //   name: "Övergripande textstorlek",
-    //   selector: "body",
-    //   property: "font-size",
-    //   unit: "%",
-    //   value: 100,
-    //   min: 60,
-    //   max: 240
-    // }
   ],
   audienceSettings: {
     replaceAudienceIconsWithText: false,

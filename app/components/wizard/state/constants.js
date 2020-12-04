@@ -2,6 +2,8 @@ export const selectors = [
   'top-panel-explore-Marketplace',
   'top-panel-explore-Games',
   'top-panel-explore-Pages',
+  'top-panel-explore-Watch',
+  'top-panel-explore-Groups',
   'create-post-panel-safety-just-me',
   'create-post-panel-safety-friends',
   'explore-1',
@@ -18,7 +20,10 @@ export const selectors = [
   'explore-18',
   'explore-20',
   'post-settings-save',
+  'post-settings-save-link',
+  'post-settings-save-video',
   'post-settings-hide',
+  'post-settings-hide-ad',
   'post-settings-notifications',
   'composer-tag-friends',
   'composer-check-in',
@@ -36,6 +41,7 @@ export const selectors = [
   'friends-recommended',
   'friends-games',
   'friends-games-popular',
+  'highlightAudienceWhenPosting',
 ]
 
 export const actions = {

@@ -18,7 +18,7 @@ const Question = styled.h1`
 `
 
 const Selections = styled.div`
-  padding: 42px;
+  padding: 36px;
 `
 
 const Selection = styled.div`

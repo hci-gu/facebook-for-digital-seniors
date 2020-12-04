@@ -30,15 +30,12 @@
       {
         "text": "Stämmer",
         "keywords": [],
-        "add": [
-          "create-post-panel-safety-just-me",
-          "create-post-panel-safety-friends",
-          "explore-5"
-        ]
+        "add": []
       },
       {
         "text": "Stämmer inte",
-        "keywords": []
+        "keywords": [],
+        "add": ["highlightAudienceWhenPosting"]
       }
     ],
     "altText": "Markera det nu använder"
@@ -125,7 +122,10 @@
         "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
           "post-settings-save",
+          "post-settings-save-link",
+          "post-settings-save-video",
           "post-settings-hide",
+          "post-settings-hide-ad",
           "post-settings-notifications"
         ]
       },

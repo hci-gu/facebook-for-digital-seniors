@@ -25,7 +25,7 @@ const Container = styled.div`
 `
 
 const TextContent = styled.p`
-  padding: 42px;
+  padding: 36px;
   height: 100%;
   font-size: 18px !important;
 
@@ -44,7 +44,7 @@ const Content = styled.div`
 `
 
 const Removing = styled.div`
-  padding: 42px;
+  padding: 36px;
   height: 100%;
 
   display: flex;

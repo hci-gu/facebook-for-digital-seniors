@@ -53,7 +53,7 @@ const Indicator = styled.div`
 const Title = styled.span`
   padding-left: 10px;
   margin-top: 5px;
-  width: 120px;
+  width: 125px;
   font-size: 14px !important;
 
   ${({ active }) =>

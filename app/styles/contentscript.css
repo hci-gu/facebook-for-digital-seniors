@@ -6,11 +6,11 @@
 }
 
 .red-highlight-border {
-  border: red dashed 4px;
+  border: #ed5244 dashed 3px;
 }
 
 .green-highlight-border {
-  border: green dashed 4px;
+  border: #52bf62 dashed 3px;
 }
 
 .hide {

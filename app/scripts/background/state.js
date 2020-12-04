@@ -72,14 +72,7 @@ function stateChangeCounterUpdated(firstState, secondState) {
 
 function hasSameProperties(obj1, obj2) {
   try {
-    // console.log("comparison called on: ", obj1, obj2);
     return Object.keys(obj1).every(function(property) {
-      // if (property == "facebookCssSelectors") {
-      //   console.log(
-      //     "found object property named facebookCssSelectors. Ignoring comparison of that subtree."
-      //   );
-      //   return true;
-      // } else
       if (typeof obj1[property] !== 'object') {
         return obj2.hasOwnProperty(property)
       } else {

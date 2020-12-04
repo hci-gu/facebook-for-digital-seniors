@@ -11,6 +11,10 @@ const findOptionForId = (object, id, result) => {
 }
 
 const setHiddenForId = (state, id) => {
+  if (id === 'highlightAudienceWhenPosting') {
+    state.audienceSettings.highlightAudienceWhenPosting = true
+    return
+  }
   const result = []
   findOptionForId(state, id, result)
   if (result[0]) {

@@ -4,7 +4,6 @@ import state from './background/state'
 import parseUtil from './background/parse-util'
 import messageUtils from './message-utils'
 import wizard from './background/wizard'
-import browserActions from './background/browserActions'
 
 import { getDiff } from 'recursive-diff'
 
@@ -51,7 +50,7 @@ const setup = async () => {
   const _state = refreshState()
   console.log('state initialized: ', _state)
 
-  browserActions.setBrowserActionToPopup()
+  browser.browserAction.setPopup({ popup: 'pages/menu.html' })
   await contentscriptReady
 
   const analyticsActivated =
@@ -164,6 +163,9 @@ const messageFromMenuHandler = message => {
       localStorage.setItem('wizardCompleted', false)
       sendMessageToPage('redoIntro')
       return
+    case 'debug':
+      console.log('pass on debug')
+      return sendMessageToPage('debug')
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "appName": {
-    "message": "Facebook för digitala seniorer",
+    "message": "Klara Facebook",
     "description": "Name of the application"
   },
   "appShortName": {
@@ -12,7 +12,7 @@
     "description": "The description of the application"
   },
   "browserActionTitle": {
-    "message": "Facebook för digitala seniorer",
+    "message": "Klara Facebook",
     "description": "The title of the browser action button"
   }
 }

@@ -35,7 +35,7 @@ const Container = styled.div`
   }
 `
 
-export default ({ title = '', onClick }) => {
+export default ({ title = 'Klara Facebook', onClick }) => {
   return (
     <Container>
       <span>{title}</span>

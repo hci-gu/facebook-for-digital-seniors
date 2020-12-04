@@ -50,4 +50,9 @@ const postMessageWithAck = function(message) {
 export default {
   addMessageHandlerWithAckAsPromise,
   postMessageWithAck,
+  postMessage: message => {
+    console.log('post', message)
+    const port = browser.runtime.connect({ name: 'port-from-menu' })
+    port.postMessage(message)
+  },
 }

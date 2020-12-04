@@ -4,6 +4,24 @@ const init = facebookCssSelectors => {
   selectors = facebookCssSelectors
 }
 
+const digForParent = (node, parents = 0) => {
+  if (!node || parents === 0) {
+    return node
+  }
+  return digForParent(node.parentElement, parents - 1)
+}
+
+const getNodeForText = (text, parents = 0) => {
+  const node = document.evaluate(
+    `//*[text()='${text}']`,
+    document,
+    null,
+    XPathResult.FIRST_ORDERED_NODE_TYPE,
+    null
+  ).singleNodeValue
+  return digForParent(node, parents)
+}
+
 const getNodeFromCssObject = (
   cssSelectorObject,
   startNode = document,
@@ -25,27 +43,26 @@ const getNodeFromCssObject = (
       }
     }
     if (cssSelectorObject.evaluate && selectorParameter) {
+      let key = cssSelectorObject.evaluateKey
+        ? `@${cssSelectorObject.evaluateKey}`
+        : 'text()'
+
+      let evaluatedNode = document.evaluate(
+        `//*[${key}='${selectorParameter}']`,
+        startNode,
+        null,
+        XPathResult.FIRST_ORDERED_NODE_TYPE,
+        null
+      ).singleNodeValue
       if (cssSelectorObject.DOMSearch) {
-        startNode = document.evaluate(
-          `//*[text()='${selectorParameter}']`,
-          startNode,
-          null,
-          XPathResult.FIRST_ORDERED_NODE_TYPE,
-          null
-        ).singleNodeValue
+        startNode = evaluatedNode
         node = findRelativeNode(
           startNode,
           cssSelectorObject.DOMSearch,
           selectorParameter
         )
       } else {
-        node = document.evaluate(
-          `//*[text()='${selectorParameter}']`,
-          startNode,
-          null,
-          XPathResult.FIRST_ORDERED_NODE_TYPE,
-          null
-        ).singleNodeValue
+        node = evaluatedNode
       }
     } else if (!cssSelectorObject.DOMSearch) {
       node = startNode.querySelector(cssSelectorObject.selector)
@@ -76,10 +93,7 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
   let traversalSequence = DOMSearch.split(',').map(str => str.trim())
   // console.log('searching for node traversal sequence is: ', traversalSequence);
   for (let i = 0; i < traversalSequence.length; i++) {
-    if (!currentNode) {
-      console.error('error when searching for relative node!!!')
-      return
-    }
+    if (!currentNode) return
     let currentDOMJump = traversalSequence[i].split(':').map(str => str.trim())
     // console.log('currentDOMJump: ', currentDOMJump);
     if (currentDOMJump.length == 1 && currentNode[currentDOMJump[0]]) {
@@ -104,8 +118,8 @@ const findRelativeNode = (startNode, DOMSearch, selectorParameter) => {
 }
 
 const hideElement = node => {
-  if (!node) {
-    console.error('invalid input to hideElement function:', node)
+  if (!node || !node.classList) {
+    throw ('invalid input to hideElement function:', node)
     return
   }
   // node.style.display = "none";
@@ -113,15 +127,29 @@ const hideElement = node => {
 }
 
 const showElement = node => {
-  if (!node) {
-    console.error('invalid input to showElement function:', node)
+  if (!node || !node.classList) {
+    throw ('invalid input to showElement function:', node)
     return
   }
   node.classList.remove('hide')
 }
 
+const updateVisibilityFromTextSearch = item => {
+  const node = getNodeForText(item.textSearch, item.digForParents)
+  if (node) {
+    if (item.hide) {
+      hideElement(node)
+    } else {
+      showElement(node)
+    }
+  }
+}
+
 const updateVisibilityFromShowHideObject = item => {
-  // console.log('UPDATEVISIBILITYFROMSHOWHIDEOBJECT CALLED WITH: ', item);
+  if (item.textSearch) {
+    return updateVisibilityFromTextSearch(item)
+  }
+
   try {
     let selectorNameList = item.cssSelectorName
       .split(',')
@@ -158,80 +186,18 @@ const updateVisibilityFromShowHideObject = item => {
         continue
       }
 
-      if (item.customStylesWhenHidden) {
-        item.customStylesWhenHidden.enabled = item.hide
-        applyCustomCssObject(item.customStylesWhenHidden)
-      }
-
-      if (node.length && node.length > 0) {
-        node.forEach(_node => {
-          if (item.hide) {
-            hideElement(_node)
-          } else {
-            showElement(_node)
-          }
-        })
-      } else if (node && node.length == undefined) {
+      const nodesToHide = node.length && node.length > 0 ? node : [node]
+      nodesToHide.forEach(_node => {
         if (item.hide) {
-          hideElement(node)
+          hideElement(_node)
         } else {
-          showElement(node)
+          showElement(_node)
         }
-      }
+      })
     }
   } catch (e) {
     console.log(e)
     console.error({ item })
-  }
-}
-
-const applyCustomCssObject = customCssObj => {
-  if (!style) {
-    return
-  }
-  let selector
-  if (customCssObj.selector) {
-    selector = customCssObj.selector
-  } else if (customCssObj.cssSelectorName) {
-    selector = selectors[customCssObj.cssSelectorName]
-  } else {
-    console.error('OOMG!!! CRASH OF DOOOM!!! CRYYY')
-    return
-  }
-
-  //Check if rule is already present
-  let ruleList = style.sheet.cssRules
-  let foundCssRule = undefined
-  for (let candidateCssRule of ruleList) {
-    if (
-      candidateCssRule.type == CSSRule.STYLE_RULE && // Just checking if this is a normal css rule
-      candidateCssRule.selectorText == selector
-    ) {
-      foundCssRule = candidateCssRule
-      break
-    }
-  }
-  if (foundCssRule) {
-    // console.log('style selector already present!');
-    if (customCssObj.enabled) {
-      // console.log('setting css property: ', customCssObj);
-      foundCssRule.style.setProperty(
-        customCssObj.property,
-        customCssObj.value + (customCssObj.unit ? customCssObj.unit : '')
-      )
-    } else {
-      // console.log("removing css property: ", customCssItem);
-      foundCssRule.style.removeProperty(customCssObj.property)
-    }
-  } else {
-    console.log('inserting new css rule: ', customCssObj)
-    let cssString = customCssObj.enabled
-      ? `${selector} {${customCssObj.property}: ${customCssObj.value}${
-          customCssObj.unit ? customCssObj.unit : ''
-        };}`
-      : `${selector} {}`
-    // console.log('composed cssString from js object:', cssString);
-    style.sheet.insertRule(cssString)
   }
 }
 
@@ -246,8 +212,8 @@ export default {
   init,
   getNodeFromCssObject,
   updateVisibilityFromShowHideObject,
-  applyCustomCssObject,
   createStyleTag,
   showElement,
   hideElement,
+  getNodeForText,
 }

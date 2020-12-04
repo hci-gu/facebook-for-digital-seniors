@@ -1,272 +1,146 @@
 <template>
-  <div id="main-container">
-    <label class="checkbox-label">
-      <input
-        type="checkbox"
-        v-model="stateEnabled"
-        @change="toggleState()"
-        :true-value="true"
-        :false-value="false"
-      />
-      PÅ/AV
-    </label>
-    <div v-if="stateEnabled">
-      <fieldset>
-        <legend>Visa</legend>
-        <div v-for="category of state.thingsToHide" :key="category.categoryName">
-          <div>
-            <p>{{ category.categoryName }}</p>
-            <template v-for="(group, index) of category.groups">
-              <collapsible
-                class="margin-bottom"
-                v-if="group.options"
-                :group.sync="group"
-                :key="index"
-              ></collapsible>
-              <div v-else :key="index">
-                <label :for="group.option.id" class="single-checkbox-label">
-                  <input
-                    :id="group.option.id"
-                    type="checkbox"
-                    :name="group.option.name"
-                    v-model="group.option.hide"
-                    :true-value="false"
-                    :false-value="true"
-                  />
-                  {{ group.option.name }}
-                </label>
-              </div>
-            </template>
-
-            <label
-              v-for="option of category.options"
-              :key="option.name"
-              :for="option.id"
-              class="checkbox-label"
-            >
-              <input
-                :id="option.id"
-                type="checkbox"
-                :name="option.name"
-                v-model="option.hide"
-                :true-value="false"
-                :false-value="true"
-              />
-              {{ option.name }}
-            </label>
-          </div>
-        </div>
-      </fieldset>
-      <fieldset v-for="(customCss, index) of state.customCss" :key="index">
-        <legend>
-          <!-- <label>
-          <input type="checkbox" v-model="customCss.enabled" />-->
-          {{ customCss.name }}
-          <!-- </label> -->
-        </legend>
-        <!-- <label :for="customCss.id"> -->
-        <input
-          style="width: 100%"
-          :list="customCss.id"
-          v-model="customCss.value"
-          type="range"
-          :min="customCss.min"
-          :max="customCss.max"
-          step="1"
-        />
-        <datalist :id="customCss.id">
-          <option>50</option>
-          <option label="1X">100</option>
-          <option>150</option>
-          <option label="2X">200</option>
-        </datalist>
-        <!-- {{ customCss.value }}</label> -->
-      </fieldset>
-      <fieldset v-if="state.audienceSettings">
-        <legend>Mottagare</legend>
-        <label class="checkbox-label">
-          <input type="checkbox" v-model="state.audienceSettings.replaceAudienceIconsWithText" />
-          Visa mottagare med text istället för ikon
-        </label>
-        <label class="checkbox-label">
-          <input type="checkbox" v-model="state.audienceSettings.highlightAudienceWhenPosting" />
-          Belys mottagare när man skapar ny post
-        </label>
-      </fieldset>
+  <div>
+    <!-- <debug v-if="debug" /> -->
+    <div v-if="!debug" class="container">
+      {{stateEnabled ? 'Stäng av Klara Facebook' : 'Aktivera Klara Facebook'}}
+      <div class="button-container">
+        <button @click="toggleState" v-bind:class="{ disabled: stateEnabled }">På</button>
+        <button @click="toggleState" v-bind:class="{ disabled: !stateEnabled }">Av</button>
+      </div>
+      <div class="button-container">
+        <button @click="redoIntro">Gör om introduktionen</button>
+      </div>
+      <div class="button-container"></div>
+      <div class="button-container">
+        <button @click="openWeb" class="secondary">Engagera dig med vår forskning</button>
+      </div>
+      <div class="button-container">
+        <button @click="contact" class="secondary">Kontakta oss</button>
+      </div>
+      <div class="button-container">
+        <button @click="removeExtension" class="secondary">Hoppa ur</button>
+      </div>
+      <div class="button-container" v-if="debug">
+        <button @click="sendDebug" class="secondary">DEBUG</button>
+      </div>
     </div>
-    <label class="checkbox-label">
-      <button @click="redoIntro()">Gör om introduktion</button>
-    </label>
   </div>
 </template>
 
 <script>
-import Collapsible from "./Collapsible.vue";
-import messageUtils from "../../scripts/message-utils";
-let backgroundPort;
+import messageUtils from "../../scripts/message-utils"
+let backgroundPort
 export default {
   data() {
     return {
-      state: {},
       stateEnabled: false,
+      debug: false,
     };
-  },
-  watch: {
-    state: {
-      deep: true,
-      handler: function () {
-        if (this.stateEnabled) {
-          this.sendMessageToBackground("stateUpdate", this.state);
-        }
-      },
-    },
   },
   mounted() {
-    console.log("mounted");
-
-    const messageFromBgHandler = (message) => {
-      console.log("msg received from background:", message);
-      switch (message.type) {
-        case "stateUpdate":
-          try {
-            console.log("state update received");
-            this.state = message.payload;
-          } catch (err) {
-            console.error(err);
-            return "stateUpdate failed somewhere in popup";
-          }
-          return "performed your stateUpdate. Thaaaanx!!!";
-        default:
-          console.log("unknown message type", message.type);
-          return Promise.resolve("unknown message type");
-          break;
-      }
-    };
-
-    backgroundPort = browser.runtime.connect({ name: "port-from-menu" });
-    backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck;
-    messageUtils.addMessageHandlerWithAckAsPromise(
-      backgroundPort,
-      messageFromBgHandler
-    );
-    this.sendMessageToBackground("stateEnabledRequest").then((response) => {
-      this.stateEnabled = response;
-      if (this.stateEnabled) {
-        this.sendMessageToBackground("stateRequest").then((response) => {
-          this.state = response;
-        });
-      }
-    });
+    backgroundPort = browser.runtime.connect({ name: 'port-from-menu' })
+    backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck
+    this.sendMessageToBackground('stateEnabledRequest').then((response) => {
+      this.stateEnabled = response
+    })
   },
   methods: {
-    async toggleState() {
-      await this.sendMessageToBackground("toggleState");
-      if (this.stateEnabled) {
-        this.sendMessageToBackground("stateRequest").then((response) => {
-          this.state = response;
-        });
+    async toggleState () {
+      await this.sendMessageToBackground('toggleState')
+      this.sendMessageToBackground('stateEnabledRequest').then((response) => {
+        this.stateEnabled = response
+      })
+    },
+    redoIntro() {
+      if (confirm('Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar.')) {
+        this.sendMessageToBackground('redoIntro').then((response) => {
+          this.state = response
+        })
       }
     },
-    async sendMessageToBackground(type, payload) {
+    sendDebug() {
+      this.sendMessageToBackground('debug')
+    },
+    openWeb() {
+      chrome.tabs.create({ url: 'http://digitalaseniorer.org' })
+    },
+    contact() {
+      chrome.tabs.create({ url: 'http://www.digitalaseniorer.org/kontakt' })
+    },
+    removeExtension() {
+      if (confirm('Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar.')) {
+
+      }
+    },
+    sendMessageToBackground(type, payload) {
       return backgroundPort.postMessageWithAck({
         type: type,
         payload: payload,
       });
     },
-    async redoIntro() {
-      if (
-        confirm(
-          "Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar."
-        )
-      ) {
-        this.sendMessageToBackground("redoIntro").then((response) => {
-          this.state = response;
-        });
-      }
-    },
-  },
-  components: {
-    Collapsible,
   },
 };
 </script>
 
 <style>
-body {
-  font-family: "Fira Sans", sans-serif;
-  --x: 1.5rem;
-  margin: var(--x) var(--x) var(--x) var(--x);
+  html {
+    width: 21rem;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  .container {
+    border-radius: 12px;
+    width: 20rem;
+    padding: 1rem;
+    overflow: hidden;
+    background-color: white;
 
-  --inner-border-property: 1px solid #ccc;
-}
+    display: flex;
+    flex-direction: column; 
+    justify-content: center;
+    align-items: center;
+  }
+  .button-container {
+    width: 100%;
+    margin: 0.5rem 0; 
+    display: flex;
+    justify-content: space-around;
+  }
+  button, .button {
+    width: 100%;
+    height: 35px;
+    font: inherit;
+    cursor: pointer;
+    outline: inherit;
+    transition: all 0.2s ease;
 
-html {
-  overflow-y: overlay; /* scrollbar jump fix */
-}
-
-input[type="range"] {
-  cursor: pointer;
-}
-
-#main-container {
-  width: 20rem;
-}
-
-fieldset {
-  border-style: solid;
-  border-color: #333;
-  /* padding-top: 0.6rem;
-  padding-bottom: 0.6rem; */
-  margin-bottom: 1rem;
-}
-
-fieldset p {
-  margin-top: 0.2;
-  margin-bottom: 0.1rem;
-}
-
-legend {
-  padding: 0.1rem 0.3rem 0.1rem 0.3rem;
-  background-color: #333;
-  color: #fff;
-  font-size: 0.9rem;
-}
-
-.margin-bottom {
-  margin-bottom: 0.5rem;
-}
-
-.single-checkbox-label {
-  margin: 10px;
-  display: block;
-}
-
-/* .single-checkbox-label:hover {
-  background: #eee;
-  cursor: pointer;
-} */
-
-.checkbox-label {
-  border: var(--inner-border-property);
-  border-width: 0 0 1px;
-  padding: 10px;
-  /* margin: 0 0 10px; */
-  display: block;
-}
-
-.checkbox-label[disabled]:hover,
-.checkbox-label[disabled] {
-  color: #888;
-  background-color: unset;
-}
-
-.checkbox-label:last-of-type {
-  border-bottom: none;
-}
-
-.checkbox-label:hover,
-.single-checkbox-label:hover {
-  background: #eee;
-  cursor: pointer;
-}
+    border-radius: 3px;
+    border: 2px solid #4469b0;
+    background-color: #4469b0;
+    font-size: 17px !important;
+    color: #fff;
+  }
+  button:nth-child(2) {
+    margin-left: 1rem;
+  }
+  button:hover {
+    opacity: 0.9;
+  }
+  button:active {
+    background-color: #324e83;
+  }
+  .disabled {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  button.secondary{
+    background-color: #fff;
+    color: #4469b0;
+  }
+  button.secondary:active {
+    background-color: #fff;
+    border-color: #324e83;
+    color: #324e83;
+  }
 </style>

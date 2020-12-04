@@ -46,8 +46,6 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, message => {
         console.log('state update received')
         const state = message.payload
         updateVisibilityAll(state)
-        updateStyles(state)
-        updateShareIcons(state)
         updateComposerAudience(state)
       } catch (err) {
         console.error(err)
@@ -56,9 +54,8 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, message => {
       return 'performed your stateUpdate. Thaaaanx!!!'
     case 'redoIntro':
       return showWizardAfterDomLoaded()
-    // case 'fetchLabelsRequest':
-    //   console.log('fetchLabelsRequest received');
-    //   return state;
+    case 'debug':
+      return debug()
     default:
       console.log('unknown message type', message)
       return 'unknown message type'
@@ -111,62 +108,23 @@ const init = async () => {
     console.log('state is: ', state)
   }
 
-  // updateStyles();
-  updateShareIcons(state)
-
   let bodyLoaded = new MutationSummary({
     callback: () => {
-      onBodyTagLoaded(state, selectors)
+      onBodyTagLoaded(state)
       bodyLoaded.disconnect()
     },
     queries: [{ element: 'body' }],
   })
 }
 
-const nodeChangeHandler = async summaries => {
+const nodeChangeHandler = async () => {
   console.log('node summary was triggered')
-  console.log(summaries)
-
   const state = await sendStateRequest()
-
-  let selectors = state.facebookCssSelectors
-
-  //Super ugly hack to make sure we hide/show on page refresh!!!
   updateVisibilityAll(state)
-
-  for (let summary of summaries) {
-    let changedNodes =
-      summary.reparented && summary.reparented.length != 0
-        ? summary.reparented
-        : summary.added
-    for (let node of changedNodes) {
-      console.log(node)
-      for (let item of state.thingsToHide) {
-        if (node.matches(item.cssSelector)) {
-          if (item.hide) {
-            hideElement(node)
-          } else {
-            showElement(node)
-          }
-        }
-      }
-
-      if (node.matches(selectors.postContainerClass)) {
-        updateShareIcons(state)
-      }
-
-      if (node.matches(selectors.composerFeedAudienceSelector)) {
-        updateComposerAudience(state)
-      }
-    }
-    if (summary.valueChanged && summary.valueChanged.length) {
-      updateComposerAudience(state)
-    }
-  }
+  updateComposerAudience(state)
 }
 
 const updateVisibilityAll = state => {
-  // console.log("updateVisibilityAll called");
   if (!state.thingsToHide) {
     console.error('thingsToHide is null or undefined')
     return
@@ -196,244 +154,47 @@ const updateVisibilityAll = state => {
   }
 }
 
-// goes through the stateObject tree and runs aFunction on all option objects in the tree
-const applyToAllOptionObjectsInState = (aFunction, stateObject) => {
-  const recursion = (aFunction, subStateObject) => {
-    // console.log("entering recursion with (sub)state: ", subStateObject);
-    for (let [key, value] of Object.entries(subStateObject)) {
-      if (key == 'option') {
-        // console.log("one option found:", value);
-        aFunction(value)
-        continue
-      }
-      if (key == 'options') {
-        // console.log("option array found:", value);
-        for (let el of value) {
-          aFunction(el)
-        }
-        continue
-      }
-      if (Array.isArray(value)) {
-        // console.log("subArray found:", value);
-        for (let el of value) {
-          if (typeof el === 'object' && el !== null) {
-            recursion(aFunction, el)
-          }
-        }
-        continue
-      }
-      if (typeof value === 'object' && value !== null) {
-        recursion(aFunction, value)
-        // console.log("subObject found: ", value);
-        // for (let [key, subValue] of Object.entries(value)) {
-
-        // }
-        continue
-      }
-    }
-  }
-
-  recursion(aFunction, stateObject)
-}
-
-const fetchLabelsAndAddToState = state => {
-  console.log('FETCHING ALL OPTION OBJECTS IN STATE!!!')
-
-  function addLabel(optionObj) {
-    if (optionObj.labelCssSelectorName) {
-      let selectorNameArray = optionObj.cssSelectorName.split(':')
-      let selectorName = selectorNameArray[0]
-      let selectorParameter = null
-      if (selectorNameArray[1]) {
-        selectorParameter = selectorNameArray[1]
-        console.log('selectorParameter ', selectorParameter)
-      }
-      let cssSelectorObject = state.facebookCssSelectors[selectorName]
-      console.log('retrieved cssSelectorObject: ', cssSelectorObject)
-
-      let node = DOMUtils.getNodeFromCssObject(
-        cssSelectorObject,
-        document,
-        selectorParameter
-      )
-      if (!node) {
-        console.error("didn't find the startElement before fetching label")
-        return
-      }
-
-      console.log(
-        'Extracting option label from DOM using',
-        optionObj.labelCssSelectorName
-      )
-      let labelCssSelectorObject =
-        state.facebookCssSelectors[optionObj.labelCssSelectorName]
-      let label = DOMUtils.getNodeFromCssObject(
-        labelCssSelectorObject,
-        node,
-        null
-      )
-      if (!label) {
-        console.error("didn't find the labelElement")
-        return
-      }
-      optionObj.name = label
-      console.log('SET LABEL: ', label)
-    }
-  }
-  // console.log("state before label fetch: ", state);
-  applyToAllOptionObjectsInState(addLabel, state)
-  // console.log("state after label fetch: ", state);
-  return state
-}
-
-const updateStyles = state => {
-  for (let customCssItem of state.customCss) {
-    DOMUtils.applyCustomCssObject(customCssItem)
-  }
-}
-
 const updateComposerAudience = state => {
-  // console.log("updateComposerAudience Called");
-  let selectors = state.facebookCssSelectors
-  let composer = document.querySelector(selectors.composer)
-  let composerFooter = DOMUtils.getNodeFromCssObject(
-    selectors['composerFooter'],
-    composer,
-    null
+  let element = DOMUtils.getNodeFromCssObject(
+    state.facebookCssSelectors.composerAudienceButton
   )
-  if (!composerFooter) return
-  // console.log("composer: ", composer);
-  let checkBoxes = composerFooter.querySelectorAll('[role=checkbox]')
-  // console.log("checkBoxes: ", checkBoxes);
-  if (checkBoxes && checkBoxes.length) {
-    for (let checkBox of checkBoxes) {
-      let selectAudienceButton = checkBox.nextElementSibling.firstElementChild
-      if (!selectAudienceButton) {
-        console.error(
-          'no audience selector element found. Was the css selector perhaps changed by facebook?'
-        )
-        return
-      }
-
-      if (
-        checkBox.getAttribute('aria-checked') == 'true' &&
-        state.audienceSettings.highlightAudienceWhenPosting
-      ) {
-        selectAudienceButton.classList.add('red-highlight-border')
-      } else {
-        selectAudienceButton.classList.remove('red-highlight-border')
-      }
-    }
+  if (!element) return
+  if (state.audienceSettings.highlightAudienceWhenPosting) {
+    element.classList.add('red-highlight-border')
   } else {
-    let selectAudienceButtons = composerFooter.querySelectorAll('[role=button]')
-    // console.log(selectAudienceButtons);
-    for (let selectAudienceButton of selectAudienceButtons) {
-      let buttonContainer =
-        selectAudienceButton.parentElement.parentElement.parentElement
-      if (state.audienceSettings.highlightAudienceWhenPosting) {
-        buttonContainer.classList.add('red-highlight-border')
-      } else {
-        buttonContainer.classList.remove('red-highlight-border')
-      }
-    }
+    element.classList.remove('red-highlight-border')
   }
 }
 
-const updateShareIcons = state => {
-  let selectors = state.facebookCssSelectors
-
-  let postContentWrappers = document.querySelectorAll(
-    selectors.postContainerClass
-  )
-  if (!postContentWrappers) {
-    console.error(
-      'no postContentWrapper found! Have FB perhaps renamed the cssSelectors?'
-    )
-    return
-  }
-  // console.log("found postContentWrappers:", postContentWrappers);
-
-  if (state.audienceSettings.replaceAudienceIconsWithText) {
-    for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(state, postWrapper, false, true)
-    }
-  } else {
-    for (let postWrapper of postContentWrappers) {
-      setDisplayForShareIconAndShareText(state, postWrapper, true, false)
-    }
-  }
-}
-
-const setDisplayForShareIconAndShareText = (
-  state,
-  postContainer,
-  showShareIcon,
-  showShareText
-) => {
-  let selectors = state.facebookCssSelectors
-
-  // First let's handle the icon!
-  let iconNode = postContainer.querySelector(selectors.shareIconAttributes)
-  if (!iconNode) {
-    console.error(
-      'no icon element found. Have facebook changed the css selectors?'
-    )
-    return
-  }
-  let dot = iconNode.previousElementSibling
-  if (!dot) {
-    console.error(
-      'no dot element found. Have facebook changed the css selectors?'
-    )
-    return
-  }
-  if (showShareIcon) {
-    DOMUtils.showElement(iconNode)
-    DOMUtils.showElement(dot)
-  } else {
-    DOMUtils.hideElement(iconNode)
-    DOMUtils.hideElement(dot)
-  }
-
-  //Secondly we handle the sharetext
-  let sharingTextClass = 'sharing-text'
-  let textNode = postContainer.querySelector('.' + sharingTextClass)
-  if (!textNode) {
-    // console.log("no textNode present. Creating one!!!");
-    // extract the accesibility text from wrapping elements
-    let altText = ''
-    altText = iconNode.getAttribute('data-tooltip-content')
-
-    // console.log("retrieved alt text: ", altText);
-    textNode = document.createElement('h2')
-    textNode.classList.add(sharingTextClass)
-    textNode.textContent = altText
-    postContainer.querySelector('.clearfix').appendChild(textNode)
-  }
-
-  if (showShareText) {
-    DOMUtils.showElement(textNode)
-  } else {
-    DOMUtils.hideElement(textNode)
-  }
-}
-
-const onBodyTagLoaded = async (state, selectors) => {
+const onBodyTagLoaded = async state => {
   DOMUtils.createStyleTag()
   console.log('body tag added to DOM')
+  const selectors = state.facebookCssSelectors
 
   const setupObservers = () => {
     updateVisibilityAll(state)
 
-    let watchedNodesQuery = []
-    let initialNodeObserver = new MutationSummary({
-      callback: () => {
-        console.log('FETCH LABELS AND UPDATE STATE', state)
-        sendStateUpdate(fetchLabelsAndAddToState(state))
-        initialNodeObserver.disconnect()
+    const watchedNodesQuery = [
+      {
+        element: 'form[method="POST"]',
       },
-      queries: [{ element: selectors.composerToolbar.selector }],
-    })
+      {
+        element: 'div[data-pagelet="root"]',
+      },
+      {
+        element: 'div[data-testid="Keycommand_wrapper_ModalLayer"]',
+      },
+      {
+        element: 'div[role="menu"]',
+      },
+    ]
+    // const initialNodeObserver = new MutationSummary({
+    //   callback: () => {
+    //     nodeChangeHandler()
+    //     initialNodeObserver.disconnect()
+    //   },
+    //   queries: [{ element: selectors.composerToolbar.selector }],
+    // })
 
     let leftPanelObserver = new MutationObserver(nodeChangeHandler)
     leftPanelObserver.observe(
@@ -441,12 +202,8 @@ const onBodyTagLoaded = async (state, selectors) => {
       { childList: true }
     )
 
-    watchedNodesQuery.push({
-      element: 'div[data-testid="Keycommand_wrapper_ModalLayer"]',
-    })
-
     console.log('watchedNodes: ', watchedNodesQuery)
-    let nodeObserver = new MutationSummary({
+    new MutationSummary({
       callback: nodeChangeHandler,
       queries: watchedNodesQuery,
     })
@@ -461,9 +218,10 @@ const onBodyTagLoaded = async (state, selectors) => {
   }, 100)
 }
 
-// document.addEventListener("DOMContentLoaded", () =>
-//   console.log("DOCUMENT LOADED")
-// );
+const debug = async () => {
+  // const node = DOMUtils.getNodeForText('Dölj annons', 4)
+  // const state = await sendStateRequest()
+  nodeChangeHandler()
+}
 
-console.log('YOO! FB4Seniles loaded!!!')
 init()
