@@ -1,7 +1,10 @@
 import MutationSummary from 'mutation-summary'
 import Fingerprint2 from 'fingerprintjs2'
 import DOMUtils from './contentscript/DOM-utils'
-import showWizard, { showWizardAfterDomLoaded } from '../components/wizard'
+import showWizard, {
+  showWizardAfterDomLoaded,
+  showQuestionnaireAfterDomLoaded,
+} from '../components/wizard'
 import messageUtils from './message-utils'
 // import { isPromiseResolved } from "promise-status-async";
 
@@ -53,7 +56,8 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, message => {
       }
       return 'performed your stateUpdate. Thaaaanx!!!'
     case 'redoIntro':
-      return showWizardAfterDomLoaded()
+      return showQuestionnaireAfterDomLoaded()
+    // return showWizardAfterDomLoaded()
     case 'debug':
       return debug()
     default:

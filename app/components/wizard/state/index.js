@@ -2,6 +2,8 @@ import React from 'react'
 import steps from '../steps.json'
 import constants from './constants'
 import reducer from './reducer'
+import questionnaireReducer from './questionnaire/reducer'
+import { initialState as initialQuestionnaireState } from './questionnaire'
 
 export const actions = constants.actions
 
@@ -31,11 +33,26 @@ const initialState = () => ({
 })
 
 export default class StateProvider extends React.Component {
-  state = {
-    ...initialState(),
-    dispatch: action => {
-      this.setState(reducer(this.state, action))
-    },
+  constructor(props) {
+    super(props)
+
+    if (props.questionnaire) {
+      console.log('other state')
+      this.state = {
+        ...initialQuestionnaireState(),
+        dispatch: action => {
+          this.setState(questionnaireReducer(this.state, action))
+        },
+      }
+      return
+    }
+
+    this.state = {
+      ...initialState(),
+      dispatch: action => {
+        this.setState(reducer(this.state, action))
+      },
+    }
   }
 
   render() {
