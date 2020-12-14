@@ -29,6 +29,8 @@ const initialState = () => ({
     selectedValues: step.subSteps ? step.subSteps.map(_ => null) : [],
   })),
   index: 0,
+  showInstalledInfo: false,
+  highlightFeature: null,
   selectedValues: steps.map(_ => null),
 })
 
@@ -37,7 +39,6 @@ export default class StateProvider extends React.Component {
     super(props)
 
     if (props.questionnaire) {
-      console.log('other state')
       this.state = {
         ...initialQuestionnaireState(),
         dispatch: action => {

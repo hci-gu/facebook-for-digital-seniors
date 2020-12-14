@@ -12,7 +12,7 @@ const selectorsForStep = (step, index) => {
     }, [])
   if (!step.selections) return []
   return step.selections
-    .filter((_, i) => i > index)
+    .filter((_, i) => i >= index)
     .reduce((acc, curr) => {
       if (curr.add) {
         return [...acc, ...curr.add]
@@ -30,7 +30,6 @@ const selectorsForChoice = (featuresToRemove, stepIndex, value) => {
     return []
   }
   const featuresToAddBack = selectorsForStep(step, value)
-  console.log('featuresToAddBack', step, featuresToAddBack)
 
   return featuresToRemove.filter(val => !featuresToAddBack.includes(val))
 }
@@ -70,7 +69,10 @@ const goForward = state => {
   }
   return {
     ...state,
+    help: null,
     index: state.index + 1,
+    highlightFeature:
+      state.index === 1 && state.highlightFeature === null ? true : null,
   }
 }
 
@@ -103,6 +105,7 @@ const goBack = state => {
   if (state.index === 0) return
   return {
     ...state,
+    help: null,
     index: state.index - 1,
   }
 }
@@ -111,12 +114,6 @@ const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
       const featuresToRemove = removeFeaturesBasedOnSelections(state)
-      console.log(
-        state.steps.map(
-          (step, i) => `${step.name} - ${state.selectedValues[i]}`
-        )
-      )
-      console.log('featuresToRemove', featuresToRemove)
       backgroundPort.postMessage({
         type: 'setWizardCompleted',
         payload: {
@@ -141,12 +138,14 @@ const reducer = (state, { action, payload }) => {
       return {
         ...state,
         completed: true,
+        showInstalledInfo: true,
         removing: false,
       }
     case actions.ABORT:
       return {
         ...state,
         completed: true,
+        showInstalledInfo: true,
         removing: false,
       }
     case actions.SELECTION:
@@ -158,7 +157,6 @@ const reducer = (state, { action, payload }) => {
           }
           return s
         })
-        console.log(step)
         return {
           ...state,
         }
@@ -185,6 +183,7 @@ const reducer = (state, { action, payload }) => {
     case actions.HELP_PANEL:
       return {
         ...state,
+        highlightFeature: false,
         help: payload,
       }
     case actions.CONTACT_EDIT:

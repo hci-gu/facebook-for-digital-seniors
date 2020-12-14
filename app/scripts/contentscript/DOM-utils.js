@@ -194,6 +194,22 @@ const updateVisibilityFromShowHideObject = item => {
           showElement(_node)
         }
       })
+
+      if (item.id === 'composer-add-pic') {
+        const parent = nodesToHide[0].parentElement
+        const children = [...parent.children].filter(
+          elem => elem.nodeName === 'DIV'
+        )
+        const allChildrenHidden = children.every(elem =>
+          elem.classList.contains('hide')
+        )
+        if (allChildrenHidden) {
+          hideElement(parent)
+        } else {
+          showElement(parent)
+        }
+        console.log('allChildrenHidden', allChildrenHidden)
+      }
     }
   } catch (e) {
     console.log(e)

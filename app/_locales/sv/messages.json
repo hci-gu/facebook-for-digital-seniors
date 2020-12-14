@@ -4,11 +4,11 @@
     "description": "Name of the application"
   },
   "appShortName": {
-    "message": "fb-4-seniorer",
+    "message": "klara-facebook",
     "description": "The short_name (maximum of 12 characters recommended) is a short version of the app's name."
   },
   "appDescription": {
-    "message": "Ett extension för att ändra utseendet och upplevelsen på Facebook. Primärt riktat för att göra det enklare för seniorer.",
+    "message": "Ett tillägg för att ändra utseendet och upplevelsen på Facebook.",
     "description": "The description of the application"
   },
   "browserActionTitle": {

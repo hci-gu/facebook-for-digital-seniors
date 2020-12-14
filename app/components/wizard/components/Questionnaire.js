@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import Modal from './Modal'
 import Step from './Step'
 import QuestionnaireComments from './QuestionnaireComments'
+import InstallationInfo from './InstallationInfo'
 import { actions, StateContext } from '../state'
 
 import Button from './Button'
@@ -170,18 +171,19 @@ const buttonsForStep = (step, selectedValue, dispatch) => {
 }
 
 export default () => {
-  const { selectedValues, completed, steps, index, dispatch } = useContext(
-    StateContext
-  )
-  console.log({
+  const {
     selectedValues,
     completed,
+    showInstalledInfo,
     steps,
     index,
     dispatch,
-  })
+  } = useContext(StateContext)
   const selectedValue = selectedValues[index]
   const step = steps[index]
+  if (completed && showInstalledInfo) {
+    return <InstallationInfo />
+  }
   if (completed) return null
   return (
     <Container>

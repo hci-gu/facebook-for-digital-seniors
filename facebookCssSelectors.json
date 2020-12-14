@@ -122,8 +122,7 @@
   },
   "rightPanel": "[data-pagelet=\"RightRail\"]",
   "rightPanelSponsored": {
-    "parentSelectorName": "rightPanel",
-    "selector": "div > div > div"
+    "selector": "[data-pagelet=\"RightRail\"] > div > div > div"
   },
   "postSettings": {
     "evaluate": true,

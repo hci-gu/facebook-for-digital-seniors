@@ -15,6 +15,10 @@ const Container = styled.div`
     padding: 10px;
     line-height: 100%;
   }
+`
+
+const Buttons = styled.div`
+  display: flex;
 
   > button {
     cursor: pointer;
@@ -32,14 +36,29 @@ const Container = styled.div`
     :active {
       opacity: 0.5;
     }
+
+    > img {
+      margin-top: 2px;
+      width: 18px;
+      height: auto;
+    }
   }
 `
 
-export default ({ title = 'Klara Facebook', onClick }) => {
+export default ({ title = 'Klara Facebook', onClick, onTabClick }) => {
   return (
     <Container>
       <span>{title}</span>
-      <button onClick={onClick}>╳</button>
+      <Buttons>
+        {onTabClick && (
+          <button onClick={onTabClick}>
+            <img src={chrome.runtime.getURL(`images/icons/tab.png`)}></img>
+          </button>
+        )}
+        <button onClick={onClick}>
+          <img src={chrome.runtime.getURL(`images/icons/cross.png`)}></img>
+        </button>
+      </Buttons>
     </Container>
   )
 }

@@ -12,7 +12,7 @@
       </div>
       <div class="button-container"></div>
       <div class="button-container">
-        <button @click="openWeb" class="secondary">Engagera dig med vår forskning</button>
+        <button @click="openWeb" class="secondary">Lär dig mer om vår forskning</button>
       </div>
       <div class="button-container">
         <button @click="contact" class="secondary">Kontakta oss</button>
@@ -55,6 +55,7 @@ export default {
       if (confirm('Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar.')) {
         this.sendMessageToBackground('redoIntro').then((response) => {
           this.state = response
+          window.close()
         })
       }
     },

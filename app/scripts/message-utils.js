@@ -1,7 +1,6 @@
 //This function adds ack functionality for us by letting the user provide a messageHandler that returns a promise. The resolved value gets sent as ack to the sender
 const addMessageHandlerWithAckAsPromise = (port, messageHandler) => {
   let respond = (id, payload) => {
-    console.log('responding to message')
     port.postMessage({
       type: id,
       payload: payload,
@@ -23,8 +22,6 @@ const addMessageHandlerWithAckAsPromise = (port, messageHandler) => {
 }
 
 const postMessageWithAck = function(message) {
-  // console.log('posting message with ACK');
-  // console.log(this);
   const me = this
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
@@ -51,7 +48,6 @@ export default {
   addMessageHandlerWithAckAsPromise,
   postMessageWithAck,
   postMessage: message => {
-    console.log('post', message)
     const port = browser.runtime.connect({ name: 'port-from-menu' })
     port.postMessage(message)
   },

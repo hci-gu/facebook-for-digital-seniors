@@ -56,6 +56,7 @@ export default () => {
           onChange={e => onChange(e, 'age')}
           value={contact.age}
           type="number"
+          min="0"
           style={{ width: 100 }}
         ></input>
       </Input>

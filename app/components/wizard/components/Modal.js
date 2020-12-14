@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import styled from 'styled-components'
 import Steps from './Steps'
 import HelpPanel from './HelpPanel'
 import Navbar from './Navbar'
 import Dialog from './Dialog'
+import { StateContext } from '../state'
 
 const Container = styled.div`
   width: 1263px;
@@ -35,16 +36,21 @@ const Content = styled.div`
 `
 
 export default ({ children }) => {
+  const { tabbed, dispatch } = useContext(StateContext)
   const [dialogVisible, setDialogVisible] = useState(false)
 
   const onNavbarClose = () => {
     setDialogVisible(!dialogVisible)
   }
 
+  const onNavbarTabbed = () => {
+    dispatch({ payload: { tabbed: !tabbed } })
+  }
+
   return (
     <>
       <Container>
-        <Navbar onClick={onNavbarClose} />
+        <Navbar onClick={onNavbarClose} onTabClick={onNavbarTabbed} />
         <Inner>
           <Sidebar>
             <Steps />

@@ -41,6 +41,7 @@
   "permissions": ["storage", "tabs", "https://d2sy394i9mrp8i.cloudfront.net/*"],
   "web_accessible_resources": [
     "images/tooltip/*.png",
+    "images/icons/*.png",
     "images/before.png",
     "images/after.png"
   ]

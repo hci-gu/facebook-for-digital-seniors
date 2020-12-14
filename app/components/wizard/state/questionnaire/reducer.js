@@ -38,10 +38,6 @@ const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
       const answers = state.selectedValues.filter(v => v != null)
-      console.log({
-        answers,
-        comments: state.freeform,
-      })
       backgroundPort.postMessage({
         type: 'questionnaireCompleted',
         payload: {
@@ -52,6 +48,7 @@ const reducer = (state, { action, payload }) => {
       return {
         ...state,
         completed: true,
+        showInstalledInfo: true,
       }
     case actions.EXIT:
     case actions.ABORT:
@@ -62,6 +59,7 @@ const reducer = (state, { action, payload }) => {
       return {
         ...state,
         completed: true,
+        showInstalledInfo: true,
       }
     case actions.SELECTION:
       const step = state.steps[state.index]

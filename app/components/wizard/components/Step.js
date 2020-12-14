@@ -4,16 +4,24 @@ import { actions, StateContext } from '../state'
 import HelpIcon from './HelpIcon'
 import StudyInfo from './StudyInfo'
 import descriptionForPanel from '../descriptionForPanel'
+import { SeeThrough } from 'react-see-through'
 
 const Container = styled.div`
   height: 100%;
 `
 
 const Question = styled.h1`
-  font-size: 24px !important;
-
+  font-size: 28px !important;
+  font-weight: 500 !important;
+  > label {
+    color: black !important;
+  }
+  > label > span {
+    color: black !important;
+  }
   > label > span > a {
     cursor: pointer;
+    font-weight: bold !important;
   }
 `
 
@@ -86,7 +94,18 @@ const Selection = styled.div`
   }
 `
 
-const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
+const StyledSeeThrough = styled(SeeThrough)`
+  display: inline;
+`
+
+const renderTextWithHighlights = (
+  dispatch,
+  index,
+  id,
+  text,
+  keywords,
+  highlightFeature = false
+) => {
   if (!keywords.length) return <label htmlFor={id}>{text}</label>
   const parts = text.split(new RegExp(`(${keywords.join('|')})`, 'gi'))
   return (
@@ -109,8 +128,11 @@ const renderTextWithHighlights = (dispatch, index, id, text, keywords) => {
               })
             }}
           >
-            <a style={{ fontWeight: 'bold', color: 'black' }}>{part}</a>
-            <HelpIcon />
+            <StyledSeeThrough active={highlightFeature} interactive>
+              <a style={{ fontWeight: 'bold', color: 'black' }}>{part}</a>
+
+              <HelpIcon />
+            </StyledSeeThrough>
           </span>
         )
       })}{' '}
@@ -131,7 +153,13 @@ const cleanKeyword = keyword => {
 }
 
 export default () => {
-  const { selectedValues, index, dispatch, steps } = useContext(StateContext)
+  const {
+    selectedValues,
+    index,
+    dispatch,
+    highlightFeature,
+    steps,
+  } = useContext(StateContext)
   let step = steps[index]
   let selectedValue = selectedValues[index]
   if (step.subSteps) {
@@ -157,7 +185,8 @@ export default () => {
           index,
           `${step.name}_-1`,
           step.question,
-          step.keywords ? step.keywords : []
+          step.keywords ? step.keywords : [],
+          highlightFeature
         )}
       </Question>
       {step.name === 'select-data-level-1' && <StudyInfo />}

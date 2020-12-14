@@ -1,5 +1,7 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
+import { SeeThrough } from 'react-see-through'
+
 import { StateContext } from '../state'
 
 import HelpIcon from './HelpIcon'
@@ -31,7 +33,9 @@ const getImage = image => {
 }
 
 export default () => {
-  const { help, steps, index } = useContext(StateContext)
+  const { help, steps, index, highlightFeature, dispatch } = useContext(
+    StateContext
+  )
   const step = steps[index]
 
   if (!step.showHelpPanel) return null
@@ -44,10 +48,10 @@ export default () => {
           <Description>
             {help.description.split('\n').map(text => {
               return (
-                <>
-                  <span>{text}</span>
+                <span key={text}>
+                  {text}
                   <br></br>
-                </>
+                </span>
               )
             })}
           </Description>
@@ -55,11 +59,17 @@ export default () => {
         </>
       ) : (
         <>
-          <Title>Hjälppanel</Title>
-          <Description>
-            Tryck på den här symbolen <HelpIcon /> för att få en förklaring av
-            funktionaliteten.
-          </Description>
+          <SeeThrough
+            active={highlightFeature}
+            onClick={() => dispatch({ payload: { highlightFeature: false } })}
+            interactive
+          >
+            <Title>Hjälppanel</Title>
+            <Description>
+              Tryck på den här symbolen <HelpIcon /> för att få en förklaring av
+              funktionaliteten.
+            </Description>
+          </SeeThrough>
         </>
       )}
     </Container>

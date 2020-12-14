@@ -58,7 +58,7 @@ export default ({ onClose }) => {
             <h1>Vill du verkligen avsluta introduktionen?</h1>
             <p>
               Om du avslutar nu behöver du göra om introduktionen för att kunna
-              använda extensionet.
+              använda tillägget.
               <br></br>
               <br></br>
               Nästa gång du besöker Facebook kommer introduktionen visas igen.

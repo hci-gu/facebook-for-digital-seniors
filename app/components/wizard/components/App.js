@@ -1,4 +1,6 @@
 import React, { useContext } from 'react'
+import { SeeThroughController } from 'react-see-through'
+
 import styled from 'styled-components'
 import Modal from './Modal'
 import Step from './Step'
@@ -8,6 +10,8 @@ import Intro from './Intro'
 import { actions, StateContext } from '../state'
 
 import Button from './Button'
+import InstallationInfo from './InstallationInfo'
+import Tabbed from './Tabbed'
 
 const Container = styled.div`
   position: fixed;
@@ -211,35 +215,45 @@ export default () => {
     index,
     removing,
     contact,
+    showInstalledInfo,
+    tabbed,
     dispatch,
   } = useContext(StateContext)
   const selectedValue = selectedValues[index]
   const step = steps[index]
   const skippedQuestions = selectedValues[1] === 0
+  if (completed && showInstalledInfo) {
+    return <InstallationInfo />
+  }
+  if (tabbed) {
+    return <Tabbed />
+  }
   if (completed) return null
   return (
-    <Container>
-      {removing ? (
-        <Removing>
-          <h1>Uppdaterar Facebook efter dina önskemål</h1>
-          <ProgressIndicator />
-        </Removing>
-      ) : (
-        <Modal>
-          <Content>
-            {componentForStep(step, skippedQuestions)}
-            <ButtonContainer>
-              {buttonsForStep(
-                step,
-                selectedValue,
-                dispatch,
-                skippedQuestions,
-                contact
-              )}
-            </ButtonContainer>
-          </Content>
-        </Modal>
-      )}
-    </Container>
+    <SeeThroughController maskColor="rgba(0, 0, 0, 0.4)">
+      <Container>
+        {removing ? (
+          <Removing>
+            <h1>Uppdaterar Facebook efter dina önskemål</h1>
+            <ProgressIndicator />
+          </Removing>
+        ) : (
+          <Modal>
+            <Content>
+              {componentForStep(step, skippedQuestions)}
+              <ButtonContainer>
+                {buttonsForStep(
+                  step,
+                  selectedValue,
+                  dispatch,
+                  skippedQuestions,
+                  contact
+                )}
+              </ButtonContainer>
+            </Content>
+          </Modal>
+        )}
+      </Container>
+    </SeeThroughController>
   )
 }

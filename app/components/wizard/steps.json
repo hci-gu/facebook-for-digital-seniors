@@ -118,7 +118,7 @@
         "add": ["top-panel-explore-Events", "stories", "videoChats"]
       },
       {
-        "text": "Samma som oven, men när jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
+        "text": "Samma som ovan, men när jag skrollar i mitt flöde händer det ibland att jag vill dölja inlägg som irriterar mig, spara inlägg eller slå på notiser för ett specifikt inlägg.",
         "keywords": ["flöde", "dölja inlägg", "spara inlägg", "slå på notiser"],
         "add": [
           "post-settings-save",
@@ -189,14 +189,14 @@
   {
     "name": "select-data-level",
     "title": "Om studien",
-    "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
+    "question": "Detta tillägg är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
     "dontShowInProgress": false,
     "showHelpPanel": false,
     "subStepIndex": 0,
     "subSteps": [
       {
         "name": "select-data-level-1",
-        "question": "Detta extension är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
+        "question": "Detta tillägg är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
         "selections": [
           {
             "text": "Jag vill gärna delta i studien och bli kontaktad genom epost.",
@@ -207,7 +207,7 @@
             "keywords": []
           },
           {
-            "text": "Jag vill inte delta i studien men vill prova extensionet.",
+            "text": "Jag vill inte delta i studien men vill prova tillägget.",
             "keywords": []
           }
         ]

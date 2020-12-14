@@ -1,5 +1,4 @@
 export default key => {
-  console.log('panel', key)
   switch (key) {
     case 'ser-de-inlagg':
       return 'När du skapar ett inlägg på Facebook kan du ändra vilka som kan se ditt inlägg, t.ex. vänner, allmänheten eller bara du. \n\n Nedan ser du var man ändrar vilka som kan se dina inlägg.'

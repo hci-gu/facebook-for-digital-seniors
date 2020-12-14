@@ -124,7 +124,7 @@ export default () => {
     <Container>
       <Texts>
         <h1>Klara Facebook</h1>
-        <h2>Simplifiera din upplevelse på Facebook</h2>
+        <h2>Förenkla din upplevelse på Facebook</h2>
       </Texts>
       <ReactCompareSlider
         itemOne={image('before')}

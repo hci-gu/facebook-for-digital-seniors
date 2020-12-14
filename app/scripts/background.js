@@ -51,6 +51,13 @@ const setup = async () => {
   console.log('state initialized: ', _state)
 
   browser.browserAction.setPopup({ popup: 'pages/menu.html' })
+  if (!window.localStorage.getItem('firstOpen')) {
+    window.localStorage.setItem('firstOpen', 'done')
+    chrome.tabs.create({
+      url: 'https://facebook.com',
+    })
+  }
+
   await contentscriptReady
 
   const analyticsActivated =
