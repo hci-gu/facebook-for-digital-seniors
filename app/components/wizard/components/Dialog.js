@@ -24,6 +24,19 @@ const Dialog = styled.div`
   background-color: white;
   border-radius: 5px;
   overflow: hidden;
+
+  ${({ isQuestionnaire }) =>
+    isQuestionnaire &&
+    `
+    width: 340px;
+    height: 225px;
+    top: calc(50% - 125px);
+    left: calc(50% - 150px);
+    
+    > div > div > h1 {
+      text-align: center;
+    }
+  `}
 `
 
 const Content = styled.div`
@@ -47,21 +60,26 @@ const Content = styled.div`
 const Buttons = styled.div``
 
 export default ({ onClose }) => {
-  const { dispatch } = useContext(StateContext)
+  const { dispatch, isQuestionnaire } = useContext(StateContext)
 
   return (
     <Container>
-      <Dialog>
+      <Dialog isQuestionnaire>
         <Navbar onClick={onClose} />
         <Content>
           <div>
-            <h1>Vill du verkligen avsluta introduktionen?</h1>
+            <h1>
+              Vill du verkligen avsluta{' '}
+              {isQuestionnaire ? 'formuläret' : 'introduktionen'}?
+            </h1>
             <p>
-              Om du avslutar nu behöver du göra om introduktionen för att kunna
-              använda tillägget.
-              <br></br>
-              <br></br>
-              Nästa gång du besöker Facebook kommer introduktionen visas igen.
+              {isQuestionnaire
+                ? ''
+                : 'Om du avslutar nu behöver du göra om introduktionen för att kunna använda tillägget.'}
+              {!isQuestionnaire && <br></br>}
+              {!isQuestionnaire && <br></br>}
+              {!isQuestionnaire &&
+                'Nästa gång du besöker Facebook kommer introduktionen visas igen.'}
             </p>
           </div>
           <Buttons>

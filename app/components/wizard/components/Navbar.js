@@ -39,7 +39,7 @@ const Buttons = styled.div`
 
     > img {
       margin-top: 2px;
-      width: 18px;
+      width: 17px;
       height: auto;
     }
   }

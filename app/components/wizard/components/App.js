@@ -181,7 +181,7 @@ const buttonsForStep = (step, selectedValue, dispatch, skipped, contact) => {
     default:
       let disabled = selectedValue === null && step.title
       if (name === 'share-contact-info') {
-        disabled = !contact.email || !contact.age || !contact.sex
+        disabled = !contact.age || !contact.sex
       }
       if (name === 'share-data-info') {
         disabled = false

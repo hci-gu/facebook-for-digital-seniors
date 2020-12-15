@@ -7,6 +7,10 @@ const ContactInfo = styled.div`
   height: 100%;
 `
 
+const OptionalFields = styled.div`
+  margin-top: 20px;
+`
+
 const Text = styled.span``
 
 const Input = styled.div`
@@ -43,14 +47,6 @@ export default () => {
         information om dig. Vänligen fyll i nedanstående
       </Text>
       <Input>
-        <span>Mail:</span>
-        <input
-          onChange={e => onChange(e, 'email')}
-          value={contact.email}
-          style={{ width: 300 }}
-        ></input>
-      </Input>
-      <Input>
         <span>Ålder:</span>
         <input
           onChange={e => onChange(e, 'age')}
@@ -69,6 +65,21 @@ export default () => {
           <option value={null}>Vill inte ange</option>
         </select>
       </Input>
+      <OptionalFields>
+        <Text>
+          Om du dessutom går med på att bli kontaktad för eventuella följdfrågor
+          kan du fylla i mail nedan.
+        </Text>
+        <Input>
+          <span>Mail:</span>
+          <input
+            onChange={e => onChange(e, 'email')}
+            value={contact.email}
+            placeholder="Din epost-adress ( frivilligt )"
+            style={{ width: 300 }}
+          ></input>
+        </Input>
+      </OptionalFields>
     </ContactInfo>
   )
 }

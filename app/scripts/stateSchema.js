@@ -1,6 +1,6 @@
 export default {
-  stateBreakingChangeCounter: 89,
-  globalToggle: false,
+  stateBreakingChangeCounter: 90,
+  globalToggle: true,
   thingsToHide: [
     {
       categoryName: 'Menyalternativ',

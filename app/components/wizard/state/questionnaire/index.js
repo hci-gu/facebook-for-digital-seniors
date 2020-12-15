@@ -1,6 +1,7 @@
 import steps from '../../questions'
 
 export const initialState = () => ({
+  isQuestionnaire: true,
   completed: false,
   removing: false,
   selectors: [],

@@ -38,7 +38,10 @@ const signupToParse = async (browserHash, contact) => {
       credentials.username,
       credentials.password
     )
-    user.setACL(new Parse.ACL(user))
+    let acl = new Parse.ACL(user)
+    acl.setReadAccess(user, true)
+    acl.setWriteAccess(user, true)
+    user.setACL(acl)
 
     if (user) {
       console.log('registered new parse user: ', user)
@@ -59,17 +62,11 @@ const signupToParse = async (browserHash, contact) => {
 }
 
 const loginToParse = async browserHash => {
-  let user
-  // user = Parse.User.current();
-  // if (user) {
-  //   loggedInToParse = true;
-  //   return user;
-  // }
-  console.log('no current user. Trying to login')
   let credentials = generateCredentials(browserHash)
-  console.log('credentials', credentials)
-  user = await Parse.User.logIn(credentials.username, credentials.password)
-  console.log('user', user)
+  const user = await Parse.User.logIn(
+    credentials.username,
+    credentials.password
+  )
 
   if (user) {
     loggedInToParse = true
@@ -79,15 +76,21 @@ const loginToParse = async browserHash => {
   return Promise.reject('failed to login. NOW CRYYY!')
 }
 
+const setDefaultDocFields = (doc, user, write = false) => {
+  let acl = new Parse.ACL(Parse.User.current())
+  acl.setReadAccess(user, true)
+  if (write) acl.setWriteAccess(user, true)
+  doc.setACL(acl)
+  doc.set('date', new Date())
+  doc.set('user', Parse.User.current())
+}
+
 const sendUserInteraction = async (payload, state) => {
   if (!loggedInToParse) return
-  console.log('received user interaction: ', payload)
   const UserInteraction = Parse.Object.extend('UserInteraction')
   const interaction = new UserInteraction()
-  interaction.setACL(new Parse.ACL(Parse.User.current()))
+  setDefaultDocFields(interaction, Parse.User.current())
 
-  interaction.set('user', Parse.User.current())
-  interaction.set('when', new Date())
   interaction.set('eventType', payload.eventType)
   interaction.set('eventData', payload.eventData)
   interaction.set('userSettings', state)
@@ -114,15 +117,73 @@ const updateUserSettings = async state => {
     userSettings = result[0]
   } else {
     userSettings = new UserSettings()
-    userSettings.set('user', Parse.User.current())
-    userSettings.setACL(new Parse.ACL(Parse.User.current()))
+    setDefaultDocFields(userSettings, Parse.User.current(), true)
   }
   userSettings.set('settings', state)
   userSettings.save()
+}
+
+const fetchQuestionnairePeriod = async () => {
+  if (!loggedInToParse) return
+  try {
+    const QuestionnaireSettings = Parse.Object.extend('questionnaireSettings')
+    const query = new Parse.Query(QuestionnaireSettings)
+    const result = await query.find()
+    if (result && result.length > 0) {
+      return result[0].attributes.showAgainAfterDays
+    }
+  } catch (e) {
+    console.log(e)
+  }
+  return 7
+}
+
+const submitFormAnswers = async answers => {
+  const FormAnswer = Parse.Object.extend('FormAnswers')
+  const formAnswer = new FormAnswer()
+  setDefaultDocFields(formAnswer, Parse.User.current())
+  formAnswer.set('answers', answers)
+
+  return formAnswer.save()
+}
+
+const submitQuestionnaire = async ({ answers, comments }) => {
+  const Answer = Parse.Object.extend('QuestionnaireAnswers')
+  const answer = new Answer()
+  setDefaultDocFields(answer, Parse.User.current())
+  answer.set('answers', answers)
+  answer.set('comments', comments)
+  answer.set('version', '1.0.0')
+
+  return answer.save()
+}
+
+const deleteAllForUser = async (table, user) => {
+  const Table = Parse.Object.extend(table)
+  const query = new Parse.Query(Table)
+  const results = await query.find({ sessionToken: user.getSessionToken() })
+  await Parse.Object.destroyAll(results)
+}
+
+const deleteData = async () => {
+  console.log('deleteData', loggedInToParse)
+  const user = Parse.User.current()
+
+  await deleteAllForUser('QuestionnaireAnswers', user)
+  await deleteAllForUser('UserInteraction', user)
+  await deleteAllForUser('UserSettings', user)
+  // await deleteAllForUser('FormAnswers', user)
+
+  await user.clear()
+  console.log('all done')
 }
 
 export default {
   setupParseConnection,
   sendUserInteraction,
   updateUserSettings,
+  fetchQuestionnairePeriod,
+  submitFormAnswers,
+  submitQuestionnaire,
+  deleteData,
 }

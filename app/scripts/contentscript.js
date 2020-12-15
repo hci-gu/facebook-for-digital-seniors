@@ -56,8 +56,7 @@ messageUtils.addMessageHandlerWithAckAsPromise(backgroundPort, message => {
       }
       return 'performed your stateUpdate. Thaaaanx!!!'
     case 'redoIntro':
-      return showQuestionnaireAfterDomLoaded()
-    // return showWizardAfterDomLoaded()
+      return showWizardAfterDomLoaded()
     case 'debug':
       return debug()
     default:
@@ -100,6 +99,9 @@ const init = async () => {
   if (!wizardCompleted) {
     showWizard()
   }
+
+  checkIfQuestionnaireShouldDisplay()
+
   console.log('response received: ', state)
   // state = response;
   let selectors = state.facebookCssSelectors
@@ -168,6 +170,17 @@ const updateComposerAudience = state => {
   } else {
     element.classList.remove('red-highlight-border')
   }
+}
+
+const checkIfQuestionnaireShouldDisplay = async () => {
+  try {
+    const showQuestionnaire = await backgroundPort.postMessageWithAck({
+      type: 'shouldDisplayQuestionnaire',
+    })
+    if (showQuestionnaire) {
+      showQuestionnaireAfterDomLoaded()
+    }
+  } catch (e) {}
 }
 
 const onBodyTagLoaded = async state => {

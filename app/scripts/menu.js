@@ -1,5 +1,3 @@
-console.log(`Gunnar är bäst`)
-
 import Vue from 'vue'
 import App from '../components/menu/App.vue'
 

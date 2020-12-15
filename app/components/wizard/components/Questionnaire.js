@@ -7,6 +7,7 @@ import InstallationInfo from './InstallationInfo'
 import { actions, StateContext } from '../state'
 
 import Button from './Button'
+import Tabbed from './Tabbed'
 
 const Container = styled.div`
   position: fixed;
@@ -24,6 +25,7 @@ const Container = styled.div`
 `
 
 const TextContent = styled.p`
+  position: relative;
   padding: 36px;
   height: 100%;
   font-size: 18px !important;
@@ -49,6 +51,15 @@ const ButtonContainer = styled.div`
   justify-content: flex-end;
 `
 
+const GULogo = styled.img`
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 90px;
+  height: auto;
+`
+
 const componentForStep = (step, skipped) => {
   let name = step.name
   if (step.subSteps) {
@@ -58,6 +69,7 @@ const componentForStep = (step, skipped) => {
     case 'intro':
       return (
         <TextContent>
+          <GULogo src={chrome.runtime.getURL(`images/gu_logo.png`)} />
           <h1>Hej!</h1>
           <br />
           <br />
@@ -177,12 +189,17 @@ export default () => {
     showInstalledInfo,
     steps,
     index,
+    tabbed,
     dispatch,
   } = useContext(StateContext)
   const selectedValue = selectedValues[index]
   const step = steps[index]
   if (completed && showInstalledInfo) {
     return <InstallationInfo />
+  }
+
+  if (tabbed) {
+    return <Tabbed />
   }
   if (completed) return null
   return (

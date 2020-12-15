@@ -199,11 +199,7 @@
         "question": "Detta tillägg är en del av en forskningsstudie utförd av Göteborgs Universitet. Välj om/hur du vill delta i forskningen.",
         "selections": [
           {
-            "text": "Jag vill gärna delta i studien och bli kontaktad genom epost.",
-            "keywords": []
-          },
-          {
-            "text": "Jag vill gärna delta i studien men inte bli kontaktad.",
+            "text": "Jag vill gärna delta i studien.",
             "keywords": []
           },
           {

@@ -38,10 +38,16 @@
       "all_frames": false
     }
   ],
-  "permissions": ["storage", "tabs", "https://d2sy394i9mrp8i.cloudfront.net/*"],
+  "permissions": [
+    "storage",
+    "tabs",
+    "management",
+    "https://d2sy394i9mrp8i.cloudfront.net/*"
+  ],
   "web_accessible_resources": [
     "images/tooltip/*.png",
     "images/icons/*.png",
+    "images/gu_logo.png",
     "images/before.png",
     "images/after.png"
   ]

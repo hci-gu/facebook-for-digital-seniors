@@ -6,6 +6,7 @@ import {
 } from 'react-compare-slider'
 
 const Container = styled.div`
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
@@ -22,6 +23,15 @@ const Container = styled.div`
     width: 640px;
     height: 320px;
   }
+`
+
+const GULogo = styled.img`
+  position: absolute;
+  top: 0;
+  right: 0;
+
+  width: 90px;
+  height: auto;
 `
 
 const Texts = styled.div`
@@ -125,6 +135,7 @@ export default () => {
       <Texts>
         <h1>Klara Facebook</h1>
         <h2>Förenkla din upplevelse på Facebook</h2>
+        <GULogo src={chrome.runtime.getURL(`images/gu_logo.png`)} />
       </Texts>
       <ReactCompareSlider
         itemOne={image('before')}

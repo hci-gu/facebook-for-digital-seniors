@@ -28,7 +28,7 @@ const reset = () => set(Object.assign({}, stateSchema))
 const get = () => {
   if (!getEnabled()) {
     console.log('state disabled, return default')
-    return Object.assign({}, stateSchema)
+    return Object.assign({}, stateSchema, { globalToggle: false })
   }
 
   try {

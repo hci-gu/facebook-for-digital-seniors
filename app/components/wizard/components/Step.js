@@ -4,19 +4,20 @@ import { actions, StateContext } from '../state'
 import HelpIcon from './HelpIcon'
 import StudyInfo from './StudyInfo'
 import descriptionForPanel from '../descriptionForPanel'
-import { SeeThrough } from 'react-see-through'
 
 const Container = styled.div`
   height: 100%;
 `
 
 const Question = styled.h1`
+  position: relative;
   font-size: 28px !important;
   font-weight: 500 !important;
   > label {
     color: black !important;
   }
   > label > span {
+    position: relative;
     color: black !important;
   }
   > label > span > a {
@@ -94,10 +95,6 @@ const Selection = styled.div`
   }
 `
 
-const StyledSeeThrough = styled(SeeThrough)`
-  display: inline;
-`
-
 const renderTextWithHighlights = (
   dispatch,
   index,
@@ -128,11 +125,8 @@ const renderTextWithHighlights = (
               })
             }}
           >
-            <StyledSeeThrough active={highlightFeature} interactive>
-              <a style={{ fontWeight: 'bold', color: 'black' }}>{part}</a>
-
-              <HelpIcon />
-            </StyledSeeThrough>
+            <a style={{ fontWeight: 'bold', color: 'black' }}>{part}</a>
+            <HelpIcon />
           </span>
         )
       })}{' '}

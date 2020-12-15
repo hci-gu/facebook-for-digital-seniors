@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { SeeThrough } from 'react-see-through'
+import Tooltip from 'react-power-tooltip'
 
 import { StateContext } from '../state'
 
@@ -16,7 +16,9 @@ const Title = styled.h1`
   font-size: 18px !important;
 `
 
-const Description = styled.p``
+const Description = styled.p`
+  position: relative;
+`
 
 const Image = styled.img`
   max-width: 100%;
@@ -31,6 +33,14 @@ const getImage = image => {
   }
   return imagePath
 }
+
+const TooltipContent = styled.span`
+  display: inline-block;
+  width: '250px';
+  height: '60px';
+  background-color: 'white';
+  font-size: 13px !important;
+`
 
 export default () => {
   const { help, steps, index, highlightFeature, dispatch } = useContext(
@@ -59,17 +69,25 @@ export default () => {
         </>
       ) : (
         <>
-          <SeeThrough
-            active={highlightFeature}
+          <Title>Hjälppanel</Title>
+          <Description
             onClick={() => dispatch({ payload: { highlightFeature: false } })}
-            interactive
           >
-            <Title>Hjälppanel</Title>
-            <Description>
-              Tryck på den här symbolen <HelpIcon /> för att få en förklaring av
-              funktionaliteten.
-            </Description>
-          </SeeThrough>
+            Tryck på den här symbolen <HelpIcon /> för att få en förklaring av
+            funktionaliteten.
+            <Tooltip
+              show={highlightFeature}
+              arrowAlign="start"
+              position="left top"
+              textBoxWidth="250px"
+              fontWeight="300"
+            >
+              <TooltipContent>
+                Hjälppanelen finns tillgänglig för att hjälpa till att förklara
+                funktionalitet i Facebook under introduktionen.
+              </TooltipContent>
+            </Tooltip>
+          </Description>
         </>
       )}
     </Container>

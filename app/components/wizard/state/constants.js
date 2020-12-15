@@ -55,6 +55,7 @@ export const actions = {
   CHECK: 'check',
   HELP_PANEL: 'help-panel',
   CONTACT_EDIT: 'contact-edit',
+  FREEFORM_EDIT: 'freeform-edit',
 }
 
 export default {

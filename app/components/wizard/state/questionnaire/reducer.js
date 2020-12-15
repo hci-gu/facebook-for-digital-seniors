@@ -53,7 +53,7 @@ const reducer = (state, { action, payload }) => {
     case actions.EXIT:
     case actions.ABORT:
       backgroundPort.postMessage({
-        type: 'questionnaireAborted',
+        type: 'questionnaireCompleted',
         payload: {},
       })
       return {

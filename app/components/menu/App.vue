@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <debug v-if="debug" /> -->
     <div v-if="!debug" class="container">
       {{stateEnabled ? 'Stäng av Klara Facebook' : 'Aktivera Klara Facebook'}}
       <div class="button-container">
@@ -14,15 +13,21 @@
       <div class="button-container">
         <button @click="openWeb" class="secondary">Lär dig mer om vår forskning</button>
       </div>
-      <div class="button-container">
-        <button @click="contact" class="secondary">Kontakta oss</button>
+      <a class="show-more" @click="toggleShowmore">
+        Fler alternativ
+      </a>
+      <div v-if="showMore">
+        <div class="button-container">
+          <button @click="uninstall" class="secondary">Avinstallera</button>
+        </div>
+        <div class="button-container">
+          <button @click="removeExtension" class="secondary">Hoppa av</button>
+        </div>
+        <div class="button-container" v-if="debug">
+          <button @click="sendDebug" class="secondary">DEBUG</button>
+        </div>
       </div>
-      <div class="button-container">
-        <button @click="removeExtension" class="secondary">Hoppa ur</button>
-      </div>
-      <div class="button-container" v-if="debug">
-        <button @click="sendDebug" class="secondary">DEBUG</button>
-      </div>
+      <img v-bind:src="'/images/gu_logo.png'" style="width: 90px; margin-top: 10px;">
     </div>
   </div>
 </template>
@@ -34,8 +39,9 @@ export default {
   data() {
     return {
       stateEnabled: false,
+      showMore: false,
       debug: false,
-    };
+    }
   },
   mounted() {
     backgroundPort = browser.runtime.connect({ name: 'port-from-menu' })
@@ -59,6 +65,9 @@ export default {
         })
       }
     },
+    toggleShowmore() {
+      this.showMore = !this.showMore
+    },
     sendDebug() {
       this.sendMessageToBackground('debug')
     },
@@ -68,16 +77,25 @@ export default {
     contact() {
       chrome.tabs.create({ url: 'http://www.digitalaseniorer.org/kontakt' })
     },
+    uninstall() {
+      if (confirm('Är du säker på att du vill avinstallera tillägget?')) {
+        this.sendMessageToBackground('uninstall').then(() => {
+          window.close()
+        })
+      }
+    },
     removeExtension() {
-      if (confirm('Genom att göra om introduktionen så kommer du förlora alla dina nuvarande inställningar.')) {
-
+      if (confirm('Är du säker på att du vill hoppa av studien? Insamlad data och dina svar från formuläret kommer tas bort. Vill du bara sluta använda tillägget kan du avinstallera det istället.')) {
+        this.sendMessageToBackground('deleteUser').then(() => {
+          window.close()
+        })
       }
     },
     sendMessageToBackground(type, payload) {
       return backgroundPort.postMessageWithAck({
         type: type,
         payload: payload,
-      });
+      })
     },
   },
 };
@@ -143,5 +161,13 @@ export default {
     background-color: #fff;
     border-color: #324e83;
     color: #324e83;
+  }
+  .show-more {
+    font-size: 13px;
+    margin-top: 10px;
+    cursor: pointer;
+
+    color: #324e83;
+    text-decoration: underline;
   }
 </style>

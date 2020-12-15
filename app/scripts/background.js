@@ -63,6 +63,7 @@ const setup = async () => {
   const analyticsActivated =
     localStorage.getItem('analyticsActivated') === 'true'
   if (analyticsActivated) {
+    console.log('analyticsActivated!!!')
     getBrowserFingerPrintAndSetupParse()
   }
 }
@@ -96,7 +97,7 @@ const sendMessageToPage = async (type, msg) => {
   }
 }
 
-const messageFromContentHandler = message => {
+const messageFromContentHandler = async message => {
   console.log('message from contentscript received: ', message)
   switch (message.type) {
     case 'stateRequest':
@@ -124,8 +125,29 @@ const messageFromContentHandler = message => {
       const activateAnalytics = wizard.setCompleted(message.payload)
       if (activateAnalytics) {
         getBrowserFingerPrintAndSetupParse(message.payload.contact)
+        localStorage.setItem('submitDate', new Date())
       }
       sendMessageToPage('stateUpdate', state.get())
+      return
+    case 'shouldDisplayQuestionnaire':
+      if (localStorage.getItem('submitDate')) {
+        const lastSubmitDate = new Date(localStorage.getItem('submitDate'))
+        const diffTime = Math.abs(new Date() - lastSubmitDate)
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        const shouldShowAgainAfter = await parseUtil.fetchQuestionnairePeriod()
+        if (diffDays >= shouldShowAgainAfter) {
+          return {
+            daysSince: shouldShowAgainAfter,
+          }
+        }
+      }
+      return false
+    case 'questionnaireCompleted':
+      console.log('questionnaireCompleted', message.payload)
+      if (message.payload && message.payload.answers) {
+        await parseUtil.submitQuestionnaire(message.payload)
+      }
+      localStorage.setItem('submitDate', new Date())
       return
     default:
       console.log('unknown message type')
@@ -133,7 +155,7 @@ const messageFromContentHandler = message => {
   }
 }
 
-const messageFromMenuHandler = message => {
+const messageFromMenuHandler = async message => {
   console.log('message from menu received: ', message)
   switch (message.type) {
     case 'toggleState':
@@ -169,6 +191,16 @@ const messageFromMenuHandler = message => {
       state.reset()
       localStorage.setItem('wizardCompleted', false)
       sendMessageToPage('redoIntro')
+      return
+    case 'deleteUser':
+      state.reset()
+      await parseUtil.deleteData()
+      sendMessageToPage('stateUpdate', state.get())
+      sendMessageToPage('deleteUser')
+      chrome.management.uninstallSelf()
+      return
+    case 'uninstall':
+      chrome.management.uninstallSelf()
       return
     case 'debug':
       console.log('pass on debug')
