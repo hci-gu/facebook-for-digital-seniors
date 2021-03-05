@@ -113,13 +113,17 @@ const goBack = state => {
 const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
+      console.log('VENDOR_NAME', VENDOR_NAME)
       const featuresToRemove = removeFeaturesBasedOnSelections(state)
+      const answers = state.selectedValues.filter(v => v != null)
       backgroundPort.postMessage({
         type: 'setWizardCompleted',
         payload: {
+          vendor: VENDOR_NAME,
+          answers,
           featuresToRemove,
-          analyticsActivated: state.selectedValues[0] <= 1,
-          contact: state.selectedValues[0] === 0 ? state.contact : null,
+          analyticsActivated: !!state.contact.age,
+          contact: !!state.contact.age ? state.contact : null,
         },
       })
       return {
@@ -130,9 +134,10 @@ const reducer = (state, { action, payload }) => {
       backgroundPort.postMessage({
         type: 'setWizardCompleted',
         payload: {
+          vendor: VENDOR_NAME,
           featuresToRemove: [],
-          analyticsActivated: state.selectedValues[0] <= 1,
-          contact: state.selectedValues[0] === 0 ? state.contact : null,
+          analyticsActivated: !!state.contact.age,
+          contact: !!state.contact.age ? state.contact : null,
         },
       })
       return {

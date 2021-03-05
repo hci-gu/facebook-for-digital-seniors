@@ -2,6 +2,7 @@
 // So, we write it in vanilla JS
 // (But you could use ES2015 features supported by your Node.js version)
 const webpack = require('webpack')
+const DefinePlugin = webpack.DefinePlugin
 const Dotenv = require('dotenv-webpack')
 
 // const ChromeExtensionReloader = require("webpack-chrome-extension-reloader");
@@ -23,6 +24,11 @@ module.exports = {
     // plugins: [];
 
     config.plugins.push(new Dotenv())
+    config.plugins.push(
+      new DefinePlugin({
+        VENDOR_NAME: JSON.stringify(vendor),
+      })
+    )
 
     // config.node["fs"] = "empty";
 

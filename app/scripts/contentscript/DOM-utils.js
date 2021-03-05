@@ -208,7 +208,6 @@ const updateVisibilityFromShowHideObject = item => {
         } else {
           showElement(parent)
         }
-        console.log('allChildrenHidden', allChildrenHidden)
       }
     }
   } catch (e) {

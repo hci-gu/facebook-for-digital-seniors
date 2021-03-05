@@ -20,7 +20,7 @@
         <div class="button-container">
           <button @click="uninstall" class="secondary">Avinstallera</button>
         </div>
-        <div class="button-container">
+        <div class="button-container" v-if="analyticsEnabled">
           <button @click="removeExtension" class="secondary">Hoppa av</button>
         </div>
         <div class="button-container" v-if="debug">
@@ -39,6 +39,7 @@ export default {
   data() {
     return {
       stateEnabled: false,
+      analyticsEnabled: false,
       showMore: false,
       debug: false,
     }
@@ -48,6 +49,9 @@ export default {
     backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck
     this.sendMessageToBackground('stateEnabledRequest').then((response) => {
       this.stateEnabled = response
+    })
+    this.sendMessageToBackground('analyticsEnabled').then((response) => {
+      this.analyticsEnabled = response
     })
   },
   methods: {

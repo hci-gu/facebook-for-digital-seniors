@@ -45,23 +45,50 @@ export default [
   {
     name: 'simplicity',
     title: 'Förenkling',
-    showHelpPanel: false,
-    question:
-      'Fyll i det alternativ som passar bäst för dig.\n\nSen jag började använda den enklare designen är det oftast...',
     keywords: [],
-    selections: [
+    subStepIndex: 0,
+    subSteps: [
       {
-        text: '...lättare än tidigare att hitta och göra det jag behöver.',
-        keywords: [],
+        name: 'simplicity-1',
+        question:
+          'Fyll i det alternativ som passar bäst för dig.\n\nSen jag började använda den enklare designen är det oftast...',
+        showHelpPanel: false,
+        selections: [
+          {
+            text: '...lättare än tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+          {
+            text:
+              '...lika lätt/svårt som tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+          {
+            text: '...svårare än tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+        ],
       },
       {
-        text:
-          '...lika lätt/svårt som tidigare att hitta och göra det jag behöver.',
-        keywords: [],
-      },
-      {
-        text: '...svårare än tidigare att hitta och göra det jag behöver.',
-        keywords: [],
+        name: 'simplicity-2',
+        question:
+          'Följdfråga: Har du i den enklare designen av Facebook saknat möjligheten att göra något av följande?',
+        showHelpPanel: true,
+        selections: [
+          {
+            text: '...lättare än tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+          {
+            text:
+              '...lika lätt/svårt som tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+          {
+            text: '...svårare än tidigare att hitta och göra det jag behöver.',
+            keywords: [],
+          },
+        ],
       },
     ],
   },

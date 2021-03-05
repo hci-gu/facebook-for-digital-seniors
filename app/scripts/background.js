@@ -60,25 +60,22 @@ const setup = async () => {
 
   await contentscriptReady
 
-  const analyticsActivated =
-    localStorage.getItem('analyticsActivated') === 'true'
-  if (analyticsActivated) {
-    console.log('analyticsActivated!!!')
+  if (parseUtil.getAnalyticsEnabled()) {
     getBrowserFingerPrintAndSetupParse()
   }
 }
 
-const getBrowserFingerPrintAndSetupParse = async contact => {
+const getBrowserFingerPrintAndSetupParse = async ({ contact, vendor }) => {
   let browserPrint = localStorage.getItem('browserFingerPrint')
   if (!browserPrint) {
     console.log('no browserprint saved in storage. Gonna ask the page for one')
     browserPrint = await getFingerprintFromContentScript()
     if (browserPrint) {
       localStorage.setItem('browserFingerPrint', browserPrint)
-      parseUtil.setupParseConnection(browserPrint, contact)
+      await parseUtil.setupParseConnection(browserPrint, contact, vendor)
     }
   } else {
-    parseUtil.setupParseConnection(browserPrint, contact)
+    await parseUtil.setupParseConnection(browserPrint, contact, vendor)
   }
 }
 
@@ -123,11 +120,16 @@ const messageFromContentHandler = async message => {
       return wizard.isCompleted()
     case 'setWizardCompleted':
       const activateAnalytics = wizard.setCompleted(message.payload)
-      if (activateAnalytics) {
-        getBrowserFingerPrintAndSetupParse(message.payload.contact)
-        localStorage.setItem('submitDate', new Date())
-      }
       sendMessageToPage('stateUpdate', state.get())
+      if (activateAnalytics) {
+        localStorage.setItem('submitDate', new Date())
+        await getBrowserFingerPrintAndSetupParse({
+          contact: message.payload.contact,
+          vendor: message.payload.vendor,
+        })
+        if (message.payload.answers)
+          parseUtil.submitWizardAnswers(message.payload.answers)
+      }
       return
     case 'shouldDisplayQuestionnaire':
       if (localStorage.getItem('submitDate')) {
@@ -143,7 +145,6 @@ const messageFromContentHandler = async message => {
       }
       return false
     case 'questionnaireCompleted':
-      console.log('questionnaireCompleted', message.payload)
       if (message.payload && message.payload.answers) {
         await parseUtil.submitQuestionnaire(message.payload)
       }
@@ -165,7 +166,6 @@ const messageFromMenuHandler = async message => {
     case 'stateRequest':
       let gotState = state.get()
       if (gotState) {
-        console.log('stateRequest', gotState)
         return gotState
       } else {
         return Promise.reject("couldn't retrieve a state from localStorage!")
@@ -173,7 +173,6 @@ const messageFromMenuHandler = async message => {
     case 'stateEnabledRequest':
       let enabled = state.getEnabled()
       if (enabled !== undefined) {
-        console.log('stateEnabledRequest', enabled)
         return enabled
       } else {
         return Promise.reject(
@@ -181,27 +180,26 @@ const messageFromMenuHandler = async message => {
         )
       }
     case 'stateUpdate':
-      console.log('received state update from menu', message.payload)
       state.set(message.payload)
       parseUtil.updateUserSettings(state.get())
       sendMessageToPage('stateUpdate', state.get())
       return 'Aiight! Got your state!'
     case 'redoIntro':
-      console.log('redo intro')
       state.reset()
       localStorage.setItem('wizardCompleted', false)
       sendMessageToPage('redoIntro')
       return
     case 'deleteUser':
-      state.reset()
-      await parseUtil.deleteData()
-      sendMessageToPage('stateUpdate', state.get())
-      sendMessageToPage('deleteUser')
-      chrome.management.uninstallSelf()
+      try {
+        await parseUtil.deleteData()
+      } catch (e) {}
       return
     case 'uninstall':
       chrome.management.uninstallSelf()
       return
+    case 'analyticsEnabled':
+      console.log('BG analyticsEnabled', parseUtil.getAnalyticsEnabled())
+      return parseUtil.getAnalyticsEnabled()
     case 'debug':
       console.log('pass on debug')
       return sendMessageToPage('debug')

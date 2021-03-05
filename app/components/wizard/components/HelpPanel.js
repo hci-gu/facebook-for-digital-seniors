@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import Tooltip from 'react-power-tooltip'
 
@@ -49,6 +49,17 @@ export default () => {
   const step = steps[index]
 
   if (!step.showHelpPanel) return null
+
+  useEffect(() => {
+    const handleClick = () => {
+      if (highlightFeature) {
+        dispatch({ payload: { highlightFeature: false } })
+      }
+    }
+    window.addEventListener('mousedown', handleClick)
+
+    return () => window.removeEventListener('mousedown', handleClick)
+  }, [highlightFeature])
 
   return (
     <Container>

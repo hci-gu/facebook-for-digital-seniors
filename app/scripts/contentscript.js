@@ -6,7 +6,8 @@ import showWizard, {
   showQuestionnaireAfterDomLoaded,
 } from '../components/wizard'
 import messageUtils from './message-utils'
-// import { isPromiseResolved } from "promise-status-async";
+
+const wait = time => new Promise(resolve => setTimeout(() => resolve(), time))
 
 const getFingerprint = () => {
   const calculateFingerprint = async () => {
@@ -69,11 +70,6 @@ const sendUserInteraction = payload => {
   backgroundPort.postMessage({ type: 'userInteraction', payload: payload })
 }
 
-const sendStateUpdate = state => {
-  console.log('sending state to bg: ', state)
-  backgroundPort.postMessage({ type: 'stateUpdate', payload: state })
-}
-
 const sendStateRequest = () =>
   backgroundPort.postMessageWithAck({ type: 'stateRequest', payload: null })
 
@@ -86,12 +82,20 @@ backgroundPort
     sendUserInteraction({ eventType: 'refresh' })
   })
 
-//INIT stuff is happening here
-const init = async () => {
-  console.log('init')
-  const state = await backgroundPort.postMessageWithAck({
-    type: 'refreshState',
-  })
+const getState = async (retries = 3) => {
+  try {
+    const state = await backgroundPort.postMessageWithAck({
+      type: 'refreshState',
+    })
+    return state
+  } catch (e) {}
+  if (retries > 0) {
+    await wait(500 * 3 - retries)
+    return getState(retries - 1)
+  }
+}
+
+const checkAndShowWizard = async () => {
   const wizardCompleted = await backgroundPort.postMessageWithAck({
     type: 'wizardCompleted',
   })
@@ -99,8 +103,13 @@ const init = async () => {
   if (!wizardCompleted) {
     showWizard()
   }
+}
 
-  checkIfQuestionnaireShouldDisplay()
+//INIT stuff is happening here
+const init = async () => {
+  console.log('init')
+  const state = await getState()
+  checkAndShowWizard()
 
   console.log('response received: ', state)
   // state = response;
@@ -121,6 +130,7 @@ const init = async () => {
     },
     queries: [{ element: 'body' }],
   })
+  setTimeout(() => onBodyTagLoaded(state), 300)
 }
 
 const nodeChangeHandler = async () => {
@@ -128,6 +138,7 @@ const nodeChangeHandler = async () => {
   const state = await sendStateRequest()
   updateVisibilityAll(state)
   updateComposerAudience(state)
+  updateVisibilityAll(state)
 }
 
 const updateVisibilityAll = state => {
@@ -183,6 +194,7 @@ const checkIfQuestionnaireShouldDisplay = async () => {
   } catch (e) {}
 }
 
+let addedObservers = false
 const onBodyTagLoaded = async state => {
   DOMUtils.createStyleTag()
   console.log('body tag added to DOM')
@@ -190,47 +202,49 @@ const onBodyTagLoaded = async state => {
 
   const setupObservers = () => {
     updateVisibilityAll(state)
+    setTimeout(() => updateVisibilityAll(state), 500)
 
-    const watchedNodesQuery = [
-      {
-        element: 'form[method="POST"]',
-      },
-      {
-        element: 'div[data-pagelet="root"]',
-      },
-      {
-        element: 'div[data-testid="Keycommand_wrapper_ModalLayer"]',
-      },
-      {
-        element: 'div[role="menu"]',
-      },
-    ]
-    // const initialNodeObserver = new MutationSummary({
-    //   callback: () => {
-    //     nodeChangeHandler()
-    //     initialNodeObserver.disconnect()
-    //   },
-    //   queries: [{ element: selectors.composerToolbar.selector }],
-    // })
+    if (!addedObservers) {
+      const watchedNodesQuery = [
+        {
+          element: 'form[method="POST"]',
+        },
+        {
+          element: 'div[data-pagelet="root"]',
+        },
+        {
+          element: 'div[data-testid="Keycommand_wrapper_ModalLayer"]',
+        },
+        {
+          element: 'div[role="menu"]',
+        },
+      ]
 
-    let leftPanelObserver = new MutationObserver(nodeChangeHandler)
-    leftPanelObserver.observe(
-      DOMUtils.getNodeFromCssObject(selectors.leftPanelExplore),
-      { childList: true }
-    )
+      let leftPanelObserver = new MutationObserver(nodeChangeHandler)
+      leftPanelObserver.observe(
+        DOMUtils.getNodeFromCssObject(selectors.leftPanelExplore),
+        { childList: true }
+      )
 
-    console.log('watchedNodes: ', watchedNodesQuery)
-    new MutationSummary({
-      callback: nodeChangeHandler,
-      queries: watchedNodesQuery,
-    })
+      new MutationSummary({
+        callback: nodeChangeHandler,
+        queries: watchedNodesQuery,
+      })
+      addedObservers = true
+    }
   }
 
   let interval = setInterval(() => {
     const node = DOMUtils.getNodeFromCssObject(selectors.leftPanel)
     if (node) {
+      console.log('NODE FOUND ADD OBSERVERS')
       setupObservers()
+      setTimeout(() => {
+        checkIfQuestionnaireShouldDisplay()
+      }, 1000)
       clearInterval(interval)
+    } else {
+      console.log('keep looking')
     }
   }, 100)
 }

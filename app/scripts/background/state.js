@@ -12,15 +12,7 @@ const initialize = async facebookCssSelectors => {
   let state = storedState ? storedState : Object.assign({}, stateSchema)
   state.facebookCssSelectors = facebookCssSelectors
 
-  if (
-    !hasSameProperties(state, stateSchema) ||
-    !hasSameProperties(stateSchema, state) ||
-    stateChangeCounterUpdated(state, stateSchema)
-  ) {
-    set(stateSchema)
-  } else {
-    set(state)
-  }
+  set(state)
 }
 
 const reset = () => set(Object.assign({}, stateSchema))
@@ -55,39 +47,6 @@ const toggleEnabled = () => {
 
 const getEnabled = () => {
   return localStorage.getItem('enabled') === 'true'
-}
-
-function stateChangeCounterUpdated(firstState, secondState) {
-  if (
-    !firstState.stateBreakingChangeCounter ||
-    !secondState.stateBreakingChangeCounter
-  ) {
-    return true
-  }
-  return (
-    firstState.stateBreakingChangeCounter !==
-    secondState.stateBreakingChangeCounter
-  )
-}
-
-function hasSameProperties(obj1, obj2) {
-  try {
-    return Object.keys(obj1).every(function(property) {
-      if (typeof obj1[property] !== 'object') {
-        return obj2.hasOwnProperty(property)
-      } else {
-        if (!obj2.hasOwnProperty(property)) {
-          return false
-        }
-        return hasSameProperties(obj1[property], obj2[property])
-      }
-    })
-  } catch (e) {
-    //If bug. fallback to consider the comparison not equal.
-    console.error('some bug in the hasSameProperties function')
-    console.error(e)
-    return false
-  }
 }
 
 export default {

@@ -42,31 +42,34 @@ export default {
             hide: false,
           },
           options: [
-            'Covid-19-informationscentret',
-            'Sidor',
-            'Vänner',
-            'Messenger',
-            'Evenemang',
-            'Marketplace',
-            'Videor',
-            'Insamlingar',
-            'Grupper',
-            'Vänlistor',
-            'Minnen',
-            'Spel',
-            'Erbjudanden',
-            'Spelvideo',
-            'Köp- och säljgrupper',
-            'Jobb',
-            'Senaste',
-            'Annonser',
-            'Facebook Pay',
-            'Sparat',
-            'Krisrespons',
-            'Oculus',
-            'Senaste annonsaktivitet',
-            'Livevideor',
-            'Vädret',
+            'Covid-19-informationscentret', // 0
+            'Sidor', // 1
+            'Vänner', // 2
+            'Messenger', // 3
+            'Evenemang', // 4
+            'Marketplace', // 5
+            'Videor', // 6
+            'Insamlingar', // 7
+            'Grupper', // 8
+            'Vänlistor', // 9
+            'Minnen', // 10
+            'Spel', // 11
+            'Erbjudanden', // 12
+            'Spelvideo', // 13
+            'Köp- och säljgrupper', // 14
+            'Jobb', // 15
+            'Senaste', // 16
+            'Annonser', // 17
+            'Facebook Pay', // 18
+            'Sparat', // 19
+            'Krisrespons', // 20
+            'Oculus', // 21
+            'Senaste annonsaktivitet', // 22
+            'Livevideor', // 23
+            'Vädret', // 24
+            'Annonscenter', // 24
+            'Ads Manager', // 24
+            'Watch', // 25
           ].map((name, i) => ({
             id: `explore-${i}`,
             name,
@@ -213,7 +216,13 @@ export default {
         {
           id: 'right-panel-sponsored',
           name: 'Högerpanel sponsrad',
-          cssSelectorName: 'rightPanelSponsored',
+          cssSelectorName: 'rightPanelSponsored, rightPanelSponsoredContent',
+          hide: false,
+        },
+        {
+          id: 'footer-text',
+          name: 'Fotnot',
+          cssSelectorName: 'footerText',
           hide: false,
         },
       ],

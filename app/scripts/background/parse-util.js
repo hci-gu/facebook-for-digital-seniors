@@ -1,23 +1,23 @@
 import Parse, { isEncryptedUserEnabled } from 'parse'
 import Fingerprint2 from 'fingerprintjs2'
 
-Parse.serverURL = 'https://d2sy394i9mrp8i.cloudfront.net/parse' // This is your Server URL
+Parse.serverURL = 'https://analytics.digitalaseniorer.org/parse' // This is your Server URL
 Parse.initialize(
   process.env.PARSE_APP_KEY // This is your Application ID
 )
 let loggedInToParse = false
 
-const setupParseConnection = async (browserPrint, contact) => {
-  if (!Parse.User.current()) {
+const setupParseConnection = async (browserPrint, contact, vendor) => {
+  if (!Parse.User.current() && getAnalyticsEnabled()) {
     console.log('no logged in parse user found. Gonna try to login/signup')
     try {
       await loginToParse(browserPrint)
     } catch (err) {
       console.log('login failed, err', err)
-      let signUpResult = await signupToParse(browserPrint, contact)
+      let signUpResult = await signupToParse(browserPrint, contact, vendor)
       console.log(signUpResult)
     }
-  } else {
+  } else if (getAnalyticsEnabled()) {
     // Might be a good idea to verify logged in user against the actual server here.
     // Because the current() function just checks if there is a user in localstorage and fetches it.
     // It thus relies on the parse server still having the session token saved.
@@ -31,7 +31,7 @@ const generateCredentials = hash => {
   return { username: Fingerprint2.x64hash128(hash), password: hash }
 }
 
-const signupToParse = async (browserHash, contact) => {
+const signupToParse = async (browserHash, contact, vendor) => {
   let credentials = generateCredentials(browserHash)
   try {
     let user = await Parse.User.signUp(
@@ -47,6 +47,7 @@ const signupToParse = async (browserHash, contact) => {
       console.log('registered new parse user: ', user)
       user.set('contactEmail', contact.email)
       user.set('contactAge', contact.age)
+      user.set('vendor', vendor)
       if (process.env.NODE_ENV == 'development') {
         console.log('creating user as testUser')
         user.set('isTestUser', true)
@@ -138,13 +139,14 @@ const fetchQuestionnairePeriod = async () => {
   return 7
 }
 
-const submitFormAnswers = async answers => {
-  const FormAnswer = Parse.Object.extend('FormAnswers')
-  const formAnswer = new FormAnswer()
-  setDefaultDocFields(formAnswer, Parse.User.current())
-  formAnswer.set('answers', answers)
+const submitWizardAnswers = async answers => {
+  const WizardAnswer = Parse.Object.extend('WizardAnswers')
+  const wizardAnswer = new WizardAnswer()
+  setDefaultDocFields(wizardAnswer, Parse.User.current())
+  wizardAnswer.set('answers', answers)
+  wizardAnswer.set('version', '1.0.0')
 
-  return formAnswer.save()
+  return wizardAnswer.save()
 }
 
 const submitQuestionnaire = async ({ answers, comments }) => {
@@ -166,24 +168,31 @@ const deleteAllForUser = async (table, user) => {
 }
 
 const deleteData = async () => {
-  console.log('deleteData', loggedInToParse)
   const user = Parse.User.current()
 
   await deleteAllForUser('QuestionnaireAnswers', user)
   await deleteAllForUser('UserInteraction', user)
   await deleteAllForUser('UserSettings', user)
-  // await deleteAllForUser('FormAnswers', user)
+  await deleteAllForUser('WizardAnswers', user)
 
-  await user.clear()
-  console.log('all done')
+  user.set('contactEmail', null)
+  user.set('contactAge', null)
+  user.set('contactSex', null)
+  await user.save()
+  localStorage.setItem('analyticsActivated', false)
 }
+
+const getAnalyticsEnabled = () =>
+  localStorage.getItem('analyticsActivated') === 'true'
 
 export default {
   setupParseConnection,
   sendUserInteraction,
   updateUserSettings,
   fetchQuestionnairePeriod,
-  submitFormAnswers,
+  submitWizardAnswers,
   submitQuestionnaire,
   deleteData,
+  getAnalyticsEnabled,
+  signupToParse,
 }

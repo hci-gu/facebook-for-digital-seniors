@@ -69,59 +69,71 @@ const InfoDialog = ({ onClose }) => {
             <span>Studien och dess syfte</span>
             <p>
               Många över 65 år använder sociala medier och vi förväntar oss att
-              öka under de kommande åren eftersom de flesta under 65 nuförtiden
-              använder sociala medier större delen av sitt liv. Vi fokuserar på
-              Facebook för att förstå hur sociala medier ser ut att anpassas i
-              människors åldrande. Den här tillägget du installerade är det
-              första försöket att göra detta.
+              det kommer öka under de kommande åren eftersom de flesta under 65
+              nuförtiden använder sociala medier större delen av sitt liv. Vi
+              fokuserar på Facebook för att förstå hur sociala medier ser ut att
+              anpassas i människors åldrande. Den här tillägget du installerade
+              är det första försöket att göra detta.
             </p>
             <span>Vilka uppgifter vi samlar in</span>
             <p>
               Vi samlar in data relaterade till din interaktion med tillägget,
-              t.ex. vilka FB-tjänster du valde att se eller dölja, hur ofta du
-              gör ändringarna ... andra tekniska saker. Vi skickar ett
-              frågeformulär om din erfarenhet av tillägget varje…. Det kan du
-              välja att svara på.
+              t.ex. vilka FB-funktioner du valde att se eller dölja genom
+              formuläret, hur ofta du besöker facebook, samt varje gång
+              tillägget slås av/på. Vi skickar ett frågeformulär om din
+              erfarenhet av tillägget veckovis som du kan välja att svara på.
             </p>
             <span>Säkerhet för dina uppgifter</span>
             <p>
               Vi ser till att vi har vidtagit alla nödvändiga åtgärder för att
-              hålla dina uppgifter säkra (lagrade låsta och krypterade) i första
-              hand på Göteborgs universitet.
+              hålla dina uppgifter säkra.
             </p>
             <span>Två sätt att delta</span>
             <p>
               <ul>
                 <li>
                   Du kan delta och ge oss möjlighet att kontakta dig genom att
-                  ge oss din e-post och några allmänna detaljer om dig
+                  ge oss din e-post och några allmänna detaljer om dig själv.
                 </li>
                 <li>
-                  Du kan delta utan att ge oss din e-post bara några allmänna
-                  detaljer om dig.
+                  Du kan delta utan att ge oss din e-post och bara några
+                  allmänna detaljer om dig.
                 </li>
               </ul>
             </p>
             <span>Du kan alltid dra tillbaka</span>
             <p>
               Om du ändrar dig för ditt deltagande eller typen av ditt
-              deltagande kan du alltid kontakta PI-e-post och meddela dem att du
-              vill återkalla. Det är viktigt att informera oss om att om du vill
-              sluta äga rum i vår forskning för att hjälpa dig att helt
-              avinstallera tillägget och ta bort data, samlade vi från dig
+              deltagande kan du alltid trycka på "Hoppa av" knappen som finns
+              efter du är klar med formuläret i menyn för tillägget. Kontakta
+              annars oss på e-post och meddela att du vill återkalla. Det är
+              viktigt att informera oss om att om du vill sluta vara en del i
+              vår forskning för att hjälpa dig att helt avinstallera tillägget
+              och ta bort data samlat från dig.
             </p>
             <span>Integriteten av vår forskning</span>
             <p>
               Denna forskning accepterades av Etikprövningsmyndigheten och fick
-              finansiering av Familjen Kamprads Stiftelse
+              finansiering av Familjen Kamprads Stiftelse.
             </p>
             <span>För mer information om studien</span>
             <p>
               besök{' '}
-              <a href="http://www.digitalaseniorer.org/">
+              <a
+                href="http://www.digitalaseniorer.org/"
+                target="_blank"
+                rel="noreferrer"
+              >
                 http://www.digitalaseniorer.org/
               </a>{' '}
-              eller kontakta oss på via e-post
+              eller kontakta oss via e-post som du kan hitta här{' '}
+              <a
+                href="http://www.digitalaseniorer.org/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                http://www.digitalaseniorer.org/kontakt
+              </a>{' '}
             </p>
           </div>
           <Buttons>

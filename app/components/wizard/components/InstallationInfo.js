@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import styled from 'styled-components'
 import Tooltip from 'react-power-tooltip'
 import { StateContext } from '../state'
+import Button from './Button'
 
 const Container = styled.div`
   position: fixed;
@@ -37,6 +38,13 @@ const TooltipContent = styled.div`
   }
 `
 
+const ButtonContainer = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`
+
 export default () => {
   const { dispatch } = useContext(StateContext)
 
@@ -63,6 +71,17 @@ export default () => {
             och sen välja{' '}
             <img src={chrome.runtime.getURL(`images/icons/fb.png`)}></img>Klara
             Facebook i menyn.
+            <br></br>
+            <br></br>
+            <ButtonContainer>
+              <Button
+                onClick={() =>
+                  dispatch({ payload: { showInstalledInfo: false } })
+                }
+              >
+                Ok
+              </Button>
+            </ButtonContainer>
           </TooltipContent>
         </Tooltip>
       </Positioned>

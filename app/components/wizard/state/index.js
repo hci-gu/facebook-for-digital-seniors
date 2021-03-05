@@ -29,7 +29,7 @@ const initialState = () => ({
     selectedValues: step.subSteps ? step.subSteps.map(_ => null) : [],
   })),
   index: 0,
-  showInstalledInfo: false,
+  showInstalledInfo: true,
   highlightFeature: null,
   selectedValues: steps.map(_ => null),
 })

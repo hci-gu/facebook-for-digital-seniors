@@ -17,9 +17,9 @@ const Dialog = styled.div`
   z-index: 1001 !important;
   position: absolute;
   width: 400px;
-  height: 350px;
+  height: 300px;
   top: calc(50% - 175px);
-  left: calc(50% - 200px);
+  left: calc(50% - 150px);
 
   background-color: white;
   border-radius: 5px;
@@ -64,7 +64,7 @@ export default ({ onClose }) => {
 
   return (
     <Container>
-      <Dialog isQuestionnaire>
+      <Dialog isQuestionnaire={isQuestionnaire}>
         <Navbar onClick={onClose} />
         <Content>
           <div>

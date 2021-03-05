@@ -92,7 +92,12 @@
       {
         "text": "Ibland tittar jag på förslagen Facebook ger mig, så som vänner eller spel",
         "keywords": ["vänner", "spel"],
-        "add": ["friends-recommended", "friends-games", "friends-games-popular"]
+        "add": [
+          "friends-recommended",
+          "friends-games",
+          "friends-games-popular",
+          "explore-9"
+        ]
       },
       {
         "text": "Samma som ovan, men ibland ber jag om eller ger rekommendationer",
@@ -146,16 +151,16 @@
         "text": "Jag vill ibland köpa och sälja saker på Facebook.",
         "keywords": ["köpa och sälja"],
         "add": [
-          "explore-8",
           "top-panel-explore-Marketplace",
           "create-post-more",
-          "explore-4"
+          "explore-5",
+          "explore-14"
         ]
       },
       {
         "text": "Samma som ovan, men ibland vill jag kolla på min annonshistorik, mina erbjudanden eller leta efter jobbannonser.",
         "keywords": ["annonshistorik", "erbjudanden", "jobbannonser"],
-        "add": ["explore-17", "explore-9", "explore-13", "explore-10"]
+        "add": ["explore-17", "explore-12", "explore-15"]
       },
       {
         "text": "Jag vill inte göra något av ovanstående.",
@@ -173,12 +178,12 @@
       {
         "text": "Ibland spelar jag spel på Facebook.",
         "keywords": [" spel "],
-        "add": ["explore-6", "top-panel-explore-Games"]
+        "add": ["explore-11", "explore-21", "top-panel-explore-Games"]
       },
       {
         "text": "Samma som ovan, men ibland vill jag titta på spelvideos på Facebook också.",
         "keywords": ["spelvideos"],
-        "add": ["explore-20"]
+        "add": ["explore-13"]
       },
       {
         "text": "Jag är inte intresserad av spel på Facebook.",

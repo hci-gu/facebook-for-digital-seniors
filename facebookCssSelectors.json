@@ -59,32 +59,32 @@
   "topPanelExplore": "div[role=\"navigation\"] > ul",
   "topPanelExploreHome": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Startsida\"]",
+    "selector": "[aria-label^=\"Startsida\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "topPanelExplorePages": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Sidor\"]",
+    "selector": "[aria-label^=\"Sidor\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "topPanelExploreMarketplace": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Marketplace\"]",
+    "selector": "[aria-label^=\"Marketplace\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "topPanelExploreGroups": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Grupper\"]",
+    "selector": "[aria-label^=\"Grupper\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "topPanelExploreWatch": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Watch\"]",
+    "selector": "[aria-label^=\"Watch\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "topPanelExploreGames": {
     "parentSelectorName": "topPanelExplore",
-    "selector": "[aria-label=\"Spel (gaming)\"]",
+    "selector": "[aria-label^=\"Spel (gaming)\"]",
     "DOMSearch": "parentElement, parentElement, parentElement"
   },
   "friendsPanel": {
@@ -121,8 +121,19 @@
     "DOMSearch": "parentElement, parentElement, parentElement, parentElement, parentElement, parentElement, parentElement"
   },
   "rightPanel": "[data-pagelet=\"RightRail\"]",
+  "rightPanelContent": {
+    "selector": "[data-pagelet=\"RightRail\"] > div"
+  },
   "rightPanelSponsored": {
-    "selector": "[data-pagelet=\"RightRail\"] > div > div > div"
+    "parentSelectorName": "rightPanelContent",
+    "DOMSearch": "children:0"
+  },
+  "rightPanelSponsoredContent": {
+    "parentSelectorName": "rightPanelContent",
+    "DOMSearch": "children:0"
+  },
+  "footerText": {
+    "selector": "footer[aria-label=\"Facebook\"]"
   },
   "postSettings": {
     "evaluate": true,
