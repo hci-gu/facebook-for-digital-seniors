@@ -58,12 +58,13 @@
         "add": ["composer-tag-friends", "composer-check-in"]
       },
       {
-        "text": "Samma som ovan, men ibland ber jag också om rekommendationer, lägger till känsla/aktivitet, lägger till GIFs eller skapar en insamling.",
+        "text": "Samma som ovan, men ibland ber jag också om rekommendationer, lägger till känsla/aktivitet, lägger till GIFs, skapar en insamling eller håller i en frågestund.",
         "keywords": [
           "rekommendationer",
           "känsla/aktivitet",
           "GIFs",
-          "insamling"
+          "insamling",
+          "frågestund"
         ],
         "add": [
           "composer-background-button",
@@ -73,6 +74,7 @@
           "composer-gif",
           "composer-charity",
           "composer-live-stream",
+          "composer-question",
           "create-post-more"
         ]
       },
@@ -170,7 +172,7 @@
   },
   {
     "name": "games",
-    "title": "Spel",
+    "title": "Spel / Video",
     "showHelpPanel": true,
     "question": "Vilket påstående stämmer bäst in på dig?",
     "altText": "Markera det du använder",
@@ -186,8 +188,13 @@
         "add": ["explore-13"]
       },
       {
-        "text": "Jag är inte intresserad av spel på Facebook.",
-        "keywords": [" spel "]
+        "text": "Samma som ovan, men ibland vill jag titta på videos på Facebook också.",
+        "keywords": [" videos "],
+        "add": ["explore-27", "top-panel-explore-Watch"]
+      },
+      {
+        "text": "Jag är inte intresserad av spel eller videos på Facebook.",
+        "keywords": [" spel ", " videos "]
       }
     ]
   },

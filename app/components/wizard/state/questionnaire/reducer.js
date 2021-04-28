@@ -1,8 +1,8 @@
 import { actions } from '../constants'
 import steps from '../../questions'
 let backgroundPort =
-  browser && browser.runtime
-    ? browser.runtime.connect({ name: 'port-from-contentscript' })
+  chrome && chrome.runtime
+    ? chrome.runtime.connect({ name: 'port-from-contentscript' })
     : null
 
 const goForward = state => {

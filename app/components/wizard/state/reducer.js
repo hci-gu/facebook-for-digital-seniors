@@ -1,8 +1,8 @@
 import { actions, selectors } from './constants'
 import steps from '../steps.json'
 let backgroundPort =
-  browser && browser.runtime
-    ? browser.runtime.connect({ name: 'port-from-contentscript' })
+  chrome && chrome.runtime
+    ? chrome.runtime.connect({ name: 'port-from-contentscript' })
     : null
 
 const selectorsForStep = (step, index) => {
@@ -113,7 +113,6 @@ const goBack = state => {
 const reducer = (state, { action, payload }) => {
   switch (action) {
     case actions.DONE:
-      console.log('VENDOR_NAME', VENDOR_NAME)
       const featuresToRemove = removeFeaturesBasedOnSelections(state)
       const answers = state.selectedValues.filter(v => v != null)
       backgroundPort.postMessage({

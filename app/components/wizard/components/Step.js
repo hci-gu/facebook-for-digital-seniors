@@ -95,6 +95,11 @@ const Selection = styled.div`
   }
 `
 
+const cleanUpTitle = word => {
+  if (word[0] === ' ') word = word.split(' ').join('')
+  return `${word[0].toUpperCase()}${word.slice(1)}`
+}
+
 const renderTextWithHighlights = (
   dispatch,
   index,
@@ -119,7 +124,7 @@ const renderTextWithHighlights = (
                 action: actions.HELP_PANEL,
                 payload: {
                   image: `${index}-${cleanKeyword(part)}`,
-                  title: `${part[0].toUpperCase()}${part.slice(1)}`,
+                  title: cleanUpTitle(part),
                   description: descriptionForPanel(cleanKeyword(part)),
                 },
               })

@@ -60,6 +60,10 @@ export default key => {
       return ''
     case 'valgorenhetsinsamlingar':
       return 'Inlägg för välgörenhetsinsamlingar kan t.ex. dyka upp om någon av dina vänner delar att de har bidragit till en välgörenhetsorganisation eller liknande. \n\n Nedan ser du ett exempel på ett inlägg för en välgörenhetsinsamling.'
+    case 'fragestund':
+      return 'Du kan hålla i en frågestund om som skapar ett inlägg med en frågeställning dina vänner kan svara på eller diskutera. \n\n Nedan ser du en bild på var du skapar en frågestund.'
+    case 'videos':
+      return 'Sidor på Facebook kan lägga upp videoklipp som användare kan titta på, under “Watch” hittar du ett flöde av enbart såna här inlägg. \n\nNedan ser du två bilder på var du hittar Watch.'
     case 'spel':
       return 'Du kan spela spel på Facebook. Ett exempel på ett vanligt Facebook spel är “Quiz planet”. \n\n Nedan ser du en bild på var du hittar spel.'
     case 'spelvideos':

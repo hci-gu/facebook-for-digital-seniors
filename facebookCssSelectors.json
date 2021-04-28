@@ -7,7 +7,7 @@
     "DOMSearch": "parentElement, children: 2"
   },
   "stories": "[data-pagelet=\"Stories\"]",
-  "videoChats": "[data-pagelet=\"VideoChatHomeUnit\"]",
+  "videoChats": "[data-pagelet=\"VideoChatHomeUnitNoDDD\"]",
   "popupMenu": {
     "selector": "[data-pagelet=\"root\"] > [role=\"menu\"]",
     "DOMSearch": "firstElementChild, firstElementChild, firstElementChild, firstElementChild",

@@ -185,6 +185,14 @@ const deleteData = async () => {
 const getAnalyticsEnabled = () =>
   localStorage.getItem('analyticsActivated') === 'true'
 
+const getUserId = () => {
+  const user = Parse.User.current()
+  if (!!user) {
+    return user.attributes.username
+  }
+  return null
+}
+
 export default {
   setupParseConnection,
   sendUserInteraction,
@@ -195,4 +203,5 @@ export default {
   deleteData,
   getAnalyticsEnabled,
   signupToParse,
+  getUserId,
 }

@@ -143,7 +143,7 @@ export default {
       }
     };
 
-    backgroundPort = browser.runtime.connect({ name: "port-from-menu" });
+    backgroundPort = chrome.runtime.connect({ name: "port-from-menu" });
     backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck;
     messageUtils.addMessageHandlerWithAckAsPromise(
       backgroundPort,

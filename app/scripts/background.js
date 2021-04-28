@@ -50,7 +50,7 @@ const setup = async () => {
   const _state = refreshState()
   console.log('state initialized: ', _state)
 
-  browser.browserAction.setPopup({ popup: 'pages/menu.html' })
+  chrome.browserAction.setPopup({ popup: 'pages/menu.html' })
   if (!window.localStorage.getItem('firstOpen')) {
     window.localStorage.setItem('firstOpen', 'done')
     chrome.tabs.create({
@@ -61,7 +61,7 @@ const setup = async () => {
   await contentscriptReady
 
   if (parseUtil.getAnalyticsEnabled()) {
-    getBrowserFingerPrintAndSetupParse()
+    getBrowserFingerPrintAndSetupParse({})
   }
 }
 
@@ -198,15 +198,17 @@ const messageFromMenuHandler = async message => {
       chrome.management.uninstallSelf()
       return
     case 'analyticsEnabled':
-      console.log('BG analyticsEnabled', parseUtil.getAnalyticsEnabled())
       return parseUtil.getAnalyticsEnabled()
+    case 'getAnalyticsId':
+      const userId = parseUtil.getUserId()
+      return userId
     case 'debug':
       console.log('pass on debug')
       return sendMessageToPage('debug')
   }
 }
 
-browser.runtime.onConnect.addListener(port => {
+chrome.runtime.onConnect.addListener(port => {
   console.log('port connected: ', port)
   port.onDisconnect.addListener(p => {
     console.log('port disconnected:', p.name)

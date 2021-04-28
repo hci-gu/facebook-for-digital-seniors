@@ -23,6 +23,7 @@
         <div class="button-container" v-if="analyticsEnabled">
           <button @click="removeExtension" class="secondary">Hoppa av</button>
         </div>
+        <span v-if="userId" class="user-id">UserId: {{userId}}</span>
         <div class="button-container" v-if="debug">
           <button @click="sendDebug" class="secondary">DEBUG</button>
         </div>
@@ -42,16 +43,20 @@ export default {
       analyticsEnabled: false,
       showMore: false,
       debug: false,
+      userId: ''
     }
   },
   mounted() {
-    backgroundPort = browser.runtime.connect({ name: 'port-from-menu' })
+    backgroundPort = chrome.runtime.connect({ name: 'port-from-menu' })
     backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck
     this.sendMessageToBackground('stateEnabledRequest').then((response) => {
       this.stateEnabled = response
     })
     this.sendMessageToBackground('analyticsEnabled').then((response) => {
       this.analyticsEnabled = response
+    })
+    this.sendMessageToBackground('getAnalyticsId').then((response) => {
+      this.userId = response
     })
   },
   methods: {
@@ -173,5 +178,8 @@ export default {
 
     color: #324e83;
     text-decoration: underline;
+  }
+  .user-id {
+    font-size: 11px;
   }
 </style>

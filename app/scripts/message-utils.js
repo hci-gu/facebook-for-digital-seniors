@@ -48,7 +48,7 @@ export default {
   addMessageHandlerWithAckAsPromise,
   postMessageWithAck,
   postMessage: message => {
-    const port = browser.runtime.connect({ name: 'port-from-menu' })
+    const port = chrome.runtime.connect({ name: 'port-from-menu' })
     port.postMessage(message)
   },
 }

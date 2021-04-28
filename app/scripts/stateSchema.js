@@ -67,9 +67,9 @@ export default {
             'Senaste annonsaktivitet', // 22
             'Livevideor', // 23
             'Vädret', // 24
-            'Annonscenter', // 24
-            'Ads Manager', // 24
-            'Watch', // 25
+            'Annonscenter', // 25
+            'Ads Manager', // 26
+            'Watch', // 27
           ].map((name, i) => ({
             id: `explore-${i}`,
             name,
@@ -131,6 +131,7 @@ export default {
             { id: 'composer-live-stream', text: 'Livevideo' },
             { id: 'composer-charity', text: 'Samla in pengar' },
             { id: 'composer-video-party', text: 'Videoparty' },
+            { id: 'composer-question', text: 'Håll en frågestund' },
           ].map(({ id, text }, i) => ({
             id,
             name: text,

@@ -1,5 +1,5 @@
 import showWizard, { showWizardAfterDomLoaded } from '../components/wizard'
 
-if (!browser.runtime) {
+if (!chrome.runtime) {
   showWizard()
 }

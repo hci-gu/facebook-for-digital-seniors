@@ -34,7 +34,7 @@ const getFingerprint = () => {
   })
 }
 
-let backgroundPort = browser.runtime.connect({
+let backgroundPort = chrome.runtime.connect({
   name: 'port-from-contentscript',
 })
 backgroundPort.postMessageWithAck = messageUtils.postMessageWithAck
