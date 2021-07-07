@@ -53,7 +53,7 @@ export default {
             'Grupper', // 8
             'Vänlistor', // 9
             'Minnen', // 10
-            'Spel', // 11
+            'Spela spel', // 11
             'Erbjudanden', // 12
             'Spelvideo', // 13
             'Köp- och säljgrupper', // 14

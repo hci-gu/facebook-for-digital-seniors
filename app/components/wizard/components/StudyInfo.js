@@ -128,7 +128,7 @@ const InfoDialog = ({ onClose }) => {
               </a>{' '}
               eller kontakta oss via e-post som du kan hitta här{' '}
               <a
-                href="http://www.digitalaseniorer.org/"
+                href="http://www.digitalaseniorer.org/kontakt"
                 target="_blank"
                 rel="noreferrer"
               >
