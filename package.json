@@ -8,7 +8,7 @@
     "data-extraction": "node ./dataExtraction.js"
   },
   "devDependencies": {
-    "css-loader": "^3.3.0",
+    "css-loader": "^6.7.3",
     "json2csv": "^5.0.6",
     "webextension-toolbox": "latest"
   },
@@ -29,7 +29,7 @@
     "recursive-diff": "^1.0.8",
     "styled-components": "^5.0.1",
     "vue": "^2.6.10",
-    "vue-loader": "^15.7.2",
+    "vue-loader": "^17.0.1",
     "vue-template-compiler": "^2.6.10"
   }
 }
